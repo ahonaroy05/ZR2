@@ -1,4 +1,5 @@
-import { useState } from "react";
+import React, { useState } from "react";
+import { View, TextInput, Button, FlatList, Text, StyleSheet } from "react-native";
 
 const ChatBox = () => {
   const [input, setInput] = useState("");
@@ -7,46 +8,65 @@ const ChatBox = () => {
   const sendMessage = async () => {
     if (!input.trim()) return;
 
-    setMessages((prev) => [...prev, "You: " + input]);
+    const updated = [...messages, "You: " + input];
+    setMessages(updated);
     const question = input;
     setInput("");
 
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${import.meta.env.VITE_OPENAI_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "gpt-4o",
-        messages: [
-          { role: "system", content: "You are ZenBot, a helpful assistant." },
-          { role: "user", content: question },
-        ],
-      }),
-    });
+    try {
+      const res = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${process.env.EXPO_PUBLIC_OPENAI_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "gpt-4o",
+          messages: [
+            { role: "system", content: "You are ZenBot, a helpful AI wellness assistant." },
+            { role: "user", content: question },
+          ],
+        }),
+      });
 
-    const data = await response.json();
-    const reply = data.choices?.[0]?.message?.content ?? "ZenBot didn’t reply.";
-    setMessages((prev) => [...prev, "ZenBot: " + reply]);
+      const data = await res.json();
+      const reply = data.choices?.[0]?.message?.content ?? "ZenBot didn’t reply.";
+      setMessages([...updated, "ZenBot: " + reply]);
+    } catch (err) {
+      setMessages([...updated, "ZenBot: Error talking to server."]);
+    }
   };
 
   return (
-    <div className="p-4 max-w-md mx-auto bg-white shadow rounded mt-6">
-      <div className="h-64 overflow-y-scroll mb-2 border rounded p-2 text-sm">
-        {messages.map((msg, idx) => (
-          <div key={idx}>{msg}</div>
-        ))}
-      </div>
-      <input
-        className="w-full p-2 border rounded"
-        placeholder="Ask ZenBot..."
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-        onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+    <View style={styles.container}>
+      <FlatList
+        data={messages}
+        renderItem={({ item }) => <Text style={styles.message}>{item}</Text>}
+        keyExtractor={(_, i) => i.toString()}
+        style={{ flex: 1 }}
       />
-    </div>
+      <TextInput
+        style={styles.input}
+        placeholder="Ask ZenBot something..."
+        value={input}
+        onChangeText={setInput}
+        onSubmitEditing={sendMessage}
+      />
+      <Button title="Send" onPress={sendMessage} />
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: { flex: 1, padding: 16 },
+  input: {
+    borderWidth: 1,
+    padding: 10,
+    marginVertical: 10,
+    borderRadius: 6,
+    backgroundColor: "#fff",
+  },
+  message: { marginVertical: 4, fontSize: 14 },
+});
 
 export default ChatBox;
