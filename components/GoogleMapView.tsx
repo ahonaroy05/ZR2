@@ -55,6 +55,13 @@ export function GoogleMapView({
 
   const loadGoogleMapsScript = () => {
     return new Promise<void>((resolve, reject) => {
+      // Check if API key is available
+      const apiKey = process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY;
+      if (!apiKey) {
+        reject(new Error('Google Maps API key is not configured. Please set EXPO_PUBLIC_GOOGLE_MAPS_API_KEY in your environment variables.'));
+        return;
+      }
+
       // Check if Google Maps is already loaded
       if (window.google && window.google.maps) {
         resolve();
@@ -77,7 +84,7 @@ export function GoogleMapView({
 
       // Create and load the script
       const script = document.createElement('script');
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=geometry`;
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=geometry`;
       script.async = true;
       script.defer = true;
       
@@ -323,10 +330,10 @@ export function GoogleMapView({
       <View style={[styles.container, styles.placeholder, { backgroundColor: colors.primaryLight }, style]}>
         <View style={styles.placeholderContent}>
           <Text style={[styles.placeholderText, { color: colors.text }]}>
-            Map Error
+            Map Configuration Required
           </Text>
           <Text style={[styles.placeholderSubtext, { color: colors.textSecondary }]}>
-            {error}
+            {error.includes('API key') ? 'Google Maps API key needed for route visualization' : error}
           </Text>
         </View>
       </View>
