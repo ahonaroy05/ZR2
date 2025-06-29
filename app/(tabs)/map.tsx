@@ -194,39 +194,32 @@ export default function MapScreen() {
 
         {/* Interactive Map Placeholder with Loading State */}
         <View style={styles.mapContainer}>
-          {loading || error || routes.length === 0 ? (
+          {loading ? (
             <LinearGradient
               colors={[colors.primaryLight, colors.surface]}
               style={[styles.mapPlaceholder, { shadowColor: colors.shadow }]}
             >
               <View style={styles.mapContent}>
-                {loading ? (
-                  <>
-                    <Loader size={32} color={colors.primary} />
-                    <Text style={[styles.mapText, { color: colors.text }]}>Loading Routes...</Text>
-                    <Text style={[styles.mapSubtext, { color: colors.textSecondary }]}>Analyzing traffic and stress factors</Text>
-                  </>
-                ) : error ? (
-                  <>
-                    <AlertTriangle size={32} color={colors.error} />
-                    <Text style={[styles.mapText, { color: colors.text }]}>Route Loading Failed</Text>
-                    <Text style={[styles.mapSubtext, { color: colors.textSecondary }]}>Tap to retry</Text>
-                    <TouchableOpacity 
-                      style={[styles.retryButton, { backgroundColor: colors.primary }]}
-                      onPress={loadRoutes}
-                    >
-                      <Text style={[styles.retryButtonText, { color: colors.textInverse }]}>Retry</Text>
-                    </TouchableOpacity>
-                  </>
-                ) : (
-                  <>
-                    <MapPin size={32} color={colors.success} />
-                    <Text style={[styles.mapText, { color: colors.text }]}>Interactive Route Map</Text>
-                    <Text style={[styles.mapSubtext, { color: colors.textSecondary }]}>
-                      Tap routes to preview therapy options
-                    </Text>
-                  </>
-                )}
+                <Loader size={32} color={colors.primary} />
+                <Text style={[styles.mapText, { color: colors.text }]}>Loading Routes...</Text>
+                <Text style={[styles.mapSubtext, { color: colors.textSecondary }]}>Analyzing traffic and stress factors</Text>
+              </View>
+            </LinearGradient>
+          ) : error ? (
+            <LinearGradient
+              colors={[colors.primaryLight, colors.surface]}
+              style={[styles.mapPlaceholder, { shadowColor: colors.shadow }]}
+            >
+              <View style={styles.mapContent}>
+                <AlertTriangle size={32} color={colors.error} />
+                <Text style={[styles.mapText, { color: colors.text }]}>Route Loading Failed</Text>
+                <Text style={[styles.mapSubtext, { color: colors.textSecondary }]}>Tap to retry</Text>
+                <TouchableOpacity 
+                  style={[styles.retryButton, { backgroundColor: colors.primary }]}
+                  onPress={loadRoutes}
+                >
+                  <Text style={[styles.retryButtonText, { color: colors.textInverse }]}>Retry</Text>
+                </TouchableOpacity>
               </View>
             </LinearGradient>
           ) : (
@@ -242,6 +235,7 @@ export default function MapScreen() {
                 selectedRoute={selectedRoute}
                 onRouteSelect={handleRouteSelect}
                 style={styles.map}
+                key={`map-${routes.length}`}
               />
             </View>
           )}
