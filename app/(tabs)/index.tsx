@@ -150,7 +150,6 @@ export default function HomeScreen() {
             </View>
           </View>
         </View>
-
         <View style={styles.recentSessions}>
           <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Recent Sessions</Text>
           <View style={[styles.sessionCard, { backgroundColor: theme.colors.card, shadowColor: theme.colors.shadow }]}>
@@ -167,6 +166,7 @@ export default function HomeScreen() {
             </View>
           </View>
         </View>
+      </ScrollView>
       </ScrollView>
 
       <FloatingActionButton 
