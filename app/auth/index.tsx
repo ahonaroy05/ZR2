@@ -84,6 +84,7 @@ export default function AuthScreen() {
     setEmail('demo@example.com');
     setPassword('demo123');
     setUsername('Demo User');
+    setIsSignUp(false); // Ensure demo always uses sign-in flow
     
     // Auto-login after a brief delay
     setTimeout(() => {
