@@ -12,6 +12,7 @@ import { BreathingBubble } from '@/components/BreathingBubble';
 import { FloatingActionButton } from '@/components/FloatingActionButton';
 import { EmergencyCalm } from '@/components/EmergencyCalm';
 import { Calendar, Clock, TrendingUp, Shield, MapPin, Settings } from 'lucide-react-native';
+import { getCurrentGreeting } from '@/utils/timeGreeting';
 
 export default function HomeScreen() {
   const { user, isDemoMode } = useAuth();
@@ -64,12 +65,9 @@ export default function HomeScreen() {
         <View style={styles.header}>
           <View>
             <Text style={styles.greeting}>
-              Good morning, {user?.user_metadata?.username || 'Friend'}
+              {getCurrentGreeting()}{user?.user_metadata?.username || 'Friend'}
             </Text>
-            <Text style={styles.subtitle}>How are you feeling today?</Text>
-            <TouchableOpacity>
-                <Text style={[styles.signOutText, { color: theme.colors.surface }]}>Sign Out</Text>
-            </TouchableOpacity>
+            <Text style={[styles.subtitle, { color: theme.colors.textSecondary }]}>How are you feeling today?</Text>
           </View>
         </View>
 
