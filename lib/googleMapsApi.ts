@@ -86,27 +86,33 @@ export class GoogleMapsApi {
     // Use the Supabase Edge Function URL
     const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
     if (!supabaseUrl) {
-      throw new Error('EXPO_PUBLIC_SUPABASE_URL environment variable is required');
+      console.warn('EXPO_PUBLIC_SUPABASE_URL environment variable is not set');
+      // Use a fallback URL for development
+      this.baseUrl = 'http://localhost:54321/functions/v1/google-maps-routes';
+    } else {
+      this.baseUrl = `${supabaseUrl}/functions/v1/google-maps-routes`;
     }
-    this.baseUrl = `${supabaseUrl}/functions/v1/google-maps-routes`;
   }
 
   async getRoutes(request: RouteRequest): Promise<RouteResponse> {
     try {
       const anonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
       if (!anonKey) {
-        throw new GoogleMapsApiError(
-          'EXPO_PUBLIC_SUPABASE_ANON_KEY environment variable is required',
-          'CONFIG_ERROR'
-        );
+        console.warn('EXPO_PUBLIC_SUPABASE_ANON_KEY environment variable is not set');
+        // For development, we can proceed without the anon key
+      }
+
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+      
+      if (anonKey) {
+        headers['Authorization'] = `Bearer ${anonKey}`;
       }
 
       const response = await fetch(this.baseUrl, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${anonKey}`,
-        },
+        headers,
         body: JSON.stringify(request),
       });
 

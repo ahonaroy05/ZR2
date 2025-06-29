@@ -55,18 +55,18 @@ export default function MapScreen() {
       console.error('Failed to load routes:', err);
       
       let alertTitle = 'Route Loading Failed';
-      let alertMessage = 'Unable to load routes. Please check your connection and try again.';
+      let alertMessage = 'Unable to load routes. This might be because the Google Maps service is not configured or unavailable.';
       
       if (err instanceof Error) {
-        if (err.message.includes('API key')) {
+        if (err.message.includes('API key') || err.message.includes('not configured')) {
           alertTitle = 'Configuration Error';
-          alertMessage = 'Google Maps API is not properly configured. Please contact support.';
-        } else if (err.message.includes('Network error')) {
+          alertMessage = 'The route service is not properly configured. This is expected in development mode without a Google Maps API key.';
+        } else if (err.message.includes('Network error') || err.message.includes('connect')) {
           alertTitle = 'Connection Error';
-          alertMessage = 'Unable to connect to the server. Please check your internet connection and try again.';
+          alertMessage = 'Unable to connect to the route service. This is expected in development mode without proper Supabase configuration.';
         } else if (err.message.includes('environment variable')) {
           alertTitle = 'Configuration Error';
-          alertMessage = 'App configuration is incomplete. Please contact support.';
+          alertMessage = 'App configuration is incomplete. This is expected in development mode.';
         } else {
           alertMessage = err.message;
         }
@@ -75,9 +75,61 @@ export default function MapScreen() {
       Alert.alert(
         alertTitle,
         alertMessage,
-        [{ text: 'OK' }]
+        [
+          { text: 'OK' },
+          { 
+            text: 'Use Demo Mode', 
+            onPress: () => {
+              // Load demo routes for development
+              setState(prev => ({
+                ...prev,
+                routes: getDemoRoutes(),
+                loading: false,
+                error: null,
+              }));
+            }
+          }
+        ]
       );
     }
+  };
+
+  // Demo routes for development when API is not available
+  const getDemoRoutes = (): any[] => {
+    return [
+      {
+        id: 'demo-route-1',
+        name: 'Scenic Route',
+        summary: 'Via Park Avenue',
+        distance: { text: '5.2 km', value: 5200 },
+        duration: { text: '12 mins', value: 720 },
+        durationInTraffic: { text: '15 mins', value: 900 },
+        stressLevel: 'low',
+        stressFactors: ['Light traffic', 'Scenic views'],
+        therapyType: 'Nature Sounds',
+        color: '#A8E6CF',
+        traffic: 'Light',
+        legs: [],
+        overviewPolyline: { points: 'demo_polyline_1' },
+        warnings: [],
+      },
+      {
+        id: 'demo-route-2',
+        name: 'Express Route',
+        summary: 'Via Highway 101',
+        distance: { text: '4.8 km', value: 4800 },
+        duration: { text: '8 mins', value: 480 },
+        durationInTraffic: { text: '18 mins', value: 1080 },
+        stressLevel: 'high',
+        stressFactors: ['Heavy traffic', 'Construction zones'],
+        therapyType: 'Guided Meditation',
+        color: '#FFB3BA',
+        traffic: 'Heavy',
+        legs: [],
+        overviewPolyline: { points: 'demo_polyline_2' },
+        warnings: ['Construction ahead'],
+      },
+    ];
   };
 
   const handleRouteSelect = (routeId: string) => {

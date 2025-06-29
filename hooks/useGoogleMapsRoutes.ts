@@ -105,9 +105,20 @@ export function useGoogleMapsRoutes() {
 
       return enhancedRoutes;
     } catch (error) {
-      const errorMessage = error instanceof GoogleMapsApiError 
-        ? error.message 
-        : 'Failed to fetch routes';
+      let errorMessage = 'Failed to fetch routes';
+      
+      if (error instanceof GoogleMapsApiError) {
+        errorMessage = error.message;
+      } else if (error instanceof Error) {
+        // Check for specific error types
+        if (error.message.includes('fetch')) {
+          errorMessage = 'Unable to connect to the route service. Please check your internet connection.';
+        } else if (error.message.includes('EXPO_PUBLIC_SUPABASE_URL')) {
+          errorMessage = 'Route service is not configured. Please contact support.';
+        } else {
+          errorMessage = error.message;
+        }
+      }
       
       setState(prev => ({
         ...prev,
