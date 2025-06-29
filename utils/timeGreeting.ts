@@ -1,5 +1,5 @@
 /**
- * Get a time-based greeting message
+ * Get a time-based greeting message that updates automatically
  * @param date Optional date to use for greeting (defaults to current time)
  * @returns Greeting string with comma and space
  */
@@ -33,4 +33,23 @@ export function getCurrentGreeting(): string {
  */
 export function getGreetingForTime(date: Date): string {
   return getTimeBasedGreeting(date);
+}
+
+/**
+ * Hook to get real-time greeting that updates automatically
+ * @param updateInterval Update interval in milliseconds (default: 60000 = 1 minute)
+ * @returns Current greeting that updates in real-time
+ */
+export function useRealTimeGreeting(updateInterval: number = 60000): string {
+  const [greeting, setGreeting] = React.useState(getTimeBasedGreeting());
+  
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      setGreeting(getTimeBasedGreeting());
+    }, updateInterval);
+    
+    return () => clearInterval(interval);
+  }, [updateInterval]);
+  
+  return greeting;
 }

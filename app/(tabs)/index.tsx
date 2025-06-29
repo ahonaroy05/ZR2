@@ -5,6 +5,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useStressTracking } from '@/hooks/useStressTracking';
 import { useMeditationTracking } from '@/hooks/useMeditationTracking';
 import { getTimeBasedGreeting } from '@/utils/timeGreeting';
+import { TimeBasedGreeting } from '@/components/TimeBasedGreeting';
+import { getTimeBasedGreeting } from '@/utils/timeGreeting';
 import { StressMeter } from '@/components/StressMeter';
 import { BreathingBubble } from '@/components/BreathingBubble';
 import { FloatingActionButton } from '@/components/FloatingActionButton';
@@ -36,10 +38,20 @@ export default function HomeScreen() {
   const [showEmergencyCalm, setShowEmergencyCalm] = useState(false);
   const [showSettingsDrawer, setShowSettingsDrawer] = useState(false);
   const [weeklyStats, setWeeklyStats] = useState<any>(null);
+  const [currentTime, setCurrentTime] = useState(new Date());
 
   // Get current stress level or use default
   const currentStress = getCurrentStressLevel() || stressLevel;
   const averageStress = getAverageStressLevel() || 0;
+
+  // Update time every minute for real-time greeting updates
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 60000); // Update every minute
+
+    return () => clearInterval(timer);
+  }, []);
 
   // Load weekly stats
   React.useEffect(() => {
@@ -77,9 +89,11 @@ export default function HomeScreen() {
       <ScrollView style={[styles.scrollView]} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
           <View>
-            <Text style={styles.greeting}>
-              {getTimeBasedGreeting()}{user?.user_metadata?.username || 'Friend'}
-            </Text>
+            <TimeBasedGreeting 
+              username={user?.user_metadata?.username || 'Friend'}
+              style={styles.greeting}
+              updateInterval={60000}
+            />
             <Text style={styles.subtitle}>How are you feeling today?</Text>
           </View>
         </View>
