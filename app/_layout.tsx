@@ -3,7 +3,6 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { ThemeProvider, useTheme } from '@/contexts/ThemeContext';
-import { ThemeProvider, useTheme } from '@/contexts/ThemeContext';
 import { useFrameworkReady } from '@/hooks/useFrameworkReady';
 import { useFonts } from 'expo-font';
 import {
@@ -37,24 +36,7 @@ function RootLayoutContent() {
   );
 }
 
-function RootLayoutContent() {
-  const { theme } = useTheme();
-
-  return (
-    <AuthProvider>
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="onboarding" options={{ headerShown: false }} />
-    <ThemeProvider>
-      <AuthProvider>
-        <RootLayoutContent />
-      </AuthProvider>
-    </ThemeProvider>
-  );
-}
-
 export default function RootLayout() {
-    }
-  )
   useFrameworkReady();
 
   const [fontsLoaded, fontError] = useFonts({
@@ -78,7 +60,9 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider>
-      <RootLayoutContent />
+      <AuthProvider>
+        <RootLayoutContent />
+      </AuthProvider>
     </ThemeProvider>
   );
 }
