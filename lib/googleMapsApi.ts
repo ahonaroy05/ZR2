@@ -93,29 +93,46 @@ export class GoogleMapsApi {
 
   async getRoutes(request: RouteRequest): Promise<RouteResponse> {
     try {
+      const anonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
+      if (!anonKey) {
+        throw new GoogleMapsApiError(
+          'EXPO_PUBLIC_SUPABASE_ANON_KEY environment variable is required',
+          'CONFIG_ERROR'
+        );
+      }
+
       const response = await fetch(this.baseUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY}`,
+          'Authorization': `Bearer ${anonKey}`,
         },
         body: JSON.stringify(request),
       });
 
-      const data: RouteResponse = await response.json();
-
       if (!response.ok) {
+        let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.error || errorMessage;
+        } catch {
+          // If we can't parse the error response, use the default message
+        }
+        
         throw new GoogleMapsApiError(
-          data.error || 'Failed to fetch routes',
-          'API_ERROR',
+          errorMessage,
+          'HTTP_ERROR',
           response.status
         );
       }
 
+      const data: RouteResponse = await response.json();
+
       if (!data.success) {
         throw new GoogleMapsApiError(
           data.error || 'Route request failed',
-          'ROUTE_ERROR'
+          'ROUTE_ERROR',
+          response.status
         );
       }
 
@@ -126,9 +143,20 @@ export class GoogleMapsApi {
       }
 
       // Network or other errors
+      let errorMessage = 'Unknown error occurred';
+      let errorCode = 'UNKNOWN_ERROR';
+      
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        errorMessage = 'Network error: Unable to connect to the server. Please check your internet connection.';
+        errorCode = 'NETWORK_ERROR';
+      } else if (error instanceof Error) {
+        errorMessage = error.message;
+        errorCode = 'NETWORK_ERROR';
+      }
+      
       throw new GoogleMapsApiError(
-        error instanceof Error ? error.message : 'Unknown error occurred',
-        'NETWORK_ERROR'
+        errorMessage,
+        errorCode
       );
     }
   }

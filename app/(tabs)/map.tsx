@@ -53,9 +53,28 @@ export default function MapScreen() {
       await getStressOptimizedRoutes(currentLocation, destination);
     } catch (err) {
       console.error('Failed to load routes:', err);
+      
+      let alertTitle = 'Route Loading Failed';
+      let alertMessage = 'Unable to load routes. Please check your connection and try again.';
+      
+      if (err instanceof Error) {
+        if (err.message.includes('API key')) {
+          alertTitle = 'Configuration Error';
+          alertMessage = 'Google Maps API is not properly configured. Please contact support.';
+        } else if (err.message.includes('Network error')) {
+          alertTitle = 'Connection Error';
+          alertMessage = 'Unable to connect to the server. Please check your internet connection and try again.';
+        } else if (err.message.includes('environment variable')) {
+          alertTitle = 'Configuration Error';
+          alertMessage = 'App configuration is incomplete. Please contact support.';
+        } else {
+          alertMessage = err.message;
+        }
+      }
+      
       Alert.alert(
-        'Route Loading Failed',
-        'Unable to load routes. Please check your connection and try again.',
+        alertTitle,
+        alertMessage,
         [{ text: 'OK' }]
       );
     }

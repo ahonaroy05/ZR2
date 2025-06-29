@@ -1,5 +1,3 @@
-import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
-
 // TypeScript interfaces for request/response
 interface RouteRequest {
   origin: {
@@ -191,7 +189,7 @@ function validateRouteRequest(body: any): { valid: boolean; error?: string } {
 async function fetchGoogleMapsRoute(request: RouteRequest): Promise<any> {
   const apiKey = Deno.env.get('GOOGLE_MAPS_API_KEY');
   if (!apiKey) {
-    throw new Error('Google Maps API key not configured');
+    throw new Error('Google Maps API key not configured. Please set GOOGLE_MAPS_API_KEY environment variable in your Supabase Edge Function settings.');
   }
   
   // Build the Google Maps Directions API URL
@@ -242,21 +240,34 @@ async function fetchGoogleMapsRoute(request: RouteRequest): Promise<any> {
   const url = `${baseUrl}?${params.toString()}`;
   
   try {
+    console.log('Fetching from Google Maps API:', url.replace(apiKey, '[API_KEY_HIDDEN]'));
+    
     const response = await fetch(url);
     
     if (!response.ok) {
-      throw new Error(`Google Maps API error: ${response.status} ${response.statusText}`);
+      const errorText = await response.text();
+      console.error('Google Maps API HTTP error:', response.status, response.statusText, errorText);
+      throw new Error(`Google Maps API HTTP error: ${response.status} ${response.statusText}. Response: ${errorText}`);
     }
     
     const data = await response.json();
+    console.log('Google Maps API response status:', data.status);
     
     if (data.status !== 'OK') {
-      throw new Error(`Google Maps API returned status: ${data.status}. ${data.error_message || ''}`);
+      const errorMessage = data.error_message || `Google Maps API returned status: ${data.status}`;
+      console.error('Google Maps API error:', errorMessage);
+      throw new Error(errorMessage);
     }
     
     return data;
   } catch (error) {
     console.error('Error fetching from Google Maps API:', error);
+    
+    // Provide more specific error messages
+    if (error instanceof TypeError && error.message.includes('fetch')) {
+      throw new Error('Network error: Unable to connect to Google Maps API. Please check your internet connection and API key configuration.');
+    }
+    
     throw error;
   }
 }
@@ -302,7 +313,7 @@ function transformGoogleMapsResponse(googleResponse: any): RouteResponse['data']
   };
 }
 
-serve(async (req: Request) => {
+Deno.serve(async (req: Request) => {
   try {
     // Handle CORS preflight
     if (req.method === 'OPTIONS') {
@@ -415,11 +426,16 @@ serve(async (req: Request) => {
   } catch (error) {
     console.error('Edge function error:', error);
     
+    // Provide detailed error information
+    const errorMessage = error instanceof Error ? error.message : 'Internal server error';
+    const errorCode = error instanceof Error && error.message.includes('API key') ? 'API_KEY_ERROR' : 'INTERNAL_ERROR';
+    
     // Return error response
     return new Response(
       JSON.stringify({
         success: false,
-        error: error instanceof Error ? error.message : 'Internal server error',
+        error: errorMessage,
+        code: errorCode,
       } as ErrorResponse),
       {
         status: 500,
