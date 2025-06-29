@@ -92,7 +92,7 @@ export default function SoundScreen() {
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
           <Text style={[styles.title, { color: theme.colors.text }]}>Soundscape Mixer</Text>
-          <Text style={[styles.subtitle, { color: theme.colors.textSecondary }]}>Create your perfect audio environment</Text>
+          <Text style={[styles.subtitle, { color: theme.colors.text }]}>Create your perfect audio environment</Text>
         </View>
 
         <View style={styles.controlsSection}>
@@ -159,8 +159,8 @@ export default function SoundScreen() {
           ) : (
             <View style={[styles.emptyMix, { backgroundColor: theme.colors.card, shadowColor: theme.colors.shadow }]}>
               <Headphones size={32} color={theme.colors.textTertiary} />
-              <Text style={[styles.emptyMixText, { color: theme.colors.textSecondary }]}>No sounds playing</Text>
-              <Text style={[styles.emptyMixSubtext, { color: theme.colors.textTertiary }]}>Tap a sound below to start</Text>
+              <Text style={[styles.emptyMixText, { color: theme.colors.text }]}>No sounds playing</Text>
+              <Text style={[styles.emptyMixSubtext, { color: theme.colors.textSecondary }]}>Tap a sound below to start</Text>
             </View>
           )}
         </View>
@@ -189,12 +189,12 @@ export default function SoundScreen() {
                 
                 <View style={styles.soundInfo}>
                   <Text style={[styles.soundName, { color: theme.colors.text }]}>{sound.name}</Text>
-                  <Text style={[styles.soundDescription, { color: theme.colors.textSecondary }]}>{sound.description}</Text>
+                  <Text style={[styles.soundDescription, { color: theme.colors.text }]}>{sound.description}</Text>
                 </View>
 
                 {sound.isPlaying && (
                   <View style={styles.soundVolumeControl}>
-                    <Text style={[styles.volumeLabel, { color: theme.colors.textSecondary }]}>Volume</Text>
+                    <Text style={[styles.volumeLabel, { color: theme.colors.text }]}>Volume</Text>
                     <Slider
                       style={styles.soundSlider}
                       value={sound.volume}
@@ -218,13 +218,13 @@ export default function SoundScreen() {
           <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Presets</Text>
           <View style={styles.presetButtons}>
             <TouchableOpacity style={[styles.presetButton, { backgroundColor: theme.colors.card, borderColor: theme.colors.border, shadowColor: theme.colors.shadow }]}>
-              <Text style={[styles.presetButtonText, { color: theme.colors.textSecondary }]}>Focus</Text>
+              <Text style={[styles.presetButtonText, { color: theme.colors.text }]}>Focus</Text>
             </TouchableOpacity>
             <TouchableOpacity style={[styles.presetButton, { backgroundColor: theme.colors.card, borderColor: theme.colors.border, shadowColor: theme.colors.shadow }]}>
-              <Text style={[styles.presetButtonText, { color: theme.colors.textSecondary }]}>Relax</Text>
+              <Text style={[styles.presetButtonText, { color: theme.colors.text }]}>Relax</Text>
             </TouchableOpacity>
             <TouchableOpacity style={[styles.presetButton, { backgroundColor: theme.colors.card, borderColor: theme.colors.border, shadowColor: theme.colors.shadow }]}>
-              <Text style={[styles.presetButtonText, { color: theme.colors.textSecondary }]}>Sleep</Text>
+              <Text style={[styles.presetButtonText, { color: theme.colors.text }]}>Sleep</Text>
             </TouchableOpacity>
           </View>
         </View>

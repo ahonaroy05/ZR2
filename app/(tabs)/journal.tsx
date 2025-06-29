@@ -125,7 +125,7 @@ export default function JournalScreen() {
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
           <Text style={[styles.title, { color: theme.colors.text }]}>Mindful Journal</Text>
-          <Text style={[styles.subtitle, { color: theme.colors.textSecondary }]}>Reflect on your journey</Text>
+          <Text style={[styles.subtitle, { color: theme.colors.text }]}>Reflect on your journey</Text>
         </View>
 
         <View style={[styles.newEntrySection, { backgroundColor: theme.colors.card, shadowColor: theme.colors.shadow }]}>
@@ -145,7 +145,7 @@ export default function JournalScreen() {
                 {mood.icon}
                 <Text style={[
                   styles.moodLabel,
-                  { color: theme.colors.textSecondary },
+                  { color: theme.colors.text },
                   selectedMood === mood.type && styles.moodLabelSelected
                 ]}>
                   {mood.label}
@@ -271,7 +271,7 @@ export default function JournalScreen() {
               <TrendingUp size={20} color={theme.colors.primary} />
               <Text style={[styles.insightTitle, { color: theme.colors.text }]}>Stress Trend</Text>
             </View>
-            <Text style={[styles.insightText, { color: theme.colors.textSecondary }]}>
+            <Text style={[styles.insightText, { color: theme.colors.text }]}>
               Your average stress level decreased by 15% this week. Keep up the great work!
             </Text>
             <View style={styles.insightStats}>

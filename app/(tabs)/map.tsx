@@ -189,7 +189,7 @@ export default function MapScreen() {
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
           <Text style={[styles.title, { color: colors.text }]}>Route Therapy</Text>
-          <Text style={[styles.subtitle, { color: colors.textSecondary }]}>Choose your path to wellness</Text>
+          <Text style={[styles.subtitle, { color: colors.text }]}>Choose your path to wellness</Text>
         </View>
 
         {/* Interactive Map Placeholder with Loading State */}
@@ -202,7 +202,7 @@ export default function MapScreen() {
               <View style={styles.mapContent}>
                 <Loader size={32} color={colors.primary} />
                 <Text style={[styles.mapText, { color: colors.text }]}>Loading Routes...</Text>
-                <Text style={[styles.mapSubtext, { color: colors.textSecondary }]}>Analyzing traffic and stress factors</Text>
+                <Text style={[styles.mapSubtext, { color: colors.text }]}>Analyzing traffic and stress factors</Text>
               </View>
             </LinearGradient>
           ) : error ? (
@@ -263,16 +263,16 @@ export default function MapScreen() {
                     <Text style={[styles.routeName, { color: colors.text }]}>{route.name}</Text>
                     <View style={styles.routeMeta}>
                       <Clock size={14} color={colors.textSecondary} />
-                      <Text style={[styles.routeDuration, { color: colors.textSecondary }]}>
+                      <Text key={index} style={[styles.stressFactor, { color: colors.text }]}>
                         {route.durationInTraffic ? formatDuration(route.durationInTraffic.value) : formatDuration(route.duration.value)}
                       </Text>
                       {getStressIcon(route.stressLevel)}
-                      <Text style={[styles.routeTraffic, { color: colors.textSecondary }]}>{route.traffic} traffic</Text>
+                      <Text style={[styles.routeTraffic, { color: colors.text }]}>{route.traffic} traffic</Text>
                     </View>
-                    <Text style={[styles.routeDistance, { color: colors.textSecondary }]}>
+                    <Text style={[styles.routeDistance, { color: colors.text }]}>
                       {formatDistance(route.distance.value)}
                     </Text>
-                  </View>
+                <Text style={[styles.therapyDescription, { color: colors.text }]}>
                   <View style={[styles.routeIndicator, { backgroundColor: route.color }]} />
                 </View>
                 
@@ -310,7 +310,7 @@ export default function MapScreen() {
           ) : !loading && (
             <View style={[styles.noRoutesContainer, { backgroundColor: colors.card }]}>
               <MapPin size={24} color={colors.textSecondary} />
-              <Text style={[styles.noRoutesText, { color: colors.textSecondary }]}>
+              <Text style={[styles.noRoutesText, { color: colors.text }]}>
                 No routes available. Please try again.
               </Text>
             </View>
@@ -320,7 +320,7 @@ export default function MapScreen() {
         {/* Stress Zones Section */}
         <View style={styles.stressZones}>
           <Text style={[styles.sectionTitle, { color: colors.text }]}>Stress Zones</Text>
-          <Text style={[styles.sectionSubtitle, { color: colors.textSecondary }]}>
+          <Text style={[styles.sectionSubtitle, { color: colors.text }]}>
             Areas with elevated stress levels and recommended therapy
           </Text>
           {stressZones.map((zone, index) => (
@@ -329,7 +329,7 @@ export default function MapScreen() {
                 <View style={[styles.zoneIndicator, { backgroundColor: zone.color }]} />
                 <Text style={[styles.zoneName, { color: colors.text }]}>{zone.name}</Text>
               </View>
-              <Text style={[styles.zoneLevel, { color: colors.textSecondary }]}>Stress Level: {zone.level}</Text>
+              <Text style={[styles.zoneLevel, { color: colors.text }]}>Stress Level: {zone.level}</Text>
             </View>
           ))}
         </View>
