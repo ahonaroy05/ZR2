@@ -104,6 +104,7 @@ export function useGoogleMapsRoutes() {
       });
 
       return enhancedRoutes;
+    } catch (error) {
       console.error('Error fetching routes:', error);
       
       // Check if this is a configuration or network error that should show demo data
@@ -149,8 +150,6 @@ export function useGoogleMapsRoutes() {
       }));
       
       // Re-throw the error so the UI can handle it
-      throw error;
-
       throw error;
     }
   }, []);
