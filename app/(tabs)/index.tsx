@@ -12,7 +12,7 @@ import { StressMeter } from '@/components/StressMeter';
 import { BreathingBubble } from '@/components/BreathingBubble';
 import { FloatingActionButton } from '@/components/FloatingActionButton';
 import { EmergencyCalm } from '@/components/EmergencyCalm';
-import { Calendar, Clock, TrendingUp, Shield, MapPin, Settings } from 'lucide-react-native';
+import { Calendar, Clock, TrendingUp, Shield, MapPin, Menu } from 'lucide-react-native';
 
 export default function HomeScreen() {
   const { user, isDemoMode } = useAuth();
@@ -57,7 +57,7 @@ export default function HomeScreen() {
           colors={['#B6D0E2', '#87CEEB']}
           style={styles.settingsGradient}
         >
-          <Settings size={20} color="#FFFFFF" />
+          <Menu size={20} color="#FFFFFF" />
         </LinearGradient>
       </TouchableOpacity>
       
