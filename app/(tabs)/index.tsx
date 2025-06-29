@@ -10,7 +10,6 @@ import { StressMeter } from '@/components/StressMeter';
 import { BreathingBubble } from '@/components/BreathingBubble';
 import { EmergencyCalm } from '@/components/EmergencyCalm';
 import { SettingsDrawer } from '@/components/SettingsDrawer';
-import { FloatingActionButton } from '@/components/FloatingActionButton';
 import { Calendar, Clock, TrendingUp, Shield, MapPin, Menu } from 'lucide-react-native';
 
 export default function HomeScreen() {
@@ -176,10 +175,6 @@ export default function HomeScreen() {
           </View>
         </View>
       </ScrollView>
-      <FloatingActionButton 
-        onPress={() => setIsBreathing(!isBreathing)}
-        isActive={isBreathing}
-      />
 
       <SettingsDrawer
         visible={showSettingsDrawer}
