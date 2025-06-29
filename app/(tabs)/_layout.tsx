@@ -3,7 +3,7 @@ import { Platform } from 'react-native';
 import { Redirect } from 'expo-router';
 import { useAuth } from '@/contexts/AuthContext';
 import { DemoBanner } from '@/components/DemoBanner';
-import { Chrome as Home, Map, Volume2, BookOpen } from 'lucide-react-native';
+import { Chrome as Home, Map, Volume2, BookOpen, Settings } from 'lucide-react-native';
 
 export default function TabLayout() {
   const { user, loading, isDemoMode } = useAuth();
@@ -74,6 +74,15 @@ export default function TabLayout() {
             title: 'Journal',
             tabBarIcon: ({ size, color }) => (
               <BookOpen size={size} color={color} strokeWidth={2} />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="settings"
+          options={{
+            title: 'Settings',
+            tabBarIcon: ({ size, color }) => (
+              <Settings size={size} color={color} strokeWidth={2} />
             ),
           }}
         />
