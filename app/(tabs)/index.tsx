@@ -166,7 +166,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FAFAFA',
+    backgroundColor: '#F8FBFF',
   },
   scrollView: {
     flex: 1,
@@ -193,15 +193,20 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   signOutButton: {
-    backgroundColor: '#FFB6C1',
+    backgroundColor: '#B6D0E2',
     paddingHorizontal: 12,
     paddingVertical: 6,
-    borderRadius: 12,
+    borderRadius: 16,
+    shadowColor: '#87CEEB',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
   },
   signOutText: {
     fontFamily: 'Quicksand-SemiBold',
     fontSize: 12,
-    color: '#FAFAFA',
+    color: '#FFFFFF',
   },
   stressSection: {
     alignItems: 'center',
@@ -238,8 +243,13 @@ const styles = StyleSheet.create({
   actionCard: {
     flex: 1,
     height: 100,
-    borderRadius: 16,
+    borderRadius: 20,
     overflow: 'hidden',
+    shadowColor: '#87CEEB',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 4,
   },
   actionGradient: {
     flex: 1,
@@ -250,7 +260,7 @@ const styles = StyleSheet.create({
   actionText: {
     fontFamily: 'Quicksand-SemiBold',
     fontSize: 14,
-    color: '#FAFAFA',
+    color: '#FFFFFF',
     marginTop: 8,
     textAlign: 'center',
   },
@@ -263,15 +273,15 @@ const styles = StyleSheet.create({
   },
   statCard: {
     flex: 1,
-    backgroundColor: '#FFF',
-    borderRadius: 16,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
     padding: 16,
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
+    shadowColor: '#87CEEB',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
     shadowRadius: 8,
-    elevation: 2,
+    elevation: 3,
   },
   statNumber: {
     fontFamily: 'Nunito-Bold',
@@ -289,14 +299,14 @@ const styles = StyleSheet.create({
     paddingBottom: 120,
   },
   sessionCard: {
-    backgroundColor: '#FFF',
-    borderRadius: 16,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
     padding: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
+    shadowColor: '#87CEEB',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
     shadowRadius: 8,
-    elevation: 2,
+    elevation: 3,
   },
   sessionHeader: {
     flexDirection: 'row',
@@ -328,10 +338,10 @@ const styles = StyleSheet.create({
   sessionStat: {
     fontFamily: 'Quicksand-Medium',
     fontSize: 12,
-    color: '#A8E6CF',
-    backgroundColor: '#F0FAF4',
+    color: '#B6D0E2',
+    backgroundColor: '#F0F7FF',
     paddingHorizontal: 8,
     paddingVertical: 4,
-    borderRadius: 8,
+    borderRadius: 12,
   },
 });

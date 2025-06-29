@@ -278,7 +278,7 @@ export default function JournalScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FAFAFA',
+    backgroundColor: '#F8FBFF',
   },
   scrollView: {
     flex: 1,
@@ -300,15 +300,15 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   newEntrySection: {
-    backgroundColor: '#FFF',
-    borderRadius: 16,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
     padding: 20,
     marginBottom: 32,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
+    shadowColor: '#87CEEB',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
     shadowRadius: 8,
-    elevation: 2,
+    elevation: 3,
   },
   sectionTitle: {
     fontFamily: 'Nunito-SemiBold',
@@ -330,8 +330,8 @@ const styles = StyleSheet.create({
     borderColor: '#E0E0E0',
   },
   moodOptionSelected: {
-    borderColor: '#A8E6CF',
-    backgroundColor: '#F0FAF4',
+    borderColor: '#B6D0E2',
+    backgroundColor: '#F0F7FF',
   },
   moodLabel: {
     fontFamily: 'Quicksand-Medium',
@@ -340,7 +340,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   moodLabelSelected: {
-    color: '#A8E6CF',
+    color: '#B6D0E2',
   },
   stressSection: {
     marginBottom: 24,
@@ -362,7 +362,7 @@ const styles = StyleSheet.create({
   stressValue: {
     fontFamily: 'Nunito-SemiBold',
     fontSize: 16,
-    color: '#FFB6C1',
+    color: '#B6D0E2',
     textAlign: 'center',
   },
   inputSection: {
@@ -383,12 +383,12 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: '#F0FAF4',
+    backgroundColor: '#F0F7FF',
     alignItems: 'center',
     justifyContent: 'center',
   },
   recordButtonActive: {
-    backgroundColor: '#FFB6C1',
+    backgroundColor: '#B6D0E2',
   },
   textInput: {
     borderWidth: 1,
@@ -415,11 +415,16 @@ const styles = StyleSheet.create({
   recordingText: {
     fontFamily: 'Quicksand-Medium',
     fontSize: 14,
-    color: '#FFB6C1',
+    color: '#B6D0E2',
   },
   saveButton: {
-    borderRadius: 12,
+    borderRadius: 16,
     overflow: 'hidden',
+    shadowColor: '#87CEEB',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 4,
   },
   saveButtonDisabled: {
     opacity: 0.6,
@@ -434,7 +439,7 @@ const styles = StyleSheet.create({
   saveButtonText: {
     fontFamily: 'Quicksand-SemiBold',
     fontSize: 16,
-    color: '#FAFAFA',
+    color: '#FFFFFF',
   },
   entriesSection: {
     marginBottom: 32,
@@ -452,18 +457,18 @@ const styles = StyleSheet.create({
   viewAllText: {
     fontFamily: 'Quicksand-SemiBold',
     fontSize: 14,
-    color: '#A8E6CF',
+    color: '#B6D0E2',
   },
   entryCard: {
-    backgroundColor: '#FFF',
-    borderRadius: 16,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
     padding: 20,
     marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
+    shadowColor: '#87CEEB',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
     shadowRadius: 8,
-    elevation: 2,
+    elevation: 3,
   },
   entryHeader: {
     flexDirection: 'row',
@@ -496,7 +501,7 @@ const styles = StyleSheet.create({
   stressIndicatorText: {
     fontFamily: 'Nunito-Bold',
     fontSize: 12,
-    color: '#FAFAFA',
+    color: '#FFFFFF',
   },
   entryContent: {
     fontFamily: 'Quicksand-Regular',
@@ -511,28 +516,28 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   tag: {
-    backgroundColor: '#F0FAF4',
+    backgroundColor: '#F0F7FF',
     paddingHorizontal: 8,
     paddingVertical: 4,
-    borderRadius: 8,
+    borderRadius: 12,
   },
   tagText: {
     fontFamily: 'Quicksand-Medium',
     fontSize: 12,
-    color: '#A8E6CF',
+    color: '#B6D0E2',
   },
   insightsSection: {
     paddingBottom: 32,
   },
   insightCard: {
-    backgroundColor: '#FFF',
-    borderRadius: 16,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
     padding: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
+    shadowColor: '#87CEEB',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
     shadowRadius: 8,
-    elevation: 2,
+    elevation: 3,
   },
   insightHeader: {
     flexDirection: 'row',
@@ -559,10 +564,10 @@ const styles = StyleSheet.create({
   insightStat: {
     fontFamily: 'Quicksand-SemiBold',
     fontSize: 14,
-    color: '#A8E6CF',
-    backgroundColor: '#F0FAF4',
+    color: '#B6D0E2',
+    backgroundColor: '#F0F7FF',
     paddingHorizontal: 8,
     paddingVertical: 4,
-    borderRadius: 8,
+    borderRadius: 12,
   },
 });

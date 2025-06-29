@@ -31,7 +31,7 @@ export function DemoBanner() {
   return (
     <View style={styles.container}>
       <LinearGradient
-        colors={['#FFB6C1', '#DDA0DD']}
+        colors={['#B6D0E2', '#87CEEB']}
         style={styles.gradient}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
   text: {
     fontFamily: 'Quicksand-SemiBold',
     fontSize: 12,
-    color: '#FAFAFA',
+    color: '#FFFFFF',
     marginLeft: 6,
   },
   shimmer: {

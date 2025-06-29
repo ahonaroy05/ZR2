@@ -43,7 +43,7 @@ export function EmergencyCalm({ visible, onClose }: EmergencyCalmProps) {
           
           <View style={styles.content}>
             <View style={styles.header}>
-              <Shield size={32} color="#A8E6CF" />
+              <Shield size={32} color="#B6D0E2" />
               <Text style={styles.title}>5-4-3-2-1 Grounding</Text>
               <Text style={styles.subtitle}>Take a deep breath and focus</Text>
             </View>
@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.3)',
   },
   container: {
-    backgroundColor: '#FAFAFA',
+    backgroundColor: '#F8FBFF',
     borderRadius: 24,
     padding: 32,
     margin: 24,
@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: '#A8E6CF',
+    backgroundColor: '#B6D0E2',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 16,
@@ -143,7 +143,7 @@ const styles = StyleSheet.create({
   stepNumberText: {
     fontFamily: 'Nunito-Bold',
     fontSize: 20,
-    color: '#FAFAFA',
+    color: '#FFFFFF',
   },
   stepText: {
     fontFamily: 'Quicksand-SemiBold',
@@ -163,10 +163,10 @@ const styles = StyleSheet.create({
     marginHorizontal: 4,
   },
   progressDotActive: {
-    backgroundColor: '#A8E6CF',
+    backgroundColor: '#B6D0E2',
   },
   nextButton: {
-    backgroundColor: '#A8E6CF',
+    backgroundColor: '#B6D0E2',
     paddingHorizontal: 32,
     paddingVertical: 12,
     borderRadius: 24,
@@ -174,6 +174,6 @@ const styles = StyleSheet.create({
   nextButtonText: {
     fontFamily: 'Quicksand-SemiBold',
     fontSize: 16,
-    color: '#FAFAFA',
+    color: '#FFFFFF',
   },
 });

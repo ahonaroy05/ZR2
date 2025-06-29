@@ -27,8 +27,8 @@ export function StressMeter({ stressLevel, size = 120 }: StressMeterProps) {
       strokeDashoffset,
       stroke: interpolateColor(
         progress.value,
-        [0, 0.5, 1],
-        ['#A8E6CF', '#DDA0DD', '#FFB6C1']
+        [0, 0.4, 0.7, 1],
+        ['#B6D0E2', '#87CEEB', '#E8E8E8', '#B6D0E2']
       ),
     };
   });

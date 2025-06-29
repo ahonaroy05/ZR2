@@ -51,7 +51,7 @@ export function BreathingBubble({ isActive = false, size = 150 }: BreathingBubbl
     <View style={[styles.container, { width: size, height: size }]}>
       <Animated.View style={[styles.bubble, animatedStyle, { width: size, height: size }]}>
         <LinearGradient
-          colors={['#A8E6CF', '#DDA0DD']}
+          colors={['#B6D0E2', '#87CEEB']}
           style={[styles.gradient, { borderRadius: size / 2 }]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
   bubble: {
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#A8E6CF',
+    shadowColor: '#B6D0E2',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -98,13 +98,13 @@ const styles = StyleSheet.create({
   breathText: {
     fontFamily: 'Nunito-Bold',
     fontSize: 18,
-    color: '#FAFAFA',
+    color: '#FFFFFF',
     textAlign: 'center',
   },
   instructionText: {
     fontFamily: 'Quicksand-Medium',
     fontSize: 12,
-    color: '#FAFAFA',
+    color: '#FFFFFF',
     marginTop: 4,
     opacity: 0.9,
   },

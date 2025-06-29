@@ -155,7 +155,7 @@ export default function MapScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FAFAFA',
+    backgroundColor: '#F8FBFF',
   },
   scrollView: {
     flex: 1,
@@ -181,9 +181,14 @@ const styles = StyleSheet.create({
   },
   mapPlaceholder: {
     height: 200,
-    borderRadius: 16,
+    borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
+    shadowColor: '#87CEEB',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
   },
   mapContent: {
     alignItems: 'center',
@@ -217,20 +222,20 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   routeCard: {
-    backgroundColor: '#FFF',
-    borderRadius: 16,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
     padding: 20,
     marginBottom: 16,
     borderWidth: 2,
     borderColor: 'transparent',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
+    shadowColor: '#87CEEB',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
     shadowRadius: 8,
-    elevation: 2,
+    elevation: 3,
   },
   routeCardSelected: {
-    borderColor: '#A8E6CF',
+    borderColor: '#B6D0E2',
   },
   routeHeader: {
     flexDirection: 'row',
@@ -272,7 +277,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   therapyTag: {
-    backgroundColor: '#F0FAF4',
+    backgroundColor: '#F0F7FF',
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 12,
@@ -282,7 +287,7 @@ const styles = StyleSheet.create({
   therapyTagText: {
     fontFamily: 'Quicksand-SemiBold',
     fontSize: 12,
-    color: '#A8E6CF',
+    color: '#B6D0E2',
   },
   therapyDescription: {
     fontFamily: 'Quicksand-Regular',
@@ -294,15 +299,15 @@ const styles = StyleSheet.create({
     marginBottom: 32,
   },
   zoneCard: {
-    backgroundColor: '#FFF',
-    borderRadius: 12,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
     padding: 16,
     marginBottom: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 1,
+    shadowColor: '#87CEEB',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    elevation: 2,
   },
   zoneHeader: {
     flexDirection: 'row',
@@ -330,8 +335,13 @@ const styles = StyleSheet.create({
     paddingBottom: 32,
   },
   startButton: {
-    borderRadius: 16,
+    borderRadius: 20,
     overflow: 'hidden',
+    shadowColor: '#87CEEB',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
   },
   startGradient: {
     flexDirection: 'row',
@@ -344,6 +354,6 @@ const styles = StyleSheet.create({
   startButtonText: {
     fontFamily: 'Quicksand-SemiBold',
     fontSize: 16,
-    color: '#FAFAFA',
+    color: '#FFFFFF',
   },
 });

@@ -101,7 +101,7 @@ export default function AuthScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <LinearGradient
-        colors={['#98FF98', '#87CEEB']}
+        colors={['#F8FBFF', '#E6F3FF', '#B6D0E2']}
         style={styles.backgroundGradient}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
@@ -114,10 +114,10 @@ export default function AuthScreen() {
             <View style={styles.header}>
               <View style={styles.logoContainer}>
                 <LinearGradient
-                  colors={['#A8E6CF', '#DDA0DD']}
+                  colors={['#B6D0E2', '#87CEEB']}
                   style={styles.logoGradient}
                 >
-                  <Heart size={32} color="#FAFAFA" />
+                  <Heart size={32} color="#FFFFFF" />
                 </LinearGradient>
                 <View style={styles.rippleContainer}>
                   <Animated.View style={[styles.ripple, styles.ripple1]} />
@@ -131,7 +131,7 @@ export default function AuthScreen() {
 
             <View style={styles.form}>
               <View style={styles.inputContainer}>
-                <Mail size={20} color="#A8E6CF" style={styles.inputIcon} />
+                <Mail size={20} color="#B6D0E2" style={styles.inputIcon} />
                 <TextInput
                   style={styles.input}
                   placeholder="Email"
@@ -145,7 +145,7 @@ export default function AuthScreen() {
 
               {isSignUp && (
                 <View style={styles.inputContainer}>
-                  <User size={20} color="#A8E6CF" style={styles.inputIcon} />
+                  <User size={20} color="#B6D0E2" style={styles.inputIcon} />
                   <TextInput
                     style={styles.input}
                     placeholder="Username"
@@ -158,7 +158,7 @@ export default function AuthScreen() {
               )}
 
               <View style={styles.inputContainer}>
-                <Lock size={20} color="#A8E6CF" style={styles.inputIcon} />
+                <Lock size={20} color="#B6D0E2" style={styles.inputIcon} />
                 <TextInput
                   style={styles.input}
                   placeholder="Password"
@@ -175,7 +175,7 @@ export default function AuthScreen() {
                 disabled={loading}
               >
                 <LinearGradient
-                  colors={['#A8E6CF', '#98E4D6']}
+                  colors={['#B6D0E2', '#87CEEB']}
                   style={styles.authGradient}
                 >
                   <Text style={styles.authButtonText}>
@@ -192,10 +192,10 @@ export default function AuthScreen() {
                   disabled={loading}
                 >
                   <LinearGradient
-                    colors={['#FFB6C1', '#DDA0DD']}
+                    colors={['#87CEEB', '#B6D0E2']}
                     style={styles.demoGradient}
                   >
-                    <Play size={16} color="#FAFAFA" />
+                    <Play size={16} color="#FFFFFF" />
                     <Text style={styles.demoButtonText}>Try Demo</Text>
                   </LinearGradient>
                 </TouchableOpacity>
@@ -204,7 +204,7 @@ export default function AuthScreen() {
                   style={styles.infoButton}
                   onPress={toggleTooltip}
                 >
-                  <Info size={16} color="#A8E6CF" />
+                  <Info size={16} color="#B6D0E2" />
                 </TouchableOpacity>
               </Animated.View>
 
@@ -290,7 +290,7 @@ const styles = StyleSheet.create({
     borderRadius: 40,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#A8E6CF',
+    shadowColor: '#B6D0E2',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -308,7 +308,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     borderRadius: 80,
     borderWidth: 2,
-    borderColor: 'rgba(168, 230, 207, 0.3)',
+    borderColor: 'rgba(182, 208, 226, 0.3)',
   },
   ripple1: {
     width: 100,
@@ -348,13 +348,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: 'rgba(255, 255, 255, 0.9)',
-    borderRadius: 16,
+    borderRadius: 20,
     paddingHorizontal: 16,
     paddingVertical: 4,
     marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
+    shadowColor: '#87CEEB',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.15,
     shadowRadius: 8,
     elevation: 3,
     borderWidth: 1,
@@ -371,11 +371,11 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
   },
   authButton: {
-    borderRadius: 16,
+    borderRadius: 20,
     overflow: 'hidden',
     marginTop: 8,
     marginBottom: 16,
-    shadowColor: '#A8E6CF',
+    shadowColor: '#B6D0E2',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -392,7 +392,7 @@ const styles = StyleSheet.create({
   authButtonText: {
     fontFamily: 'Quicksand-SemiBold',
     fontSize: 16,
-    color: '#FAFAFA',
+    color: '#FFFFFF',
   },
   demoContainer: {
     flexDirection: 'row',
@@ -402,10 +402,10 @@ const styles = StyleSheet.create({
   },
   demoButton: {
     flex: 1,
-    borderRadius: 16,
+    borderRadius: 20,
     overflow: 'hidden',
     marginRight: 8,
-    shadowColor: '#FFB6C1',
+    shadowColor: '#87CEEB',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -421,7 +421,7 @@ const styles = StyleSheet.create({
   demoButtonText: {
     fontFamily: 'Quicksand-SemiBold',
     fontSize: 16,
-    color: '#FAFAFA',
+    color: '#FFFFFF',
   },
   infoButton: {
     width: 40,
@@ -430,9 +430,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.9)',
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#000',
+    shadowColor: '#87CEEB',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.15,
     shadowRadius: 4,
     elevation: 2,
   },
@@ -450,7 +450,7 @@ const styles = StyleSheet.create({
   tooltipText: {
     fontFamily: 'Quicksand-Medium',
     fontSize: 12,
-    color: '#FAFAFA',
+    color: '#FFFFFF',
     textAlign: 'center',
     lineHeight: 16,
   },
@@ -481,11 +481,11 @@ const styles = StyleSheet.create({
   },
   features: {
     backgroundColor: 'rgba(255, 255, 255, 0.9)',
-    borderRadius: 16,
+    borderRadius: 20,
     padding: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
+    shadowColor: '#87CEEB',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
     shadowRadius: 8,
     elevation: 3,
     borderWidth: 1,

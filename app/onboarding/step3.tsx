@@ -8,7 +8,7 @@ export default function OnboardingStep3() {
   return (
     <View style={styles.container}>
       <LinearGradient
-        colors={['#98FF98', '#87CEEB']}
+        colors={['#F8FBFF', '#E6F3FF', '#B6D0E2']}
         style={styles.gradient}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
@@ -38,11 +38,11 @@ export default function OnboardingStep3() {
               onPress={() => router.replace('/auth')}
             >
               <LinearGradient
-                colors={['#A8E6CF', '#98E4D6']}
+                colors={['#B6D0E2', '#87CEEB']}
                 style={styles.getStartedGradient}
               >
                 <Text style={styles.getStartedText}>Get Started</Text>
-                <Check size={20} color="#FAFAFA" />
+                <Check size={20} color="#FFFFFF" />
               </LinearGradient>
             </TouchableOpacity>
           </View>
@@ -109,13 +109,13 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.4)',
   },
   activeDot: {
-    backgroundColor: '#A8E6CF',
+    backgroundColor: '#B6D0E2',
     width: 24,
   },
   getStartedButton: {
     borderRadius: 24,
     overflow: 'hidden',
-    shadowColor: '#A8E6CF',
+    shadowColor: '#B6D0E2',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -131,6 +131,6 @@ const styles = StyleSheet.create({
   getStartedText: {
     fontFamily: 'Quicksand-SemiBold',
     fontSize: 16,
-    color: '#FAFAFA',
+    color: '#FFFFFF',
   },
 });

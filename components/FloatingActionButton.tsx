@@ -52,12 +52,12 @@ export function FloatingActionButton({ onPress, isActive = false }: FloatingActi
       <Animated.View style={[styles.pulseRing, animatedPulseStyle]} />
       <TouchableOpacity onPress={onPress} style={styles.button} activeOpacity={0.8}>
         <LinearGradient
-          colors={isActive ? ['#FFB6C1', '#DDA0DD'] : ['#A8E6CF', '#98E4D6']}
+          colors={isActive ? ['#87CEEB', '#B6D0E2'] : ['#B6D0E2', '#87CEEB']}
           style={styles.gradient}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
         >
-          <Heart size={24} color="#FAFAFA" strokeWidth={2} />
+          <Heart size={24} color="#FFFFFF" strokeWidth={2} />
         </LinearGradient>
       </TouchableOpacity>
     </Animated.View>
@@ -77,14 +77,14 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: '#A8E6CF',
+    backgroundColor: '#B6D0E2',
     opacity: 0.3,
   },
   button: {
     width: 56,
     height: 56,
     borderRadius: 28,
-    shadowColor: '#A8E6CF',
+    shadowColor: '#B6D0E2',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
