@@ -102,5 +102,6 @@ export default function TabLayout() {
         onClose={() => setShowSettings(false)}
       />
     </View>
+  )
   );
 }
