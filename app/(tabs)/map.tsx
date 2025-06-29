@@ -263,7 +263,7 @@ export default function MapScreen() {
                     <Text style={[styles.routeName, { color: colors.text }]}>{route.name}</Text>
                     <View style={styles.routeMeta}>
                       <Clock size={14} color={colors.textSecondary} />
-                      <Text key={index} style={[styles.stressFactor, { color: colors.text }]}>
+                      <Text style={[styles.routeDuration, { color: colors.text }]}>
                         {route.durationInTraffic ? formatDuration(route.durationInTraffic.value) : formatDuration(route.duration.value)}
                       </Text>
                       {getStressIcon(route.stressLevel)}
@@ -272,7 +272,7 @@ export default function MapScreen() {
                     <Text style={[styles.routeDistance, { color: colors.text }]}>
                       {formatDistance(route.distance.value)}
                     </Text>
-                <Text style={[styles.therapyDescription, { color: colors.text }]}>
+                  </View>
                   <View style={[styles.routeIndicator, { backgroundColor: route.color }]} />
                 </View>
                 
