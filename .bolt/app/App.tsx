@@ -1,10 +1,14 @@
+import React from "react";
+import { SafeAreaView, Text } from "react-native";
 import ChatBox from "./components/ChatBox";
 
 export default function App() {
   return (
-    <div className="min-h-screen bg-gray-100">
-      <h1 className="text-2xl font-bold text-center mt-4">Zenroute</h1>
+    <SafeAreaView style={{ flex: 1, paddingTop: 40 }}>
+      <Text style={{ fontSize: 24, textAlign: "center", marginBottom: 20 }}>
+        Zenroute 💬
+      </Text>
       <ChatBox />
-    </div>
+    </SafeAreaView>
   );
 }
