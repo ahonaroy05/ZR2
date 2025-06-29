@@ -1,67 +1,111 @@
-import React, { useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, SafeAreaView, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '@/contexts/ThemeContext';
-import { MapPin, Clock, TrendingDown, Route, Navigation, TriangleAlert as AlertTriangle } from 'lucide-react-native';
+import { useGoogleMapsRoutes } from '@/hooks/useGoogleMapsRoutes';
+import { GoogleMapView } from '@/components/GoogleMapView';
+import { MapPin, Clock, TrendingDown, Route, Navigation, TriangleAlert as AlertTriangle, Loader } from 'lucide-react-native';
 
-interface RouteOption {
-  id: string;
+interface StressZone {
   name: string;
-  duration: string;
-  stressLevel: 'low' | 'medium' | 'high';
-  traffic: string;
-  therapyType: string;
+  level: 'High' | 'Medium' | 'Low';
   color: string;
+  coordinates: { lat: number; lng: number };
 }
 
 export default function MapScreen() {
-  const { theme } = useTheme();
-  const [selectedRoute, setSelectedRoute] = useState<string>('route1');
-  const { colors } = useTheme();
+  const { colors, theme } = useTheme();
+  const { routes, loading, error, getStressOptimizedRoutes, clearError } = useGoogleMapsRoutes();
+  const [selectedRoute, setSelectedRoute] = useState<string | null>(null);
+  const [currentLocation, setCurrentLocation] = useState({ lat: 37.7749, lng: -122.4194 }); // San Francisco default
+  const [destination, setDestination] = useState({ lat: 37.7849, lng: -122.4094 }); // Sample destination
 
-  const routes: RouteOption[] = [
-    {
-      id: 'route1',
-      name: 'Zen Highway',
-      duration: '32 min',
-      stressLevel: 'low',
-      traffic: 'Light',
-      therapyType: 'Nature Sounds',
-      color: theme.colors.success,
+  // Sample stress zones based on common urban areas
+  const stressZones: StressZone[] = [
+    { 
+      name: 'Downtown Construction', 
+      level: 'High', 
+      color: colors.error,
+      coordinates: { lat: 37.7849, lng: -122.4094 }
     },
-    {
-      id: 'route2',
-      name: 'City Express',
-      duration: '28 min',
-      stressLevel: 'high',
-      traffic: 'Heavy',
-      therapyType: 'Guided Meditation',
-      color: theme.colors.accent,
+    { 
+      name: 'Highway Junction', 
+      level: 'Medium', 
+      color: colors.warning,
+      coordinates: { lat: 37.7749, lng: -122.4194 }
     },
-    {
-      id: 'route3',
-      name: 'Scenic Route',
-      duration: '38 min',
-      stressLevel: 'medium',
-      traffic: 'Moderate',
-      therapyType: 'Breathing Exercise',
-      color: theme.colors.primary,
+    { 
+      name: 'Park Avenue', 
+      level: 'Low', 
+      color: colors.success,
+      coordinates: { lat: 37.7649, lng: -122.4294 }
     },
   ];
 
-  const stressZones = [
-    { name: 'Downtown Construction', level: 'High', color: theme.colors.accent },
-    { name: 'Highway Junction', level: 'Medium', color: theme.colors.primary },
-    { name: 'Park Avenue', level: 'Low', color: theme.colors.success },
-  ];
+  // Load routes on component mount
+  useEffect(() => {
+    loadRoutes();
+  }, []);
+
+  const loadRoutes = async () => {
+    try {
+      clearError();
+      await getStressOptimizedRoutes(currentLocation, destination);
+    } catch (err) {
+      console.error('Failed to load routes:', err);
+      Alert.alert(
+        'Route Loading Failed',
+        'Unable to load routes. Please check your connection and try again.',
+        [{ text: 'OK' }]
+      );
+    }
+  };
+
+  const handleRouteSelect = (routeId: string) => {
+    setSelectedRoute(routeId);
+  };
+
+  const handleStartJourney = () => {
+    const selected = routes.find(route => route.id === selectedRoute);
+    if (selected) {
+      Alert.alert(
+        'Start Journey',
+        `Starting your zen journey via ${selected.name}.\n\nRecommended therapy: ${selected.therapyType}`,
+        [{ text: 'Begin', style: 'default' }]
+      );
+    } else {
+      Alert.alert(
+        'Select Route',
+        'Please select a route before starting your journey.',
+        [{ text: 'OK' }]
+      );
+    }
+  };
 
   const getStressIcon = (level: string) => {
-    switch (level) {
-      case 'low': return <TrendingDown size={16} color={theme.colors.success} />;
-      case 'medium': return <AlertTriangle size={16} color={theme.colors.primary} />;
-      case 'high': return <AlertTriangle size={16} color={theme.colors.accent} />;
-      default: return <TrendingDown size={16} color={theme.colors.success} />;
+    switch (level.toLowerCase()) {
+      case 'low': return <TrendingDown size={16} color={colors.success} />;
+      case 'medium': return <AlertTriangle size={16} color={colors.warning} />;
+      case 'high': return <AlertTriangle size={16} color={colors.error} />;
+      default: return <TrendingDown size={16} color={colors.success} />;
     }
+  };
+
+  const formatDuration = (seconds: number): string => {
+    const minutes = Math.round(seconds / 60);
+    if (minutes < 60) {
+      return `${minutes} min`;
+    }
+    const hours = Math.floor(minutes / 60);
+    const remainingMinutes = minutes % 60;
+    return `${hours}h ${remainingMinutes}m`;
+  };
+
+  const formatDistance = (meters: number): string => {
+    if (meters < 1000) {
+      return `${meters} m`;
+    }
+    return `${(meters / 1000).toFixed(1)} km`;
   };
 
   return (
@@ -72,59 +116,138 @@ export default function MapScreen() {
           <Text style={[styles.subtitle, { color: colors.textSecondary }]}>Choose your path to wellness</Text>
         </View>
 
+        {/* Interactive Map Placeholder with Loading State */}
         <View style={styles.mapContainer}>
-          <LinearGradient
-            colors={[colors.primaryLight, colors.surface]}
-            style={[styles.mapPlaceholder, { shadowColor: theme.colors.shadow }]}
-          >
-            <View style={styles.mapContent}>
-              <MapPin size={32} color={colors.success} />
-              <Text style={[styles.mapText, { color: colors.text }]}>Interactive Route Map</Text>
-              <Text style={[styles.mapSubtext, { color: colors.textSecondary }]}>Tap routes to preview therapy options</Text>
-            </View>
-          </LinearGradient>
-        </View>
-
-        <View style={styles.routesSection}>
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>Recommended Routes</Text>
-          {routes.map((route) => (
-            <TouchableOpacity
-              key={route.id}
-              style={[
-                styles.routeCard, 
-                { backgroundColor: colors.card, shadowColor: colors.shadow },
-                { backgroundColor: theme.colors.card, shadowColor: theme.colors.shadow },
-                selectedRoute === route.id && styles.routeCardSelected
-              ]}
-              onPress={() => setSelectedRoute(route.id)}
+          {loading || error || routes.length === 0 ? (
+            <LinearGradient
+              colors={[colors.primaryLight, colors.surface]}
+              style={[styles.mapPlaceholder, { shadowColor: colors.shadow }]}
             >
-              <View style={styles.routeHeader}>
-                <View style={styles.routeInfo}>
-                  <Text style={[styles.routeName, { color: colors.text }]}>{route.name}</Text>
-                  <View style={styles.routeMeta}>
-                    <Clock size={14} color={colors.textSecondary} />
-                    <Text style={[styles.routeDuration, { color: colors.textSecondary }]}>{route.duration}</Text>
-                    {getStressIcon(route.stressLevel)}
-                    <Text style={[styles.routeTraffic, { color: colors.textSecondary }]}>{route.traffic} traffic</Text>
-                  </View>
-                </View>
-                <View 
-                  style={[styles.routeIndicator, { backgroundColor: route.color }]} 
-                />
+              <View style={styles.mapContent}>
+                {loading ? (
+                  <>
+                    <Loader size={32} color={colors.primary} />
+                    <Text style={[styles.mapText, { color: colors.text }]}>Loading Routes...</Text>
+                    <Text style={[styles.mapSubtext, { color: colors.textSecondary }]}>Analyzing traffic and stress factors</Text>
+                  </>
+                ) : error ? (
+                  <>
+                    <AlertTriangle size={32} color={colors.error} />
+                    <Text style={[styles.mapText, { color: colors.text }]}>Route Loading Failed</Text>
+                    <Text style={[styles.mapSubtext, { color: colors.textSecondary }]}>Tap to retry</Text>
+                    <TouchableOpacity 
+                      style={[styles.retryButton, { backgroundColor: colors.primary }]}
+                      onPress={loadRoutes}
+                    >
+                      <Text style={[styles.retryButtonText, { color: colors.textInverse }]}>Retry</Text>
+                    </TouchableOpacity>
+                  </>
+                ) : (
+                  <>
+                    <MapPin size={32} color={colors.success} />
+                    <Text style={[styles.mapText, { color: colors.text }]}>Interactive Route Map</Text>
+                    <Text style={[styles.mapSubtext, { color: colors.textSecondary }]}>
+                      Tap routes to preview therapy options
+                    </Text>
+                  </>
+                )}
               </View>
-              
-              <View style={styles.therapyInfo}>
-                <View style={[styles.therapyTag, { backgroundColor: colors.primaryLight }]}>
-                  <Text style={[styles.therapyTagText, { color: colors.primary }]}>{route.therapyType}</Text>
-                </View>
-                <Text style={[styles.therapyDescription, { color: colors.textSecondary }]}>
-                  Tailored wellness content for this route's conditions
-                </Text>
-              </View>
-            </TouchableOpacity>
-          ))}
+            </LinearGradient>
+          ) : (
+            <View style={[styles.mapWrapper, { shadowColor: colors.shadow }]}>
+              <GoogleMapView
+                routes={routes.map(route => ({
+                  id: route.id,
+                  overviewPolyline: route.overviewPolyline,
+                  color: route.color,
+                }))}
+                origin={currentLocation}
+                destination={destination}
+                selectedRoute={selectedRoute}
+                onRouteSelect={handleRouteSelect}
+                style={styles.map}
+              />
+            </View>
+          )}
         </View>
 
+        {/* Routes Section */}
+        <View style={styles.routesSection}>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>
+            {loading ? 'Loading Routes...' : `Recommended Routes (${routes.length})`}
+          </Text>
+          
+          {routes.length > 0 ? (
+            routes.map((route) => (
+              <TouchableOpacity
+                key={route.id}
+                style={[
+                  styles.routeCard,
+                  { backgroundColor: colors.card, shadowColor: colors.shadow },
+                  selectedRoute === route.id && { borderColor: colors.primary, borderWidth: 2 }
+                ]}
+                onPress={() => handleRouteSelect(route.id)}
+              >
+                <View style={styles.routeHeader}>
+                  <View style={styles.routeInfo}>
+                    <Text style={[styles.routeName, { color: colors.text }]}>{route.name}</Text>
+                    <View style={styles.routeMeta}>
+                      <Clock size={14} color={colors.textSecondary} />
+                      <Text style={[styles.routeDuration, { color: colors.textSecondary }]}>
+                        {route.durationInTraffic ? formatDuration(route.durationInTraffic.value) : formatDuration(route.duration.value)}
+                      </Text>
+                      {getStressIcon(route.stressLevel)}
+                      <Text style={[styles.routeTraffic, { color: colors.textSecondary }]}>{route.traffic} traffic</Text>
+                    </View>
+                    <Text style={[styles.routeDistance, { color: colors.textSecondary }]}>
+                      {formatDistance(route.distance.value)}
+                    </Text>
+                  </View>
+                  <View style={[styles.routeIndicator, { backgroundColor: route.color }]} />
+                </View>
+                
+                <View style={styles.therapyInfo}>
+                  <View style={[styles.therapyTag, { backgroundColor: colors.primaryLight }]}>
+                    <Text style={[styles.therapyTagText, { color: colors.primary }]}>{route.therapyType}</Text>
+                  </View>
+                  <Text style={[styles.therapyDescription, { color: colors.textSecondary }]}>
+                    Tailored wellness content for {route.stressLevel} stress conditions
+                  </Text>
+                  
+                  {/* Stress Factors */}
+                  {route.stressFactors.length > 0 && (
+                    <View style={styles.stressFactors}>
+                      {route.stressFactors.slice(0, 2).map((factor, index) => (
+                        <Text key={index} style={[styles.stressFactor, { color: colors.textSecondary }]}>
+                          • {factor}
+                        </Text>
+                      ))}
+                    </View>
+                  )}
+                </View>
+
+                {/* Route Warnings */}
+                {route.warnings.length > 0 && (
+                  <View style={styles.warningsContainer}>
+                    <AlertTriangle size={12} color={colors.warning} />
+                    <Text style={[styles.warningText, { color: colors.warning }]}>
+                      {route.warnings[0]}
+                    </Text>
+                  </View>
+                )}
+              </TouchableOpacity>
+            ))
+          ) : !loading && (
+            <View style={[styles.noRoutesContainer, { backgroundColor: colors.card }]}>
+              <MapPin size={24} color={colors.textSecondary} />
+              <Text style={[styles.noRoutesText, { color: colors.textSecondary }]}>
+                No routes available. Please try again.
+              </Text>
+            </View>
+          )}
+        </View>
+
+        {/* Stress Zones Section */}
         <View style={styles.stressZones}>
           <Text style={[styles.sectionTitle, { color: colors.text }]}>Stress Zones</Text>
           <Text style={[styles.sectionSubtitle, { color: colors.textSecondary }]}>
@@ -141,14 +264,25 @@ export default function MapScreen() {
           ))}
         </View>
 
+        {/* Action Section */}
         <View style={styles.actionSection}>
-          <TouchableOpacity style={[styles.startButton, { shadowColor: colors.shadow }]}>
+          <TouchableOpacity 
+            style={[
+              styles.startButton, 
+              { shadowColor: colors.shadow },
+              !selectedRoute && { opacity: 0.6 }
+            ]}
+            onPress={handleStartJourney}
+            disabled={!selectedRoute}
+          >
             <LinearGradient
-              colors={[colors.success, colors.primary]}
+              colors={theme.gradient.primary}
               style={styles.startGradient}
             >
               <Navigation size={20} color={colors.textInverse} />
-              <Text style={[styles.startButtonText, { color: colors.textInverse }]}>Start Zen Journey</Text>
+              <Text style={[styles.startButtonText, { color: colors.textInverse }]}>
+                {selectedRoute ? 'Start Zen Journey' : 'Select a Route'}
+              </Text>
             </LinearGradient>
           </TouchableOpacity>
         </View>
@@ -191,16 +325,42 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 3,
   },
+  mapWrapper: {
+    height: 200,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  map: {
+    height: 200,
+  },
   mapContent: {
     alignItems: 'center',
   },
   mapText: {
     fontFamily: 'Nunito-SemiBold',
     fontSize: 18,
+    marginTop: 8,
   },
   mapSubtext: {
     fontFamily: 'Quicksand-Medium',
+    fontSize: 14,
     marginTop: 4,
+    textAlign: 'center',
+  },
+  retryButton: {
+    marginTop: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 12,
+  },
+  retryButtonText: {
+    fontFamily: 'Quicksand-SemiBold',
+    fontSize: 14,
   },
   routesSection: {
     marginBottom: 32,
@@ -213,19 +373,19 @@ const styles = StyleSheet.create({
   sectionSubtitle: {
     fontFamily: 'Quicksand-Medium',
     fontSize: 14,
+    marginBottom: 16,
     lineHeight: 20,
   },
   routeCard: {
+    borderRadius: 20,
     padding: 20,
     marginBottom: 16,
-    borderWidth: 2,
+    borderWidth: 1,
     borderColor: 'transparent',
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 3,
-  },
-  routeCardSelected: {
-    borderColor: 'transparent',
   },
   routeHeader: {
     flexDirection: 'row',
@@ -239,11 +399,13 @@ const styles = StyleSheet.create({
   routeName: {
     fontFamily: 'Nunito-SemiBold',
     fontSize: 18,
+    marginBottom: 4,
   },
   routeMeta: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
+    marginBottom: 4,
   },
   routeDuration: {
     fontFamily: 'Quicksand-Medium',
@@ -252,6 +414,10 @@ const styles = StyleSheet.create({
   routeTraffic: {
     fontFamily: 'Quicksand-Medium',
     fontSize: 14,
+  },
+  routeDistance: {
+    fontFamily: 'Quicksand-Regular',
+    fontSize: 12,
   },
   routeIndicator: {
     width: 4,
@@ -277,6 +443,40 @@ const styles = StyleSheet.create({
     fontFamily: 'Quicksand-Regular',
     fontSize: 14,
     lineHeight: 20,
+    marginBottom: 8,
+  },
+  stressFactors: {
+    marginTop: 4,
+  },
+  stressFactor: {
+    fontFamily: 'Quicksand-Regular',
+    fontSize: 12,
+    lineHeight: 16,
+  },
+  warningsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 8,
+    paddingTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255, 193, 7, 0.2)',
+  },
+  warningText: {
+    fontFamily: 'Quicksand-Medium',
+    fontSize: 12,
+    marginLeft: 6,
+    flex: 1,
+  },
+  noRoutesContainer: {
+    borderRadius: 16,
+    padding: 24,
+    alignItems: 'center',
+  },
+  noRoutesText: {
+    fontFamily: 'Quicksand-Medium',
+    fontSize: 14,
+    marginTop: 8,
+    textAlign: 'center',
   },
   stressZones: {
     marginBottom: 32,
@@ -284,6 +484,7 @@ const styles = StyleSheet.create({
   zoneCard: {
     borderRadius: 16,
     padding: 16,
+    marginBottom: 12,
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.08,
     shadowRadius: 6,
@@ -301,10 +502,12 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   zoneName: {
+    fontFamily: 'Nunito-SemiBold',
     fontSize: 16,
   },
   zoneLevel: {
     fontFamily: 'Quicksand-Medium',
+    fontSize: 14,
     marginLeft: 24,
   },
   actionSection: {
@@ -313,6 +516,7 @@ const styles = StyleSheet.create({
   startButton: {
     borderRadius: 20,
     overflow: 'hidden',
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 8,
     elevation: 4,
@@ -328,5 +532,5 @@ const styles = StyleSheet.create({
   startButtonText: {
     fontFamily: 'Quicksand-SemiBold',
     fontSize: 16,
-  }
+  },
 });
