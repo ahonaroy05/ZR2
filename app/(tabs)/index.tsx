@@ -8,7 +8,6 @@ import { useMeditationTracking } from '@/hooks/useMeditationTracking';
 import { TimeBasedGreeting } from '@/components/TimeBasedGreeting';
 import { StressMeter } from '@/components/StressMeter';
 import { BreathingBubble } from '@/components/BreathingBubble';
-import { FloatingActionButton } from '@/components/FloatingActionButton';
 import { EmergencyCalm } from '@/components/EmergencyCalm';
 import { SettingsDrawer } from '@/components/SettingsDrawer';
 import { Calendar, Clock, TrendingUp, Shield, MapPin, Menu } from 'lucide-react-native';
