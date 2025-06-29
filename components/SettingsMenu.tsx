@@ -19,19 +19,7 @@ import { BlurView } from 'expo-blur';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { ThemeToggle } from '@/components/ThemeToggle';
-import {
-  X,
-  Globe,
-  Bell,
-  User,
-  Lock,
-  Shield,
-  Type,
-  Palette,
-  Layout,
-  ChevronRight,
-  Settings as SettingsIcon,
-} from 'lucide-react-native';
+import { X, Globe, Bell, User, Lock, Shield, Type, Palette, LayoutGrid as Layout, ChevronRight, Settings as SettingsIcon } from 'lucide-react-native';
 
 interface SettingsMenuProps {
   visible: boolean;
