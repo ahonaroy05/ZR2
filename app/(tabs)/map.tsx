@@ -3,6 +3,7 @@ import { View, Text, ScrollView, TouchableOpacity, StyleSheet, SafeAreaView } fr
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '@/contexts/ThemeContext';
 import { MapPin, Clock, TrendingDown, Route, Navigation, TriangleAlert as AlertTriangle } from 'lucide-react-native';
+import { useTheme } from '@/contexts/ThemeContext';
 
 interface RouteOption {
   id: string;
@@ -17,6 +18,7 @@ interface RouteOption {
 export default function MapScreen() {
   const { theme } = useTheme();
   const [selectedRoute, setSelectedRoute] = useState<string>('route1');
+  const { colors } = useTheme();
 
   const routes: RouteOption[] = [
     {
@@ -64,33 +66,34 @@ export default function MapScreen() {
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
-          <Text style={[styles.title, { color: theme.colors.text }]}>Route Therapy</Text>
-          <Text style={[styles.subtitle, { color: theme.colors.textSecondary }]}>Choose your path to wellness</Text>
+          <Text style={[styles.title, { color: colors.text }]}>Route Therapy</Text>
+          <Text style={[styles.subtitle, { color: colors.textSecondary }]}>Choose your path to wellness</Text>
         </View>
 
         <View style={styles.mapContainer}>
           <LinearGradient
-            colors={theme.isDark ? ['#1A1F2E', '#252B3A'] : ['#F0F7FF', '#E6F3FF']}
+            colors={[colors.primaryLight, colors.surface]}
             style={[styles.mapPlaceholder, { shadowColor: theme.colors.shadow }]}
           >
             <View style={styles.mapContent}>
-              <MapPin size={32} color={theme.colors.primary} />
-              <Text style={[styles.mapText, { color: theme.colors.text }]}>Interactive Route Map</Text>
-              <Text style={[styles.mapSubtext, { color: theme.colors.textSecondary }]}>Tap routes to preview therapy options</Text>
+              <MapPin size={32} color={colors.success} />
+              <Text style={[styles.mapText, { color: colors.text }]}>Interactive Route Map</Text>
+              <Text style={[styles.mapSubtext, { color: colors.textSecondary }]}>Tap routes to preview therapy options</Text>
             </View>
           </LinearGradient>
         </View>
 
         <View style={styles.routesSection}>
-          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Recommended Routes</Text>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>Recommended Routes</Text>
           {routes.map((route) => (
             <TouchableOpacity
               key={route.id}
               style={[
-                styles.routeCard,
+                styles.routeCard, 
+                { backgroundColor: colors.card, shadowColor: colors.shadow },
                 { backgroundColor: theme.colors.card, shadowColor: theme.colors.shadow },
                 selectedRoute === route.id && styles.routeCardSelected
               ]}
@@ -98,12 +101,12 @@ export default function MapScreen() {
             >
               <View style={styles.routeHeader}>
                 <View style={styles.routeInfo}>
-                  <Text style={[styles.routeName, { color: theme.colors.text }]}>{route.name}</Text>
+                  <Text style={[styles.routeName, { color: colors.text }]}>{route.name}</Text>
                   <View style={styles.routeMeta}>
-                    <Clock size={14} color={theme.colors.textTertiary} />
-                    <Text style={[styles.routeDuration, { color: theme.colors.textSecondary }]}>{route.duration}</Text>
+                    <Clock size={14} color={colors.textSecondary} />
+                    <Text style={[styles.routeDuration, { color: colors.textSecondary }]}>{route.duration}</Text>
                     {getStressIcon(route.stressLevel)}
-                    <Text style={[styles.routeTraffic, { color: theme.colors.textSecondary }]}>{route.traffic} traffic</Text>
+                    <Text style={[styles.routeTraffic, { color: colors.textSecondary }]}>{route.traffic} traffic</Text>
                   </View>
                 </View>
                 <View 
@@ -112,10 +115,10 @@ export default function MapScreen() {
               </View>
               
               <View style={styles.therapyInfo}>
-                <View style={[styles.therapyTag, { backgroundColor: theme.colors.primaryLight }]}>
-                  <Text style={[styles.therapyTagText, { color: theme.colors.primary }]}>{route.therapyType}</Text>
+                <View style={[styles.therapyTag, { backgroundColor: colors.primaryLight }]}>
+                  <Text style={[styles.therapyTagText, { color: colors.primary }]}>{route.therapyType}</Text>
                 </View>
-                <Text style={[styles.therapyDescription, { color: theme.colors.textSecondary }]}>
+                <Text style={[styles.therapyDescription, { color: colors.textSecondary }]}>
                   Tailored wellness content for this route's conditions
                 </Text>
               </View>
@@ -124,29 +127,29 @@ export default function MapScreen() {
         </View>
 
         <View style={styles.stressZones}>
-          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Stress Zones</Text>
-          <Text style={[styles.sectionSubtitle, { color: theme.colors.textSecondary }]}>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>Stress Zones</Text>
+          <Text style={[styles.sectionSubtitle, { color: colors.textSecondary }]}>
             Areas with elevated stress levels and recommended therapy
           </Text>
           {stressZones.map((zone, index) => (
-            <View key={index} style={[styles.zoneCard, { backgroundColor: theme.colors.card, shadowColor: theme.colors.shadow }]}>
+            <View key={index} style={[styles.zoneCard, { backgroundColor: colors.card, shadowColor: colors.shadow }]}>
               <View style={styles.zoneHeader}>
                 <View style={[styles.zoneIndicator, { backgroundColor: zone.color }]} />
-                <Text style={[styles.zoneName, { color: theme.colors.text }]}>{zone.name}</Text>
+                <Text style={[styles.zoneName, { color: colors.text }]}>{zone.name}</Text>
               </View>
-              <Text style={[styles.zoneLevel, { color: theme.colors.textSecondary }]}>Stress Level: {zone.level}</Text>
+              <Text style={[styles.zoneLevel, { color: colors.textSecondary }]}>Stress Level: {zone.level}</Text>
             </View>
           ))}
         </View>
 
         <View style={styles.actionSection}>
-          <TouchableOpacity style={[styles.startButton, { shadowColor: theme.colors.shadow }]}>
+          <TouchableOpacity style={[styles.startButton, { shadowColor: colors.shadow }]}>
             <LinearGradient
-              colors={[theme.colors.primary, theme.colors.accent]}
+              colors={[colors.success, colors.primary]}
               style={styles.startGradient}
             >
-              <Navigation size={20} color="#FAFAFA" />
-              <Text style={[styles.startButtonText, { color: theme.colors.surface }]}>Start Zen Journey</Text>
+              <Navigation size={20} color={colors.textInverse} />
+              <Text style={[styles.startButtonText, { color: colors.textInverse }]}>Start Zen Journey</Text>
             </LinearGradient>
           </TouchableOpacity>
         </View>
@@ -170,12 +173,10 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: 'Nunito-Bold',
     fontSize: 28,
-    color: '#333',
   },
   subtitle: {
     fontFamily: 'Quicksand-Medium',
     fontSize: 16,
-    color: '#666',
     marginTop: 8,
   },
   mapContainer: {
@@ -197,11 +198,9 @@ const styles = StyleSheet.create({
   mapText: {
     fontFamily: 'Nunito-SemiBold',
     fontSize: 18,
-    marginTop: 8,
   },
   mapSubtext: {
     fontFamily: 'Quicksand-Medium',
-    fontSize: 14,
     marginTop: 4,
   },
   routesSection: {
@@ -210,28 +209,24 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontFamily: 'Nunito-SemiBold',
     fontSize: 20,
-    color: '#333',
     marginBottom: 16,
   },
   sectionSubtitle: {
     fontFamily: 'Quicksand-Medium',
     fontSize: 14,
-    marginBottom: 16,
     lineHeight: 20,
   },
   routeCard: {
-    borderRadius: 20,
     padding: 20,
     marginBottom: 16,
     borderWidth: 2,
     borderColor: 'transparent',
-    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 3,
   },
   routeCardSelected: {
-    borderColor: '#B6D0E2',
+    borderColor: 'transparent',
   },
   routeHeader: {
     flexDirection: 'row',
@@ -245,7 +240,6 @@ const styles = StyleSheet.create({
   routeName: {
     fontFamily: 'Nunito-SemiBold',
     fontSize: 18,
-    marginBottom: 4,
   },
   routeMeta: {
     flexDirection: 'row',
@@ -291,7 +285,6 @@ const styles = StyleSheet.create({
   zoneCard: {
     borderRadius: 16,
     padding: 16,
-    marginBottom: 12,
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.08,
     shadowRadius: 6,
@@ -309,12 +302,10 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   zoneName: {
-    fontFamily: 'Nunito-SemiBold',
     fontSize: 16,
   },
   zoneLevel: {
     fontFamily: 'Quicksand-Medium',
-    fontSize: 14,
     marginLeft: 24,
   },
   actionSection: {
@@ -323,7 +314,6 @@ const styles = StyleSheet.create({
   startButton: {
     borderRadius: 20,
     overflow: 'hidden',
-    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 8,
     elevation: 4,
@@ -339,5 +329,5 @@ const styles = StyleSheet.create({
   startButtonText: {
     fontFamily: 'Quicksand-SemiBold',
     fontSize: 16,
-  },
+  }
 });
