@@ -14,7 +14,6 @@ export function TimeBasedGreeting({
   updateInterval = 60000 
 }: TimeBasedGreetingProps) {
   const { colors } = useTheme();
-  const { colors } = useTheme();
   const [greeting, setGreeting] = useState(getTimeBasedGreeting());
 
   useEffect(() => {
