@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTheme } from '@/contexts/ThemeContext';
 import { useStressTracking } from '@/hooks/useStressTracking';
 import { useMeditationTracking } from '@/hooks/useMeditationTracking';
 import { TimeBasedGreeting } from '@/components/TimeBasedGreeting';
@@ -12,23 +13,9 @@ import { EmergencyCalm } from '@/components/EmergencyCalm';
 import { SettingsDrawer } from '@/components/SettingsDrawer';
 import { Calendar, Clock, TrendingUp, Shield, MapPin, Menu } from 'lucide-react-native';
 
-// Define theme colors
-const theme = {
-  colors: {
-    primary: '#B6D0E2',
-    accent: '#87CEEB',
-    success: '#A8E6CF',
-    text: '#333',
-    textSecondary: '#666',
-    surface: '#FFFFFF',
-    card: '#FFFFFF',
-    shadow: '#87CEEB',
-    primaryLight: '#F0F7FF',
-  },
-};
-
 export default function HomeScreen() {
   const { user, isDemoMode } = useAuth();
+  const { colors, theme } = useTheme();
   const { getCurrentStressLevel, getAverageStressLevel, recordStressLevel } = useStressTracking();
   const { sessions, getWeeklyStats } = useMeditationTracking();
   const [stressLevel] = useState(72);
@@ -67,7 +54,7 @@ export default function HomeScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <TouchableOpacity 
         style={[
           styles.settingsButton,
@@ -77,10 +64,10 @@ export default function HomeScreen() {
         activeOpacity={0.7}
       >
         <LinearGradient
-          colors={['#B6D0E2', '#87CEEB']}
+          colors={theme.gradient.primary}
           style={styles.settingsGradient}
         >
-          <Menu size={20} color="#FFFFFF" />
+          <Menu size={20} color={colors.textInverse} />
         </LinearGradient>
       </TouchableOpacity>
       
@@ -99,7 +86,7 @@ export default function HomeScreen() {
         <View style={styles.stressSection}>
           <StressMeter stressLevel={currentStress} size={140} />
           <View style={styles.stressInfo}>
-            <Text style={[styles.stressDescription, { color: theme.colors.textSecondary }]}>
+            <Text style={[styles.stressDescription, { color: colors.textSecondary }]}>
               {currentStress > 70 
                 ? 'Your stress level is elevated. Consider taking a few mindful breaths.'
                 : currentStress > 40
@@ -111,7 +98,7 @@ export default function HomeScreen() {
         </View>
 
         <View style={styles.breathingSection}>
-          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Mindful Breathing</Text>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>Mindful Breathing</Text>
           <TouchableOpacity 
             onPress={() => setIsBreathing(!isBreathing)}
             activeOpacity={0.8}
@@ -121,70 +108,70 @@ export default function HomeScreen() {
         </View>
 
         <View style={styles.quickActions}>
-          <Text style={styles.sectionTitle}>Quick Actions</Text>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>Quick Actions</Text>
           <View style={styles.actionGrid}>
-            <TouchableOpacity style={[styles.actionCard, { shadowColor: theme.colors.shadow }]}>
+            <TouchableOpacity style={[styles.actionCard, { shadowColor: colors.shadow }]}>
               <LinearGradient
-                colors={[theme.colors.primary, theme.colors.accent]}
+                colors={theme.gradient.primary}
                 style={styles.actionGradient}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
               >
-                <MapPin size={24} color="#FAFAFA" />
-                <Text style={[styles.actionText, { color: theme.colors.surface }]}>Start Journey</Text>
+                <MapPin size={24} color={colors.textInverse} />
+                <Text style={[styles.actionText, { color: colors.textInverse }]}>Start Journey</Text>
               </LinearGradient>
             </TouchableOpacity>
 
             <TouchableOpacity 
-              style={[styles.actionCard, { shadowColor: theme.colors.shadow }]}
+              style={[styles.actionCard, { shadowColor: colors.shadow }]}
               onPress={() => setShowEmergencyCalm(true)}
             >
               <LinearGradient
-                colors={[theme.colors.accent, theme.colors.primary]}
+                colors={theme.gradient.accent}
                 style={styles.actionGradient}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
               >
-                <Shield size={24} color="#FAFAFA" />
-                <Text style={[styles.actionText, { color: theme.colors.surface }]}>Emergency Calm</Text>
+                <Shield size={24} color={colors.textInverse} />
+                <Text style={[styles.actionText, { color: colors.textInverse }]}>Emergency Calm</Text>
               </LinearGradient>
             </TouchableOpacity>
           </View>
         </View>
 
         <View style={styles.todayStats}>
-          <Text style={styles.sectionTitle}>Today's Progress</Text>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>Today's Progress</Text>
           <View style={styles.statsGrid}>
-            <View style={[styles.statCard, { backgroundColor: theme.colors.card, shadowColor: theme.colors.shadow }]}>
-              <Calendar size={20} color={theme.colors.primary} />
-              <Text style={[styles.statNumber, { color: theme.colors.text }]}>{todayStats.commutes}</Text>
-              <Text style={[styles.statLabel, { color: theme.colors.textSecondary }]}>Commutes</Text>
+            <View style={[styles.statCard, { backgroundColor: colors.card, shadowColor: colors.shadow }]}>
+              <Calendar size={20} color={colors.primary} />
+              <Text style={[styles.statNumber, { color: colors.text }]}>{todayStats.commutes}</Text>
+              <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Commutes</Text>
             </View>
-            <View style={[styles.statCard, { backgroundColor: theme.colors.card, shadowColor: theme.colors.shadow }]}>
-              <Clock size={20} color={theme.colors.accent} />
-              <Text style={[styles.statNumber, { color: theme.colors.text }]}>{todayStats.mindfulMinutes}</Text>
-              <Text style={[styles.statLabel, { color: theme.colors.textSecondary }]}>Mindful Minutes</Text>
+            <View style={[styles.statCard, { backgroundColor: colors.card, shadowColor: colors.shadow }]}>
+              <Clock size={20} color={colors.accent} />
+              <Text style={[styles.statNumber, { color: colors.text }]}>{todayStats.mindfulMinutes}</Text>
+              <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Mindful Minutes</Text>
             </View>
-            <View style={[styles.statCard, { backgroundColor: theme.colors.card, shadowColor: theme.colors.shadow }]}>
-              <TrendingUp size={20} color={theme.colors.success} />
-              <Text style={[styles.statNumber, { color: theme.colors.text }]}>{todayStats.stressReduction}%</Text>
-              <Text style={[styles.statLabel, { color: theme.colors.textSecondary }]}>Stress Reduction</Text>
+            <View style={[styles.statCard, { backgroundColor: colors.card, shadowColor: colors.shadow }]}>
+              <TrendingUp size={20} color={colors.success} />
+              <Text style={[styles.statNumber, { color: colors.text }]}>{todayStats.stressReduction}%</Text>
+              <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Stress Reduction</Text>
             </View>
           </View>
         </View>
         <View style={styles.recentSessions}>
-          <Text style={styles.sectionTitle}>Recent Sessions</Text>
-          <View style={[styles.sessionCard, { backgroundColor: theme.colors.card, shadowColor: theme.colors.shadow }]}>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>Recent Sessions</Text>
+          <View style={[styles.sessionCard, { backgroundColor: colors.card, shadowColor: colors.shadow }]}>
             <View style={styles.sessionHeader}>
-              <Text style={[styles.sessionTitle, { color: theme.colors.text }]}>Morning Commute</Text>
-              <Text style={[styles.sessionTime, { color: theme.colors.textSecondary }]}>8:30 AM</Text>
+              <Text style={[styles.sessionTitle, { color: colors.text }]}>Morning Commute</Text>
+              <Text style={[styles.sessionTime, { color: colors.textSecondary }]}>8:30 AM</Text>
             </View>
-            <Text style={[styles.sessionDescription, { color: theme.colors.textSecondary }]}>
+            <Text style={[styles.sessionDescription, { color: colors.textSecondary }]}>
               15-minute guided meditation with nature sounds
             </Text>
             <View style={styles.sessionStats}>
-              <Text style={[styles.sessionStat, { color: theme.colors.primary, backgroundColor: theme.colors.primaryLight }]}>-18% stress</Text>
-              <Text style={[styles.sessionStat, { color: theme.colors.primary, backgroundColor: theme.colors.primaryLight }]}>Forest sounds</Text>
+              <Text style={[styles.sessionStat, { color: colors.primary, backgroundColor: colors.primaryLight }]}>-18% stress</Text>
+              <Text style={[styles.sessionStat, { color: colors.primary, backgroundColor: colors.primaryLight }]}>Forest sounds</Text>
             </View>
           </View>
         </View>
@@ -209,7 +196,6 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8FBFF',
   },
   scrollView: {
     flex: 1,
@@ -227,12 +213,10 @@ const styles = StyleSheet.create({
   greeting: {
     fontFamily: 'Nunito-Bold',
     fontSize: 28,
-    color: '#333',
   },
   subtitle: {
     fontFamily: 'Quicksand-Medium',
     fontSize: 16,
-    color: '#666',
     marginTop: 8,
   },
   settingsButton: {
@@ -259,7 +243,6 @@ const styles = StyleSheet.create({
   stressDescription: {
     fontFamily: 'Quicksand-Medium',
     fontSize: 14,
-    color: '#666',
     textAlign: 'center',
     lineHeight: 20,
   },
@@ -270,7 +253,6 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontFamily: 'Nunito-SemiBold',
     fontSize: 20,
-    color: '#333',
     marginBottom: 16,
   },
   quickActions: {
@@ -285,7 +267,6 @@ const styles = StyleSheet.create({
     height: 100,
     borderRadius: 20,
     overflow: 'hidden',
-    shadowColor: '#87CEEB',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.15,
     shadowRadius: 8,
@@ -326,13 +307,11 @@ const styles = StyleSheet.create({
   statNumber: {
     fontFamily: 'Nunito-Bold',
     fontSize: 24,
-    color: '#333',
     marginTop: 8,
   },
   statLabel: {
     fontFamily: 'Quicksand-Medium',
     fontSize: 12,
-    color: '#666',
     marginTop: 4,
   },
   recentSessions: {
@@ -355,17 +334,14 @@ const styles = StyleSheet.create({
   sessionTitle: {
     fontFamily: 'Nunito-SemiBold',
     fontSize: 16,
-    color: '#333',
   },
   sessionTime: {
     fontFamily: 'Quicksand-Medium',
     fontSize: 14,
-    color: '#666',
   },
   sessionDescription: {
     fontFamily: 'Quicksand-Regular',
     fontSize: 14,
-    color: '#666',
     lineHeight: 20,
     marginBottom: 12,
   },
@@ -383,7 +359,6 @@ const styles = StyleSheet.create({
   actionText: {
     fontFamily: 'Quicksand-SemiBold',
     fontSize: 14,
-    color: '#FFFFFF',
     marginTop: 8,
     textAlign: 'center',
   },

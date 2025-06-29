@@ -17,7 +17,7 @@ interface FloatingActionButtonProps {
 }
 
 export function FloatingActionButton({ onPress, isActive = false }: FloatingActionButtonProps) {
-  const { colors } = useTheme();
+  const { colors, theme } = useTheme();
   const scale = useSharedValue(1);
   const pulseOpacity = useSharedValue(0.7);
 
@@ -54,7 +54,7 @@ export function FloatingActionButton({ onPress, isActive = false }: FloatingActi
       <Animated.View style={[styles.pulseRing, { backgroundColor: colors.primary }, animatedPulseStyle]} />
       <TouchableOpacity onPress={onPress} style={styles.button} activeOpacity={0.8}>
         <LinearGradient
-          colors={isActive ? colors.gradient.accent : colors.gradient.primary}
+          colors={isActive ? theme.gradient.accent : theme.gradient.primary}
           style={styles.gradient}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}

@@ -12,7 +12,7 @@ import { Shield } from 'lucide-react-native';
 import { useTheme } from '@/contexts/ThemeContext';
 
 export function DemoBanner() {
-  const { colors } = useTheme();
+  const { colors, theme } = useTheme();
   const shimmer = useSharedValue(0);
 
   useEffect(() => {
@@ -33,7 +33,7 @@ export function DemoBanner() {
   return (
     <View style={styles.container}>
       <LinearGradient
-        colors={colors.gradient.primary}
+        colors={theme.gradient.primary}
         style={styles.gradient}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}

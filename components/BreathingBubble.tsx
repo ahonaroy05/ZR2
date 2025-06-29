@@ -16,7 +16,7 @@ interface BreathingBubbleProps {
 }
 
 export function BreathingBubble({ isActive = false, size = 150 }: BreathingBubbleProps) {
-  const { colors } = useTheme();
+  const { colors, theme } = useTheme();
   const scale = useSharedValue(0.8);
   const opacity = useSharedValue(0.7);
 
@@ -53,7 +53,7 @@ export function BreathingBubble({ isActive = false, size = 150 }: BreathingBubbl
     <View style={[styles.container, { width: size, height: size }]}>
       <Animated.View style={[styles.bubble, animatedStyle, { width: size, height: size }]}>
         <LinearGradient
-          colors={colors.gradient.primary}
+          colors={theme.gradient.primary}
           style={[styles.gradient, { borderRadius: size / 2 }]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}

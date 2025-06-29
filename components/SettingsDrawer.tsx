@@ -9,6 +9,7 @@ import Animated, {
   runOnJS,
 } from 'react-native-reanimated';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTheme } from '@/contexts/ThemeContext';
 import { 
   User, 
   Bell, 
@@ -48,12 +49,12 @@ const DRAWER_WIDTH = Math.min(SCREEN_WIDTH * 0.85, 350);
 
 export function SettingsDrawer({ visible, onClose }: SettingsDrawerProps) {
   const { user, signOut, isDemoMode } = useAuth();
+  const { colors, theme, isDarkMode, toggleTheme } = useTheme();
   const translateX = useSharedValue(-DRAWER_WIDTH);
   const overlayOpacity = useSharedValue(0);
 
   // Settings state
   const [notifications, setNotifications] = React.useState(true);
-  const [darkMode, setDarkMode] = React.useState(false);
   const [soundEnabled, setSoundEnabled] = React.useState(true);
   const [autoPlay, setAutoPlay] = React.useState(false);
 
@@ -122,8 +123,8 @@ export function SettingsDrawer({ visible, onClose }: SettingsDrawerProps) {
           subtitle: 'Switch to dark theme',
           icon: <Moon size={20} color="#DDA0DD" />,
           type: 'toggle' as const,
-          value: darkMode,
-          onToggle: setDarkMode,
+          value: isDarkMode,
+          onToggle: toggleTheme,
         },
         {
           id: 'sound',
@@ -188,19 +189,19 @@ export function SettingsDrawer({ visible, onClose }: SettingsDrawerProps) {
     return (
       <TouchableOpacity
         key={item.id}
-        style={styles.settingItem}
+        style={[styles.settingItem]}
         onPress={item.onPress}
         disabled={item.type === 'toggle'}
         activeOpacity={0.7}
       >
         <View style={styles.settingItemLeft}>
-          <View style={[styles.iconContainer, { backgroundColor: `${item.color || '#F0F7FF'}` }]}>
+          <View style={[styles.iconContainer, { backgroundColor: `${item.color || colors.primaryLight}` }]}>
             {item.icon}
           </View>
           <View style={styles.settingTextContainer}>
-            <Text style={styles.settingTitle}>{item.title}</Text>
+            <Text style={[styles.settingTitle, { color: colors.text }]}>{item.title}</Text>
             {item.subtitle && (
-              <Text style={styles.settingSubtitle}>{item.subtitle}</Text>
+              <Text style={[styles.settingSubtitle, { color: colors.textSecondary }]}>{item.subtitle}</Text>
             )}
           </View>
         </View>
@@ -210,12 +211,12 @@ export function SettingsDrawer({ visible, onClose }: SettingsDrawerProps) {
             <Switch
               value={item.value}
               onValueChange={item.onToggle}
-              trackColor={{ false: '#E0E0E0', true: '#B6D0E2' }}
-              thumbColor={item.value ? '#FFFFFF' : '#FFFFFF'}
-              ios_backgroundColor="#E0E0E0"
+              trackColor={{ false: colors.border, true: colors.primary }}
+              thumbColor={colors.surface}
+              ios_backgroundColor={colors.border}
             />
           ) : (
-            <ChevronRight size={16} color="#CCC" />
+            <ChevronRight size={16} color={colors.border} />
           )}
         </View>
       </TouchableOpacity>
@@ -231,7 +232,7 @@ export function SettingsDrawer({ visible, onClose }: SettingsDrawerProps) {
     >
       <View style={styles.modalContainer}>
         {/* Overlay */}
-        <Animated.View style={[styles.overlay, overlayAnimatedStyle]}>
+        <Animated.View style={[styles.overlay, { backgroundColor: colors.overlay }, overlayAnimatedStyle]}>
           <TouchableOpacity 
             style={styles.overlayTouchable} 
             onPress={onClose}
@@ -240,39 +241,39 @@ export function SettingsDrawer({ visible, onClose }: SettingsDrawerProps) {
         </Animated.View>
 
         {/* Drawer */}
-        <Animated.View style={[styles.drawer, drawerAnimatedStyle, { width: DRAWER_WIDTH }]}>
+        <Animated.View style={[styles.drawer, { backgroundColor: colors.background }, drawerAnimatedStyle, { width: DRAWER_WIDTH }]}>
           <View style={styles.drawerContent}>
             {/* Header */}
-            <View style={styles.header}>
+            <View style={[styles.header, { borderBottomColor: colors.border }]}>
               <View style={styles.headerContent}>
                 <View style={styles.headerLeft}>
                   <View style={styles.headerIconContainer}>
                     <LinearGradient
-                      colors={['#B6D0E2', '#87CEEB']}
+                      colors={theme.gradient.primary}
                       style={styles.headerIconGradient}
                     >
-                      <SettingsIcon size={24} color="#FFFFFF" />
+                      <SettingsIcon size={24} color={colors.textInverse} />
                     </LinearGradient>
                   </View>
                   <View>
-                    <Text style={styles.title}>Settings</Text>
-                    <Text style={styles.subtitle}>Customize your experience</Text>
+                    <Text style={[styles.title, { color: colors.text }]}>Settings</Text>
+                    <Text style={[styles.subtitle, { color: colors.textSecondary }]}>Customize your experience</Text>
                   </View>
                 </View>
                 <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-                  <X size={24} color="#666" />
+                  <X size={24} color={colors.textSecondary} />
                 </TouchableOpacity>
               </View>
             </View>
 
             {/* Demo Banner */}
             {isDemoMode && (
-              <View style={styles.demoBanner}>
+              <View style={[styles.demoBanner]}>
                 <LinearGradient
-                  colors={['#FFB6C1', '#DDA0DD']}
+                  colors={[colors.warning, colors.accent]}
                   style={styles.demoBannerGradient}
                 >
-                  <Text style={styles.demoBannerText}>
+                  <Text style={[styles.demoBannerText, { color: colors.textInverse }]}>
                     🎭 Demo Mode - Settings changes won't be saved
                   </Text>
                 </LinearGradient>
@@ -284,13 +285,13 @@ export function SettingsDrawer({ visible, onClose }: SettingsDrawerProps) {
               <View style={styles.content}>
                 {settingSections.map((section, sectionIndex) => (
                   <View key={section.title} style={styles.section}>
-                    <Text style={styles.sectionTitle}>{section.title}</Text>
-                    <View style={styles.sectionContent}>
+                    <Text style={[styles.sectionTitle, { color: colors.text }]}>{section.title}</Text>
+                    <View style={[styles.sectionContent, { backgroundColor: colors.card, shadowColor: colors.shadow }]}>
                       {section.items.map((item, itemIndex) => (
                         <View key={item.id}>
                           {renderSettingItem(item)}
                           {itemIndex < section.items.length - 1 && (
-                            <View style={styles.separator} />
+                            <View style={[styles.separator, { backgroundColor: colors.border }]} />
                           )}
                         </View>
                       ))}
@@ -300,7 +301,7 @@ export function SettingsDrawer({ visible, onClose }: SettingsDrawerProps) {
 
                 {/* Sign Out Section */}
                 <View style={styles.section}>
-                  <View style={styles.sectionContent}>
+                  <View style={[styles.sectionContent, { backgroundColor: colors.card, shadowColor: colors.shadow }]}>
                     <TouchableOpacity
                       style={styles.signOutButton}
                       onPress={handleSignOut}
@@ -314,7 +315,7 @@ export function SettingsDrawer({ visible, onClose }: SettingsDrawerProps) {
                           <Text style={[styles.settingTitle, { color: '#FF6B6B' }]}>
                             Sign Out
                           </Text>
-                          <Text style={styles.settingSubtitle}>
+                          <Text style={[styles.settingSubtitle, { color: colors.textSecondary }]}>
                             Sign out of your account
                           </Text>
                         </View>
@@ -326,8 +327,8 @@ export function SettingsDrawer({ visible, onClose }: SettingsDrawerProps) {
 
                 {/* Footer */}
                 <View style={styles.footer}>
-                  <Text style={styles.footerText}>ZenRoute v1.0.0</Text>
-                  <Text style={styles.footerSubtext}>
+                  <Text style={[styles.footerText, { color: colors.textSecondary }]}>ZenRoute v1.0.0</Text>
+                  <Text style={[styles.footerSubtext, { color: colors.border }]}>
                     Made with ❤️ for mindful commuting
                   </Text>
                 </View>
@@ -347,14 +348,12 @@ const styles = StyleSheet.create({
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   overlayTouchable: {
     flex: 1,
   },
   drawer: {
     height: '100%',
-    backgroundColor: '#F8FBFF',
     shadowColor: '#000',
     shadowOffset: { width: 2, height: 0 },
     shadowOpacity: 0.25,
@@ -369,7 +368,6 @@ const styles = StyleSheet.create({
     paddingTop: 60,
     paddingBottom: 20,
     borderBottomWidth: 1,
-    borderBottomColor: '#F0F0F0',
   },
   headerContent: {
     flexDirection: 'row',
@@ -390,7 +388,6 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#B6D0E2',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
@@ -399,12 +396,10 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: 'Nunito-Bold',
     fontSize: 22,
-    color: '#333',
   },
   subtitle: {
     fontFamily: 'Quicksand-Medium',
     fontSize: 13,
-    color: '#666',
     marginTop: 2,
   },
   closeButton: {
@@ -413,7 +408,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 16,
-    backgroundColor: '#F5F5F5',
   },
   demoBanner: {
     marginHorizontal: 20,
@@ -429,7 +423,6 @@ const styles = StyleSheet.create({
   demoBannerText: {
     fontFamily: 'Quicksand-SemiBold',
     fontSize: 12,
-    color: '#FFFFFF',
   },
   scrollView: {
     flex: 1,
@@ -444,14 +437,11 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontFamily: 'Nunito-SemiBold',
     fontSize: 16,
-    color: '#333',
     marginBottom: 8,
     marginLeft: 4,
   },
   sectionContent: {
-    backgroundColor: '#FFFFFF',
     borderRadius: 16,
-    shadowColor: '#87CEEB',
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.08,
     shadowRadius: 6,
@@ -483,12 +473,10 @@ const styles = StyleSheet.create({
   settingTitle: {
     fontFamily: 'Quicksand-SemiBold',
     fontSize: 15,
-    color: '#333',
   },
   settingSubtitle: {
     fontFamily: 'Quicksand-Regular',
     fontSize: 12,
-    color: '#666',
     marginTop: 1,
   },
   settingItemRight: {
@@ -497,7 +485,6 @@ const styles = StyleSheet.create({
   },
   separator: {
     height: 1,
-    backgroundColor: '#F0F0F0',
     marginLeft: 64,
   },
   signOutButton: {
@@ -514,12 +501,10 @@ const styles = StyleSheet.create({
   footerText: {
     fontFamily: 'Quicksand-SemiBold',
     fontSize: 13,
-    color: '#999',
   },
   footerSubtext: {
     fontFamily: 'Quicksand-Regular',
     fontSize: 11,
-    color: '#CCC',
     marginTop: 2,
   },
 });

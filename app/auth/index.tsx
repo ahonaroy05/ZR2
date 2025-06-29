@@ -13,13 +13,13 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAuth } from '@/contexts/AuthContext';
-import { router } from 'expo-router';
 import { useTheme } from '@/contexts/ThemeContext';
+import { router } from 'expo-router';
 import { Heart, Mail, Lock, User, Play, Info } from 'lucide-react-native';
 
 export default function AuthScreen() {
-  const { theme } = useTheme();
   const [isSignUp, setIsSignUp] = useState(false);
+  const { colors, theme } = useTheme();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
@@ -101,12 +101,9 @@ export default function AuthScreen() {
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+    <SafeAreaView style={styles.container}>
       <LinearGradient
-        colors={theme.isDark 
-          ? ['#0F1419', '#1A1F2E', '#252B3A'] 
-          : ['#F8FBFF', '#E6F3FF', '#B6D0E2']
-        }
+        colors={theme.gradient.background}
         style={styles.backgroundGradient}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
@@ -119,10 +116,10 @@ export default function AuthScreen() {
             <View style={styles.header}>
               <View style={styles.logoContainer}>
                 <LinearGradient
-                  colors={[theme.colors.primary, theme.colors.accent]}
+                  colors={theme.gradient.primary}
                   style={styles.logoGradient}
                 >
-                  <Heart size={32} color={theme.colors.surface} />
+                  <Heart size={32} color={colors.textInverse} />
                 </LinearGradient>
                 <View style={styles.rippleContainer}>
                   <Animated.View style={[styles.ripple, styles.ripple1]} />
@@ -130,17 +127,17 @@ export default function AuthScreen() {
                   <Animated.View style={[styles.ripple, styles.ripple3]} />
                 </View>
               </View>
-              <Text style={[styles.title, { color: theme.colors.text }]}>ZenRoute</Text>
-              <Text style={[styles.tagline, { color: theme.colors.textSecondary }]}>Transform your commute into calm</Text>
+              <Text style={[styles.title, { color: colors.text }]}>ZenRoute</Text>
+              <Text style={[styles.tagline, { color: colors.textSecondary }]}>Transform your commute into calm</Text>
             </View>
 
             <View style={styles.form}>
-              <View style={[styles.inputContainer, { backgroundColor: theme.colors.card, borderColor: theme.colors.border, shadowColor: theme.colors.shadow }]}>
-                <Mail size={20} color={theme.colors.primary} style={styles.inputIcon} />
+              <View style={[styles.inputContainer, { backgroundColor: colors.surface, borderColor: colors.border, shadowColor: colors.shadow }]}>
+                <Mail size={20} color={colors.primary} style={styles.inputIcon} />
                 <TextInput
-                  style={[styles.input, { color: theme.colors.text }]}
+                  style={[styles.input, { color: colors.text }]}
                   placeholder="Email"
-                  placeholderTextColor={theme.colors.textTertiary}
+                  placeholderTextColor={colors.textSecondary}
                   value={email}
                   onChangeText={setEmail}
                   keyboardType="email-address"
@@ -150,12 +147,12 @@ export default function AuthScreen() {
               </View>
 
               {isSignUp && (
-                <View style={[styles.inputContainer, { backgroundColor: theme.colors.card, borderColor: theme.colors.border, shadowColor: theme.colors.shadow }]}>
-                  <User size={20} color={theme.colors.primary} style={styles.inputIcon} />
+                <View style={[styles.inputContainer, { backgroundColor: colors.surface, borderColor: colors.border, shadowColor: colors.shadow }]}>
+                  <User size={20} color={colors.primary} style={styles.inputIcon} />
                   <TextInput
-                    style={[styles.input, { color: theme.colors.text }]}
+                    style={[styles.input, { color: colors.text }]}
                     placeholder="Username"
-                    placeholderTextColor={theme.colors.textTertiary}
+                    placeholderTextColor={colors.textSecondary}
                     value={username}
                     onChangeText={setUsername}
                     autoCapitalize="none"
@@ -164,12 +161,12 @@ export default function AuthScreen() {
                 </View>
               )}
 
-              <View style={[styles.inputContainer, { backgroundColor: theme.colors.card, borderColor: theme.colors.border, shadowColor: theme.colors.shadow }]}>
-                <Lock size={20} color={theme.colors.primary} style={styles.inputIcon} />
+              <View style={[styles.inputContainer, { backgroundColor: colors.surface, borderColor: colors.border, shadowColor: colors.shadow }]}>
+                <Lock size={20} color={colors.primary} style={styles.inputIcon} />
                 <TextInput
-                  style={[styles.input, { color: theme.colors.text }]}
+                  style={[styles.input, { color: colors.text }]}
                   placeholder="Password"
-                  placeholderTextColor={theme.colors.textTertiary}
+                  placeholderTextColor={colors.textSecondary}
                   value={password}
                   onChangeText={setPassword}
                   secureTextEntry
@@ -178,15 +175,15 @@ export default function AuthScreen() {
               </View>
 
               <TouchableOpacity
-                style={[styles.authButton, { shadowColor: theme.colors.shadow }, loading && styles.authButtonDisabled]}
+                style={[styles.authButton, { shadowColor: colors.shadow }, loading && styles.authButtonDisabled]}
                 onPress={handleAuth}
                 disabled={loading}
               >
                 <LinearGradient
-                  colors={[theme.colors.primary, theme.colors.accent]}
+                  colors={theme.gradient.primary}
                   style={styles.authGradient}
                 >
-                  <Text style={[styles.authButtonText, { color: theme.colors.surface }]}>
+                  <Text style={[styles.authButtonText, { color: colors.textInverse }]}>
                     {loading ? 'Loading...' : isSignUp ? 'Create Account' : 'Sign In'}
                   </Text>
                 </LinearGradient>
@@ -195,31 +192,32 @@ export default function AuthScreen() {
               {/* Demo Button */}
               <Animated.View style={[styles.demoContainer, { transform: [{ scale: pulseAnim }] }]}>
                 <TouchableOpacity
-                  style={styles.demoButton}
+                  style={[styles.demoButton, { shadowColor: colors.shadow }]}
                   onPress={handleDemoLogin}
                   disabled={loading}
                 >
                   <LinearGradient
-                    colors={[theme.colors.accent, theme.colors.primary]}
+                    colors={theme.gradient.accent}
                     style={styles.demoGradient}
                   >
-                    <Play size={16} color={theme.colors.surface} />
-                    <Text style={[styles.demoButtonText, { color: theme.colors.surface }]}>Try Demo</Text>
+                    <Play size={16} color={colors.textInverse} />
+                    <Text style={[styles.demoButtonText, { color: colors.textInverse }]}>Try Demo</Text>
                   </LinearGradient>
                 </TouchableOpacity>
                 
                 <TouchableOpacity 
-                  style={[styles.infoButton, { backgroundColor: theme.colors.card, shadowColor: theme.colors.shadow }]}
+                  style={[styles.infoButton, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}
                   onPress={toggleTooltip}
                 >
-                  <Info size={16} color={theme.colors.primary} />
+                  <Info size={16} color={colors.primary} />
                 </TouchableOpacity>
               </Animated.View>
 
               {/* Tooltip */}
               <Animated.View 
                 style={[
-                  styles.tooltip, 
+                  styles.tooltip,
+                  { backgroundColor: colors.overlay },
                   { 
                     opacity: tooltipOpacity,
                     transform: [{ 
@@ -232,7 +230,7 @@ export default function AuthScreen() {
                 ]}
                 pointerEvents={showTooltip ? 'auto' : 'none'}
               >
-                <Text style={[styles.tooltipText, { color: theme.colors.surface }]}>
+                <Text style={[styles.tooltipText, { color: colors.textInverse }]}>
                   Click to instantly access a sample account with pre-populated data
                 </Text>
                 <View style={styles.tooltipArrow} />
@@ -242,7 +240,7 @@ export default function AuthScreen() {
                 style={styles.switchButton}
                 onPress={() => setIsSignUp(!isSignUp)}
               >
-                <Text style={[styles.switchText, { color: theme.colors.textSecondary }]}>
+                <Text style={[styles.switchText, { color: colors.textSecondary }]}>
                   {isSignUp 
                     ? 'Already have an account? Sign In' 
                     : "Don't have an account? Sign Up"
@@ -251,13 +249,13 @@ export default function AuthScreen() {
               </TouchableOpacity>
             </View>
 
-            <View style={[styles.features, { backgroundColor: theme.colors.card, borderColor: theme.colors.border, shadowColor: theme.colors.shadow }]}>
-              <Text style={[styles.featuresTitle, { color: theme.colors.text }]}>What awaits you:</Text>
+            <View style={[styles.features, { backgroundColor: colors.surface, borderColor: colors.border, shadowColor: colors.shadow }]}>
+              <Text style={[styles.featuresTitle, { color: colors.text }]}>What awaits you:</Text>
               <View style={styles.featuresList}>
-                <Text style={[styles.featureItem, { color: theme.colors.textSecondary }]}>🧘 Guided meditation during commutes</Text>
-                <Text style={[styles.featureItem, { color: theme.colors.textSecondary }]}>🎵 Calming soundscapes and music</Text>
-                <Text style={[styles.featureItem, { color: theme.colors.textSecondary }]}>📊 Track your stress levels</Text>
-                <Text style={[styles.featureItem, { color: theme.colors.textSecondary }]}>📝 Mindful journaling</Text>
+                <Text style={[styles.featureItem, { color: colors.textSecondary }]}>🧘 Guided meditation during commutes</Text>
+                <Text style={[styles.featureItem, { color: colors.textSecondary }]}>🎵 Calming soundscapes and music</Text>
+                <Text style={[styles.featureItem, { color: colors.textSecondary }]}>📊 Track your stress levels</Text>
+                <Text style={[styles.featureItem, { color: colors.textSecondary }]}>📝 Mindful journaling</Text>
               </View>
             </View>
           </View>
@@ -436,7 +434,6 @@ const styles = StyleSheet.create({
     top: -60,
     left: 0,
     right: 0,
-    backgroundColor: 'rgba(51, 51, 51, 0.95)',
     borderRadius: 12,
     padding: 12,
     marginHorizontal: 8,

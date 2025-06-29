@@ -6,12 +6,12 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { Check } from 'lucide-react-native';
 
 export default function OnboardingStep3() {
-  const { colors } = useTheme();
+  const { colors, theme } = useTheme();
 
   return (
     <View style={styles.container}>
       <LinearGradient
-        colors={colors.gradient.background}
+        colors={theme.gradient.background}
         style={styles.gradient}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
@@ -41,7 +41,7 @@ export default function OnboardingStep3() {
               onPress={() => router.replace('/auth')}
             >
               <LinearGradient
-                colors={colors.gradient.primary}
+                colors={theme.gradient.primary}
                 style={styles.getStartedGradient}
               >
                 <Text style={[styles.getStartedText, { color: colors.textInverse }]}>Get Started</Text>
