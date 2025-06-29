@@ -78,14 +78,14 @@ export default function HomeScreen() {
               style={styles.greeting}
               updateInterval={60000}
             />
-            <Text style={styles.subtitle}>How are you feeling today?</Text>
+            <Text style={[styles.subtitle, { color: colors.text }]}>How are you feeling today?</Text>
           </View>
         </View>
 
         <View style={styles.stressSection}>
           <StressMeter stressLevel={currentStress} size={140} />
           <View style={styles.stressInfo}>
-            <Text style={[styles.stressDescription, { color: colors.textSecondary }]}>
+            <Text style={[styles.stressDescription, { color: colors.text }]}>
               {currentStress > 70 
                 ? 'Your stress level is elevated. Consider taking a few mindful breaths.'
                 : currentStress > 40
@@ -144,17 +144,17 @@ export default function HomeScreen() {
             <View style={[styles.statCard, { backgroundColor: colors.card, shadowColor: colors.shadow }]}>
               <Calendar size={20} color={colors.primary} />
               <Text style={[styles.statNumber, { color: colors.text }]}>{todayStats.commutes}</Text>
-              <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Commutes</Text>
+              <Text style={[styles.statLabel, { color: colors.text }]}>Commutes</Text>
             </View>
             <View style={[styles.statCard, { backgroundColor: colors.card, shadowColor: colors.shadow }]}>
               <Clock size={20} color={colors.accent} />
               <Text style={[styles.statNumber, { color: colors.text }]}>{todayStats.mindfulMinutes}</Text>
-              <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Mindful Minutes</Text>
+              <Text style={[styles.statLabel, { color: colors.text }]}>Mindful Minutes</Text>
             </View>
             <View style={[styles.statCard, { backgroundColor: colors.card, shadowColor: colors.shadow }]}>
               <TrendingUp size={20} color={colors.success} />
               <Text style={[styles.statNumber, { color: colors.text }]}>{todayStats.stressReduction}%</Text>
-              <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Stress Reduction</Text>
+              <Text style={[styles.statLabel, { color: colors.text }]}>Stress Reduction</Text>
             </View>
           </View>
         </View>
@@ -163,9 +163,9 @@ export default function HomeScreen() {
           <View style={[styles.sessionCard, { backgroundColor: colors.card, shadowColor: colors.shadow }]}>
             <View style={styles.sessionHeader}>
               <Text style={[styles.sessionTitle, { color: colors.text }]}>Morning Commute</Text>
-              <Text style={[styles.sessionTime, { color: colors.textSecondary }]}>8:30 AM</Text>
+              <Text style={[styles.sessionTime, { color: colors.text }]}>8:30 AM</Text>
             </View>
-            <Text style={[styles.sessionDescription, { color: colors.textSecondary }]}>
+            <Text style={[styles.sessionDescription, { color: colors.text }]}>
               15-minute guided meditation with nature sounds
             </Text>
             <View style={styles.sessionStats}>
