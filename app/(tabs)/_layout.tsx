@@ -1,6 +1,7 @@
 import { Tabs } from 'expo-router';
 import { Platform, View, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
 import { Redirect } from 'expo-router';
+import { useAuth } from '@/contexts/AuthContext';
 import { DemoBanner } from '@/components/DemoBanner';
 import { Chrome as Home, Map, Volume2, BookOpen, Heart } from 'lucide-react-native';
 
