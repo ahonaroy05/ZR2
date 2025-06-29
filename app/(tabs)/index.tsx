@@ -69,7 +69,7 @@ export default function HomeScreen() {
             </Text>
             <Text style={styles.subtitle}>How are you feeling today?</Text>
             <TouchableOpacity>
-                <Text style={[styles.signOutText, { color: theme.colors.surface }]}>Sign Out</Text>
+              <Text style={[styles.signOutText, { color: theme.colors.surface }]}>Sign Out</Text>
             </TouchableOpacity>
           </View>
         </View>
