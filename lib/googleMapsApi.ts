@@ -1,0 +1,270 @@
+// Client-side API wrapper for the Google Maps Edge Function
+
+export interface RouteRequest {
+  origin: {
+    lat: number;
+    lng: number;
+  };
+  destination: {
+    lat: number;
+    lng: number;
+  };
+  waypoints?: Array<{
+    lat: number;
+    lng: number;
+    stopover?: boolean;
+  }>;
+  options?: {
+    avoidTolls?: boolean;
+    avoidHighways?: boolean;
+    avoidFerries?: boolean;
+    mode?: 'driving' | 'walking' | 'bicycling' | 'transit';
+    units?: 'metric' | 'imperial';
+    alternatives?: boolean;
+    departureTime?: string; // ISO string for traffic data
+  };
+}
+
+export interface RouteResponse {
+  success: boolean;
+  data?: {
+    routes: Array<{
+      summary: string;
+      distance: {
+        text: string;
+        value: number; // in meters
+      };
+      duration: {
+        text: string;
+        value: number; // in seconds
+      };
+      durationInTraffic?: {
+        text: string;
+        value: number; // in seconds
+      };
+      legs: Array<{
+        distance: { text: string; value: number };
+        duration: { text: string; value: number };
+        startAddress: string;
+        endAddress: string;
+        steps: Array<{
+          distance: { text: string; value: number };
+          duration: { text: string; value: number };
+          htmlInstructions: string;
+          maneuver?: string;
+          startLocation: { lat: number; lng: number };
+          endLocation: { lat: number; lng: number };
+        }>;
+      }>;
+      overviewPolyline: {
+        points: string;
+      };
+      warnings: string[];
+      copyrights: string;
+    }>;
+    status: string;
+  };
+  error?: string;
+  cached?: boolean;
+}
+
+export class GoogleMapsApiError extends Error {
+  constructor(
+    message: string,
+    public code?: string,
+    public status?: number
+  ) {
+    super(message);
+    this.name = 'GoogleMapsApiError';
+  }
+}
+
+export class GoogleMapsApi {
+  private baseUrl: string;
+
+  constructor() {
+    // Use the Supabase Edge Function URL
+    const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
+    if (!supabaseUrl) {
+      throw new Error('EXPO_PUBLIC_SUPABASE_URL environment variable is required');
+    }
+    this.baseUrl = `${supabaseUrl}/functions/v1/google-maps-routes`;
+  }
+
+  async getRoutes(request: RouteRequest): Promise<RouteResponse> {
+    try {
+      const response = await fetch(this.baseUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY}`,
+        },
+        body: JSON.stringify(request),
+      });
+
+      const data: RouteResponse = await response.json();
+
+      if (!response.ok) {
+        throw new GoogleMapsApiError(
+          data.error || 'Failed to fetch routes',
+          'API_ERROR',
+          response.status
+        );
+      }
+
+      if (!data.success) {
+        throw new GoogleMapsApiError(
+          data.error || 'Route request failed',
+          'ROUTE_ERROR'
+        );
+      }
+
+      return data;
+    } catch (error) {
+      if (error instanceof GoogleMapsApiError) {
+        throw error;
+      }
+
+      // Network or other errors
+      throw new GoogleMapsApiError(
+        error instanceof Error ? error.message : 'Unknown error occurred',
+        'NETWORK_ERROR'
+      );
+    }
+  }
+
+  // Convenience method for simple route requests
+  async getSimpleRoute(
+    origin: { lat: number; lng: number },
+    destination: { lat: number; lng: number },
+    options?: RouteRequest['options']
+  ): Promise<RouteResponse> {
+    return this.getRoutes({
+      origin,
+      destination,
+      options,
+    });
+  }
+
+  // Method to get multiple route alternatives
+  async getRouteAlternatives(
+    origin: { lat: number; lng: number },
+    destination: { lat: number; lng: number },
+    options?: Omit<RouteRequest['options'], 'alternatives'>
+  ): Promise<RouteResponse> {
+    return this.getRoutes({
+      origin,
+      destination,
+      options: {
+        ...options,
+        alternatives: true,
+      },
+    });
+  }
+
+  // Method to get route with traffic data
+  async getRouteWithTraffic(
+    origin: { lat: number; lng: number },
+    destination: { lat: number; lng: number },
+    departureTime?: Date,
+    options?: Omit<RouteRequest['options'], 'departureTime'>
+  ): Promise<RouteResponse> {
+    return this.getRoutes({
+      origin,
+      destination,
+      options: {
+        ...options,
+        departureTime: departureTime?.toISOString() || new Date().toISOString(),
+      },
+    });
+  }
+
+  // Utility method to calculate stress-optimized routes
+  async getStressOptimizedRoutes(
+    origin: { lat: number; lng: number },
+    destination: { lat: number; lng: number }
+  ): Promise<RouteResponse> {
+    return this.getRoutes({
+      origin,
+      destination,
+      options: {
+        alternatives: true,
+        avoidHighways: false, // We'll analyze all options
+        avoidTolls: false,
+        mode: 'driving',
+        units: 'metric',
+        departureTime: new Date().toISOString(),
+      },
+    });
+  }
+}
+
+// Export a singleton instance
+export const googleMapsApi = new GoogleMapsApi();
+
+// Utility functions for route analysis
+export function analyzeRouteStressLevel(route: RouteResponse['data']['routes'][0]): {
+  stressLevel: 'low' | 'medium' | 'high';
+  factors: string[];
+} {
+  const factors: string[] = [];
+  let stressScore = 0;
+
+  // Analyze duration vs distance (traffic indicator)
+  const avgSpeed = route.distance.value / route.duration.value; // meters per second
+  const avgSpeedKmh = avgSpeed * 3.6;
+
+  if (avgSpeedKmh < 20) {
+    stressScore += 2;
+    factors.push('Heavy traffic conditions');
+  } else if (avgSpeedKmh < 40) {
+    stressScore += 1;
+    factors.push('Moderate traffic');
+  }
+
+  // Check for traffic delays
+  if (route.durationInTraffic && route.durationInTraffic.value > route.duration.value * 1.3) {
+    stressScore += 2;
+    factors.push('Significant traffic delays');
+  }
+
+  // Analyze route complexity (number of turns/steps)
+  const totalSteps = route.legs.reduce((sum, leg) => sum + leg.steps.length, 0);
+  const stepsPerKm = totalSteps / (route.distance.value / 1000);
+
+  if (stepsPerKm > 10) {
+    stressScore += 1;
+    factors.push('Complex route with many turns');
+  }
+
+  // Check warnings
+  if (route.warnings.length > 0) {
+    stressScore += 1;
+    factors.push('Route has warnings');
+  }
+
+  // Determine stress level
+  let stressLevel: 'low' | 'medium' | 'high';
+  if (stressScore >= 4) {
+    stressLevel = 'high';
+  } else if (stressScore >= 2) {
+    stressLevel = 'medium';
+  } else {
+    stressLevel = 'low';
+  }
+
+  return { stressLevel, factors };
+}
+
+export function recommendTherapyType(stressLevel: 'low' | 'medium' | 'high'): string {
+  switch (stressLevel) {
+    case 'low':
+      return 'Nature Sounds';
+    case 'medium':
+      return 'Breathing Exercise';
+    case 'high':
+      return 'Guided Meditation';
+    default:
+      return 'Mindful Music';
+  }
+}
