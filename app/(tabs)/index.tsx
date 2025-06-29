@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import Animated, {
+  useSharedValue,
+  withSpring,
+  useAnimatedStyle,
+} from 'react-native-reanimated';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useStressTracking } from '@/hooks/useStressTracking';
@@ -23,6 +28,9 @@ export default function HomeScreen() {
   const [showSettingsDrawer, setShowSettingsDrawer] = useState(false);
   const [weeklyStats, setWeeklyStats] = useState<any>(null);
   const [currentTime, setCurrentTime] = useState(new Date());
+  
+  // Animation for breathing button press
+  const pressScale = useSharedValue(1);
 
   // Get current stress level or use default
   const currentStress = getCurrentStressLevel() || stressLevel;
@@ -45,6 +53,29 @@ export default function HomeScreen() {
     };
     loadStats();
   }, []);
+
+  // Animated style for breathing button press
+  const animatedPressStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: pressScale.value }],
+  }));
+
+  const handleBreathingPress = () => {
+    setIsBreathing(!isBreathing);
+  };
+
+  const handlePressIn = () => {
+    pressScale.value = withSpring(0.95, {
+      damping: 15,
+      stiffness: 300,
+    });
+  };
+
+  const handlePressOut = () => {
+    pressScale.value = withSpring(1, {
+      damping: 15,
+      stiffness: 300,
+    });
+  };
 
   const todayStats = {
     commutes: 2,
@@ -98,12 +129,16 @@ export default function HomeScreen() {
 
         <View style={styles.breathingSection}>
           <Text style={[styles.sectionTitle, { color: colors.text }]}>Mindful Breathing</Text>
-          <TouchableOpacity 
-            onPress={() => setIsBreathing(!isBreathing)}
-            activeOpacity={0.8}
-          >
-            <BreathingBubble isActive={isBreathing} size={160} />
-          </TouchableOpacity>
+          <Animated.View style={animatedPressStyle}>
+            <TouchableOpacity 
+              onPress={handleBreathingPress}
+              onPressIn={handlePressIn}
+              onPressOut={handlePressOut}
+              activeOpacity={1}
+            >
+              <BreathingBubble isActive={isBreathing} size={160} />
+            </TouchableOpacity>
+          </Animated.View>
         </View>
 
         <View style={styles.quickActions}>
