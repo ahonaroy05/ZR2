@@ -10,6 +10,7 @@ interface TimeBasedGreetingProps {
 }
 
 export function TimeBasedGreeting({ 
+  username,
   style, 
   updateInterval = 60000 
 }: TimeBasedGreetingProps) {
