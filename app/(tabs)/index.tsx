@@ -12,6 +12,21 @@ import { EmergencyCalm } from '@/components/EmergencyCalm';
 import { SettingsDrawer } from '@/components/SettingsDrawer';
 import { Calendar, Clock, TrendingUp, Shield, MapPin, Menu } from 'lucide-react-native';
 
+// Define theme colors
+const theme = {
+  colors: {
+    primary: '#B6D0E2',
+    accent: '#87CEEB',
+    success: '#A8E6CF',
+    text: '#333',
+    textSecondary: '#666',
+    surface: '#FFFFFF',
+    card: '#FFFFFF',
+    shadow: '#87CEEB',
+    primaryLight: '#F0F7FF',
+  },
+};
+
 export default function HomeScreen() {
   const { user, isDemoMode } = useAuth();
   const { getCurrentStressLevel, getAverageStressLevel, recordStressLevel } = useStressTracking();
