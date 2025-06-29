@@ -11,10 +11,9 @@ export function getTimeBasedGreeting(date?: Date): string {
     return 'Good morning, ';
   } else if (hour >= 12 && hour < 17) {
     return 'Good afternoon, ';
-  } else if (hour >= 17 && hour < 22) {
-    return 'Good evening, ';
   } else {
-    return 'Good night, ';
+    // Use "Good evening" for all hours from 5:00 PM onwards (17:00) and through the night
+    return 'Good evening, ';
   }
 }
 
