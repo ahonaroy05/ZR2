@@ -15,15 +15,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useChatbot, ChatMessage } from '@/hooks/useChatbot';
-import { 
-  X, 
-  Send, 
-  Bot, 
-  User, 
-  Trash2, 
-  MessageCircle,
-  Loader2
-} from 'lucide-react-native';
+import { X, Send, Bot, User, Trash2, MessageCircle, Loader as Loader2 } from 'lucide-react-native';
 
 interface AiAssistantChatProps {
   visible: boolean;
