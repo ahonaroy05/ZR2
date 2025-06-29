@@ -9,7 +9,6 @@ import Animated, {
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Shield } from 'lucide-react-native';
-import { useTheme } from '@/contexts/ThemeContext';
 
 export function DemoBanner() {
   const { colors, theme } = useTheme();

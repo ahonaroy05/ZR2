@@ -10,10 +10,10 @@ interface TimeBasedGreetingProps {
 }
 
 export function TimeBasedGreeting({ 
-  username = 'Friend', 
   style, 
   updateInterval = 60000 
 }: TimeBasedGreetingProps) {
+  const { colors } = useTheme();
   const { colors } = useTheme();
   const [greeting, setGreeting] = useState(getTimeBasedGreeting());
 
