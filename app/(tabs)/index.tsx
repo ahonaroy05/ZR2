@@ -4,6 +4,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useAuth } from '@/contexts/AuthContext';
 import { useStressTracking } from '@/hooks/useStressTracking';
 import { useMeditationTracking } from '@/hooks/useMeditationTracking';
+import { useTheme } from '@/contexts/ThemeContext';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import { StressMeter } from '@/components/StressMeter';
 import { BreathingBubble } from '@/components/BreathingBubble';
 import { FloatingActionButton } from '@/components/FloatingActionButton';
@@ -12,6 +14,7 @@ import { Calendar, Clock, TrendingUp, Shield, MapPin } from 'lucide-react-native
 
 export default function HomeScreen() {
   const { user, signOut } = useAuth();
+  const { theme } = useTheme();
   const { getCurrentStressLevel, getAverageStressLevel, recordStressLevel } = useStressTracking();
   const { sessions, getWeeklyStats } = useMeditationTracking();
   const [stressLevel] = useState(72);
@@ -39,26 +42,29 @@ export default function HomeScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <ScrollView style={[styles.scrollView]} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
           <View style={styles.headerContent}>
             <View>
               <Text style={styles.greeting}>
                 Good morning, {user?.user_metadata?.username || 'Friend'}
               </Text>
-              <Text style={styles.subtitle}>How are you feeling today?</Text>
+              <Text style={[styles.subtitle, { color: theme.colors.textSecondary }]}>How are you feeling today?</Text>
             </View>
-            <TouchableOpacity onPress={signOut} style={styles.signOutButton}>
-              <Text style={styles.signOutText}>Sign Out</Text>
-            </TouchableOpacity>
+            <View style={styles.headerActions}>
+              <ThemeToggle size={36} />
+              <TouchableOpacity onPress={signOut} style={[styles.signOutButton, { backgroundColor: theme.colors.primary }]}>
+                <Text style={[styles.signOutText, { color: theme.colors.surface }]}>Sign Out</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
 
         <View style={styles.stressSection}>
           <StressMeter stressLevel={currentStress} size={140} />
           <View style={styles.stressInfo}>
-            <Text style={styles.stressDescription}>
+            <Text style={[styles.stressDescription, { color: theme.colors.textSecondary }]}>
               {currentStress > 70 
                 ? 'Your stress level is elevated. Consider taking a few mindful breaths.'
                 : currentStress > 40
@@ -70,7 +76,7 @@ export default function HomeScreen() {
         </View>
 
         <View style={styles.breathingSection}>
-          <Text style={styles.sectionTitle}>Mindful Breathing</Text>
+          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Mindful Breathing</Text>
           <TouchableOpacity 
             onPress={() => setIsBreathing(!isBreathing)}
             activeOpacity={0.8}
@@ -80,71 +86,71 @@ export default function HomeScreen() {
         </View>
 
         <View style={styles.quickActions}>
-          <Text style={styles.sectionTitle}>Quick Actions</Text>
+          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Quick Actions</Text>
           <View style={styles.actionGrid}>
-            <TouchableOpacity style={styles.actionCard}>
+            <TouchableOpacity style={[styles.actionCard, { shadowColor: theme.colors.shadow }]}>
               <LinearGradient
-                colors={['#A8E6CF', '#98E4D6']}
+                colors={[theme.colors.primary, theme.colors.accent]}
                 style={styles.actionGradient}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
               >
                 <MapPin size={24} color="#FAFAFA" />
-                <Text style={styles.actionText}>Start Journey</Text>
+                <Text style={[styles.actionText, { color: theme.colors.surface }]}>Start Journey</Text>
               </LinearGradient>
             </TouchableOpacity>
 
             <TouchableOpacity 
-              style={styles.actionCard}
+              style={[styles.actionCard, { shadowColor: theme.colors.shadow }]}
               onPress={() => setShowEmergencyCalm(true)}
             >
               <LinearGradient
-                colors={['#FFB6C1', '#DDA0DD']}
+                colors={[theme.colors.accent, theme.colors.primary]}
                 style={styles.actionGradient}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
               >
                 <Shield size={24} color="#FAFAFA" />
-                <Text style={styles.actionText}>Emergency Calm</Text>
+                <Text style={[styles.actionText, { color: theme.colors.surface }]}>Emergency Calm</Text>
               </LinearGradient>
             </TouchableOpacity>
           </View>
         </View>
 
         <View style={styles.todayStats}>
-          <Text style={styles.sectionTitle}>Today's Progress</Text>
+          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Today's Progress</Text>
           <View style={styles.statsGrid}>
-            <View style={styles.statCard}>
-              <Calendar size={20} color="#A8E6CF" />
-              <Text style={styles.statNumber}>{todayStats.commutes}</Text>
-              <Text style={styles.statLabel}>Commutes</Text>
+            <View style={[styles.statCard, { backgroundColor: theme.colors.card, shadowColor: theme.colors.shadow }]}>
+              <Calendar size={20} color={theme.colors.primary} />
+              <Text style={[styles.statNumber, { color: theme.colors.text }]}>{todayStats.commutes}</Text>
+              <Text style={[styles.statLabel, { color: theme.colors.textSecondary }]}>Commutes</Text>
             </View>
-            <View style={styles.statCard}>
-              <Clock size={20} color="#DDA0DD" />
-              <Text style={styles.statNumber}>{todayStats.mindfulMinutes}</Text>
-              <Text style={styles.statLabel}>Mindful Minutes</Text>
+            <View style={[styles.statCard, { backgroundColor: theme.colors.card, shadowColor: theme.colors.shadow }]}>
+              <Clock size={20} color={theme.colors.accent} />
+              <Text style={[styles.statNumber, { color: theme.colors.text }]}>{todayStats.mindfulMinutes}</Text>
+              <Text style={[styles.statLabel, { color: theme.colors.textSecondary }]}>Mindful Minutes</Text>
             </View>
-            <View style={styles.statCard}>
-              <TrendingUp size={20} color="#FFB6C1" />
-              <Text style={styles.statNumber}>{todayStats.stressReduction}%</Text>
-              <Text style={styles.statLabel}>Stress Reduction</Text>
+            <View style={[styles.statCard, { backgroundColor: theme.colors.card, shadowColor: theme.colors.shadow }]}>
+              <TrendingUp size={20} color={theme.colors.success} />
+              <Text style={[styles.statNumber, { color: theme.colors.text }]}>{todayStats.stressReduction}%</Text>
+              <Text style={[styles.statLabel, { color: theme.colors.textSecondary }]}>Stress Reduction</Text>
             </View>
           </View>
         </View>
 
         <View style={styles.recentSessions}>
-          <Text style={styles.sectionTitle}>Recent Sessions</Text>
-          <View style={styles.sessionCard}>
+          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Recent Sessions</Text>
+          <View style={[styles.sessionCard, { backgroundColor: theme.colors.card, shadowColor: theme.colors.shadow }]}>
             <View style={styles.sessionHeader}>
-              <Text style={styles.sessionTitle}>Morning Commute</Text>
-              <Text style={styles.sessionTime}>8:30 AM</Text>
+              <Text style={[styles.sessionTitle, { color: theme.colors.text }]}>Morning Commute</Text>
+              <Text style={[styles.sessionTime, { color: theme.colors.textSecondary }]}>8:30 AM</Text>
             </View>
-            <Text style={styles.sessionDescription}>
+            <Text style={[styles.sessionDescription, { color: theme.colors.textSecondary }]}>
               15-minute guided meditation with nature sounds
             </Text>
             <View style={styles.sessionStats}>
-              <Text style={styles.sessionStat}>-18% stress</Text>
-              <Text style={styles.sessionStat}>Forest sounds</Text>
+              <Text style={[styles.sessionStat, { color: theme.colors.primary, backgroundColor: theme.colors.primaryLight }]}>-18% stress</Text>
+              <Text style={[styles.sessionStat, { color: theme.colors.primary, backgroundColor: theme.colors.primaryLight }]}>Forest sounds</Text>
             </View>
           </View>
         </View>
@@ -166,7 +172,6 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8FBFF',
   },
   scrollView: {
     flex: 1,
@@ -179,7 +184,12 @@ const styles = StyleSheet.create({
   headerContent: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-start',
+    alignItems: 'center',
+  },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
   },
   greeting: {
     fontFamily: 'Nunito-Bold',
@@ -193,11 +203,9 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   signOutButton: {
-    backgroundColor: '#B6D0E2',
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 16,
-    shadowColor: '#87CEEB',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
@@ -206,7 +214,6 @@ const styles = StyleSheet.create({
   signOutText: {
     fontFamily: 'Quicksand-SemiBold',
     fontSize: 12,
-    color: '#FFFFFF',
   },
   stressSection: {
     alignItems: 'center',
@@ -273,11 +280,9 @@ const styles = StyleSheet.create({
   },
   statCard: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
     borderRadius: 20,
     padding: 16,
     alignItems: 'center',
-    shadowColor: '#87CEEB',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -299,10 +304,8 @@ const styles = StyleSheet.create({
     paddingBottom: 120,
   },
   sessionCard: {
-    backgroundColor: '#FFFFFF',
     borderRadius: 20,
     padding: 20,
-    shadowColor: '#87CEEB',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -338,8 +341,6 @@ const styles = StyleSheet.create({
   sessionStat: {
     fontFamily: 'Quicksand-Medium',
     fontSize: 12,
-    color: '#B6D0E2',
-    backgroundColor: '#F0F7FF',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 12,

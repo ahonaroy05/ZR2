@@ -3,10 +3,12 @@ import { Platform } from 'react-native';
 import { useAuth } from '@/contexts/AuthContext';
 import { Redirect } from 'expo-router';
 import { DemoBanner } from '@/components/DemoBanner';
+import { useTheme } from '@/contexts/ThemeContext';
 import { Chrome as Home, Map, Volume2, BookOpen, Heart } from 'lucide-react-native';
 
 export default function TabLayout() {
   const { user, loading, isDemoMode } = useAuth();
+  const { theme } = useTheme();
 
   if (loading) {
     return null; // Or a loading screen
@@ -23,7 +25,7 @@ export default function TabLayout() {
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: '#F8FBFF',
+          backgroundColor: theme.colors.surface,
           borderTopWidth: 0,
           elevation: 0,
           shadowOpacity: 0,
@@ -33,8 +35,8 @@ export default function TabLayout() {
           borderTopLeftRadius: 20,
           borderTopRightRadius: 20,
         },
-        tabBarActiveTintColor: '#B6D0E2',
-        tabBarInactiveTintColor: '#87CEEB',
+        tabBarActiveTintColor: theme.colors.primary,
+        tabBarInactiveTintColor: theme.colors.textTertiary,
         tabBarLabelStyle: {
           fontFamily: 'Quicksand-Medium',
           fontSize: 12,

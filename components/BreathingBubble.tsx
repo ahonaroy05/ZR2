@@ -8,6 +8,7 @@ import Animated, {
   Easing,
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useTheme } from '@/contexts/ThemeContext';
 
 interface BreathingBubbleProps {
   isActive?: boolean;
@@ -15,6 +16,7 @@ interface BreathingBubbleProps {
 }
 
 export function BreathingBubble({ isActive = false, size = 150 }: BreathingBubbleProps) {
+  const { theme } = useTheme();
   const scale = useSharedValue(0.8);
   const opacity = useSharedValue(0.7);
 
@@ -51,17 +53,17 @@ export function BreathingBubble({ isActive = false, size = 150 }: BreathingBubbl
     <View style={[styles.container, { width: size, height: size }]}>
       <Animated.View style={[styles.bubble, animatedStyle, { width: size, height: size }]}>
         <LinearGradient
-          colors={['#B6D0E2', '#87CEEB']}
+          colors={[theme.colors.primary, theme.colors.accent]}
           style={[styles.gradient, { borderRadius: size / 2 }]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
         >
           <View style={styles.textContainer}>
-            <Text style={styles.breathText}>
+            <Text style={[styles.breathText, { color: theme.colors.surface }]}>
               {isActive ? 'Breathe' : 'Tap to Start'}
             </Text>
             {isActive && (
-              <Text style={styles.instructionText}>
+              <Text style={[styles.instructionText, { color: theme.colors.surface }]}>
                 In • Hold • Out • Hold
               </Text>
             )}
@@ -80,7 +82,6 @@ const styles = StyleSheet.create({
   bubble: {
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#B6D0E2',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -98,13 +99,11 @@ const styles = StyleSheet.create({
   breathText: {
     fontFamily: 'Nunito-Bold',
     fontSize: 18,
-    color: '#FFFFFF',
     textAlign: 'center',
   },
   instructionText: {
     fontFamily: 'Quicksand-Medium',
     fontSize: 12,
-    color: '#FFFFFF',
     marginTop: 4,
     opacity: 0.9,
   },

@@ -7,6 +7,7 @@ import Animated, {
   interpolateColor,
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useTheme } from '@/contexts/ThemeContext';
 
 interface StressMeterProps {
   stressLevel: number; // 0-100
@@ -14,6 +15,7 @@ interface StressMeterProps {
 }
 
 export function StressMeter({ stressLevel, size = 120 }: StressMeterProps) {
+  const { theme } = useTheme();
   const progress = useSharedValue(0);
 
   useEffect(() => {
@@ -27,8 +29,8 @@ export function StressMeter({ stressLevel, size = 120 }: StressMeterProps) {
       strokeDashoffset,
       stroke: interpolateColor(
         progress.value,
-        [0, 0.4, 0.7, 1],
-        ['#B6D0E2', '#87CEEB', '#E8E8E8', '#B6D0E2']
+        [0, 0.5, 1],
+        [theme.colors.success, theme.colors.warning, theme.colors.error]
       ),
     };
   });
@@ -53,8 +55,8 @@ export function StressMeter({ stressLevel, size = 120 }: StressMeterProps) {
         </Animated.View>
         
         <View style={styles.textContainer}>
-          <Text style={styles.levelText}>{Math.round(stressLevel)}</Text>
-          <Text style={styles.labelText}>Stress Level</Text>
+          <Text style={[styles.levelText, { color: theme.colors.text }]}>{Math.round(stressLevel)}</Text>
+          <Text style={[styles.labelText, { color: theme.colors.textSecondary }]}>Stress Level</Text>
         </View>
       </View>
     </View>
@@ -87,12 +89,10 @@ const styles = StyleSheet.create({
   levelText: {
     fontFamily: 'Nunito-Bold',
     fontSize: 24,
-    color: '#333',
   },
   labelText: {
     fontFamily: 'Quicksand-Medium',
     fontSize: 12,
-    color: '#666',
     marginTop: 4,
   },
 });

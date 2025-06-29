@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Modal } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { X, Shield } from 'lucide-react-native';
+import { useTheme } from '@/contexts/ThemeContext';
 
 interface EmergencyCalmProps {
   visible: boolean;
@@ -17,6 +18,7 @@ const groundingSteps = [
 ];
 
 export function EmergencyCalm({ visible, onClose }: EmergencyCalmProps) {
+  const { theme } = useTheme();
   const [currentStep, setCurrentStep] = useState(0);
 
   const handleNext = () => {
@@ -35,24 +37,24 @@ export function EmergencyCalm({ visible, onClose }: EmergencyCalmProps) {
 
   return (
     <Modal visible={visible} transparent animationType="fade">
-      <BlurView intensity={20} style={styles.overlay}>
-        <View style={styles.container}>
+      <BlurView intensity={20} style={[styles.overlay, { backgroundColor: theme.colors.overlay }]}>
+        <View style={[styles.container, { backgroundColor: theme.colors.surface }]}>
           <TouchableOpacity style={styles.closeButton} onPress={handleReset}>
-            <X size={24} color="#666" />
+            <X size={24} color={theme.colors.textSecondary} />
           </TouchableOpacity>
           
           <View style={styles.content}>
             <View style={styles.header}>
-              <Shield size={32} color="#B6D0E2" />
-              <Text style={styles.title}>5-4-3-2-1 Grounding</Text>
-              <Text style={styles.subtitle}>Take a deep breath and focus</Text>
+              <Shield size={32} color={theme.colors.primary} />
+              <Text style={[styles.title, { color: theme.colors.text }]}>5-4-3-2-1 Grounding</Text>
+              <Text style={[styles.subtitle, { color: theme.colors.textSecondary }]}>Take a deep breath and focus</Text>
             </View>
             
             <View style={styles.stepContainer}>
-              <View style={styles.stepNumber}>
-                <Text style={styles.stepNumberText}>{currentStep + 1}</Text>
+              <View style={[styles.stepNumber, { backgroundColor: theme.colors.primary }]}>
+                <Text style={[styles.stepNumberText, { color: theme.colors.surface }]}>{currentStep + 1}</Text>
               </View>
-              <Text style={styles.stepText}>{groundingSteps[currentStep]}</Text>
+              <Text style={[styles.stepText, { color: theme.colors.text }]}>{groundingSteps[currentStep]}</Text>
             </View>
             
             <View style={styles.progressContainer}>
@@ -61,14 +63,15 @@ export function EmergencyCalm({ visible, onClose }: EmergencyCalmProps) {
                   key={index}
                   style={[
                     styles.progressDot,
+                    { backgroundColor: theme.colors.border },
                     index <= currentStep && styles.progressDotActive
                   ]}
                 />
               ))}
             </View>
             
-            <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
-              <Text style={styles.nextButtonText}>
+            <TouchableOpacity style={[styles.nextButton, { backgroundColor: theme.colors.primary }]} onPress={handleNext}>
+              <Text style={[styles.nextButtonText, { color: theme.colors.surface }]}>
                 {currentStep < groundingSteps.length - 1 ? 'Next' : 'Complete'}
               </Text>
             </TouchableOpacity>
@@ -87,7 +90,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.3)',
   },
   container: {
-    backgroundColor: '#F8FBFF',
     borderRadius: 24,
     padding: 32,
     margin: 24,
@@ -118,13 +120,11 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: 'Nunito-Bold',
     fontSize: 20,
-    color: '#333',
     marginTop: 8,
   },
   subtitle: {
     fontFamily: 'Quicksand-Medium',
     fontSize: 14,
-    color: '#666',
     marginTop: 4,
   },
   stepContainer: {
@@ -135,7 +135,6 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: '#B6D0E2',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 16,
@@ -143,12 +142,10 @@ const styles = StyleSheet.create({
   stepNumberText: {
     fontFamily: 'Nunito-Bold',
     fontSize: 20,
-    color: '#FFFFFF',
   },
   stepText: {
     fontFamily: 'Quicksand-SemiBold',
     fontSize: 18,
-    color: '#333',
     textAlign: 'center',
   },
   progressContainer: {
@@ -159,14 +156,12 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: '#E0E0E0',
     marginHorizontal: 4,
   },
   progressDotActive: {
-    backgroundColor: '#B6D0E2',
+    backgroundColor: '#B6D0E2', // Keep original for visibility
   },
   nextButton: {
-    backgroundColor: '#B6D0E2',
     paddingHorizontal: 32,
     paddingVertical: 12,
     borderRadius: 24,
@@ -174,6 +169,5 @@ const styles = StyleSheet.create({
   nextButtonText: {
     fontFamily: 'Quicksand-SemiBold',
     fontSize: 16,
-    color: '#FFFFFF',
   },
 });

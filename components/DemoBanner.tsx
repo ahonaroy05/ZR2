@@ -9,8 +9,10 @@ import Animated, {
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Shield } from 'lucide-react-native';
+import { useTheme } from '@/contexts/ThemeContext';
 
 export function DemoBanner() {
+  const { theme } = useTheme();
   const shimmer = useSharedValue(0);
 
   useEffect(() => {
@@ -31,14 +33,14 @@ export function DemoBanner() {
   return (
     <View style={styles.container}>
       <LinearGradient
-        colors={['#B6D0E2', '#87CEEB']}
+        colors={[theme.colors.primary, theme.colors.accent]}
         style={styles.gradient}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
       >
         <View style={styles.content}>
-          <Shield size={16} color="#FAFAFA" />
-          <Text style={styles.text}>Demo Mode Active</Text>
+          <Shield size={16} color={theme.colors.surface} />
+          <Text style={[styles.text, { color: theme.colors.surface }]}>Demo Mode Active</Text>
           <Animated.View style={[styles.shimmer, animatedStyle]} />
         </View>
       </LinearGradient>
@@ -67,7 +69,6 @@ const styles = StyleSheet.create({
   text: {
     fontFamily: 'Quicksand-SemiBold',
     fontSize: 12,
-    color: '#FFFFFF',
     marginLeft: 6,
   },
   shimmer: {

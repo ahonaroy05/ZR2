@@ -9,6 +9,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Heart } from 'lucide-react-native';
+import { useTheme } from '@/contexts/ThemeContext';
 
 interface FloatingActionButtonProps {
   onPress: () => void;
@@ -16,6 +17,7 @@ interface FloatingActionButtonProps {
 }
 
 export function FloatingActionButton({ onPress, isActive = false }: FloatingActionButtonProps) {
+  const { theme } = useTheme();
   const scale = useSharedValue(1);
   const pulseOpacity = useSharedValue(0.7);
 
@@ -49,15 +51,15 @@ export function FloatingActionButton({ onPress, isActive = false }: FloatingActi
 
   return (
     <Animated.View style={[styles.container, animatedButtonStyle]}>
-      <Animated.View style={[styles.pulseRing, animatedPulseStyle]} />
+      <Animated.View style={[styles.pulseRing, { backgroundColor: theme.colors.primary }, animatedPulseStyle]} />
       <TouchableOpacity onPress={onPress} style={styles.button} activeOpacity={0.8}>
         <LinearGradient
-          colors={isActive ? ['#87CEEB', '#B6D0E2'] : ['#B6D0E2', '#87CEEB']}
+          colors={isActive ? [theme.colors.accent, theme.colors.primary] : [theme.colors.primary, theme.colors.accent]}
           style={styles.gradient}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
         >
-          <Heart size={24} color="#FFFFFF" strokeWidth={2} />
+          <Heart size={24} color={theme.colors.surface} strokeWidth={2} />
         </LinearGradient>
       </TouchableOpacity>
     </Animated.View>
@@ -77,14 +79,12 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: '#B6D0E2',
     opacity: 0.3,
   },
   button: {
     width: 56,
     height: 56,
     borderRadius: 28,
-    shadowColor: '#B6D0E2',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,

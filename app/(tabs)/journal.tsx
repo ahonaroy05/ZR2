@@ -3,6 +3,7 @@ import { View, Text, ScrollView, TouchableOpacity, StyleSheet, SafeAreaView, Tex
 import { LinearGradient } from 'expo-linear-gradient';
 import { useJournalEntries } from '@/hooks/useJournalEntries';
 import { useStressTracking } from '@/hooks/useStressTracking';
+import { useTheme } from '@/contexts/ThemeContext';
 import { 
   Mic, 
   MicOff, 
@@ -17,6 +18,7 @@ import {
 } from 'lucide-react-native';
 
 export default function JournalScreen() {
+  const { theme } = useTheme();
   const { entries, createEntry, loading: entriesLoading } = useJournalEntries();
   const { recordStressLevel } = useStressTracking();
   const [isRecording, setIsRecording] = useState(false);
@@ -119,15 +121,15 @@ export default function JournalScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
-          <Text style={styles.title}>Mindful Journal</Text>
-          <Text style={styles.subtitle}>Reflect on your journey</Text>
+          <Text style={[styles.title, { color: theme.colors.text }]}>Mindful Journal</Text>
+          <Text style={[styles.subtitle, { color: theme.colors.textSecondary }]}>Reflect on your journey</Text>
         </View>
 
-        <View style={styles.newEntrySection}>
-          <Text style={styles.sectionTitle}>How are you feeling?</Text>
+        <View style={[styles.newEntrySection, { backgroundColor: theme.colors.card, shadowColor: theme.colors.shadow }]}>
+          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>How are you feeling?</Text>
           
           <View style={styles.moodSelector}>
             {moodOptions.map((mood) => (
@@ -135,6 +137,7 @@ export default function JournalScreen() {
                 key={mood.type}
                 style={[
                   styles.moodOption,
+                  { borderColor: theme.colors.border },
                   selectedMood === mood.type && styles.moodOptionSelected
                 ]}
                 onPress={() => setSelectedMood(mood.type)}
@@ -142,6 +145,7 @@ export default function JournalScreen() {
                 {mood.icon}
                 <Text style={[
                   styles.moodLabel,
+                  { color: theme.colors.textSecondary },
                   selectedMood === mood.type && styles.moodLabelSelected
                 ]}>
                   {mood.label}
@@ -151,19 +155,20 @@ export default function JournalScreen() {
           </View>
 
           <View style={styles.stressSection}>
-            <Text style={styles.stressTitle}>Stress Level (1-10)</Text>
+            <Text style={[styles.stressTitle, { color: theme.colors.text }]}>Stress Level (1-10)</Text>
             <View style={styles.stressRating}>
               {renderStressRating()}
             </View>
-            <Text style={styles.stressValue}>{stressRating}/10</Text>
+            <Text style={[styles.stressValue, { color: theme.colors.primary }]}>{stressRating}/10</Text>
           </View>
 
           <View style={styles.inputSection}>
             <View style={styles.inputHeader}>
-              <Text style={styles.inputLabel}>Share your thoughts</Text>
+              <Text style={[styles.inputLabel, { color: theme.colors.text }]}>Share your thoughts</Text>
               <TouchableOpacity
                 style={[
                   styles.recordButton,
+                  { backgroundColor: theme.colors.primaryLight },
                   isRecording && styles.recordButtonActive
                 ]}
                 onPress={() => setIsRecording(!isRecording)}
@@ -177,8 +182,13 @@ export default function JournalScreen() {
             </View>
             
             <TextInput
-              style={styles.textInput}
+              style={[styles.textInput, { 
+                borderColor: theme.colors.border, 
+                backgroundColor: theme.colors.surface,
+                color: theme.colors.text 
+              }]}
               placeholder="How was your journey today? What helped you feel calm?"
+              placeholderTextColor={theme.colors.textTertiary}
               multiline
               numberOfLines={4}
               value={journalText}
@@ -188,23 +198,23 @@ export default function JournalScreen() {
 
             {isRecording && (
               <View style={styles.recordingIndicator}>
-                <View style={styles.recordingDot} />
-                <Text style={styles.recordingText}>Recording voice note...</Text>
+                <View style={[styles.recordingDot, { backgroundColor: theme.colors.primary }]} />
+                <Text style={[styles.recordingText, { color: theme.colors.primary }]}>Recording voice note...</Text>
               </View>
             )}
           </View>
 
           <TouchableOpacity 
-            style={[styles.saveButton, saving && styles.saveButtonDisabled]} 
+            style={[styles.saveButton, { shadowColor: theme.colors.shadow }, saving && styles.saveButtonDisabled]} 
             onPress={handleSaveEntry}
             disabled={saving || !selectedMood || !journalText.trim()}
           >
             <LinearGradient
-              colors={['#A8E6CF', '#98E4D6']}
+              colors={[theme.colors.primary, theme.colors.accent]}
               style={styles.saveGradient}
             >
               <Save size={16} color="#FAFAFA" />
-              <Text style={styles.saveButtonText}>
+              <Text style={[styles.saveButtonText, { color: theme.colors.surface }]}>
                 {saving ? 'Saving...' : 'Save Entry'}
               </Text>
             </LinearGradient>
@@ -213,18 +223,18 @@ export default function JournalScreen() {
 
         <View style={styles.entriesSection}>
           <View style={styles.entriesHeader}>
-            <Text style={styles.sectionTitle}>Recent Entries</Text>
+            <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Recent Entries</Text>
             <TouchableOpacity style={styles.viewAllButton}>
-              <Text style={styles.viewAllText}>View All</Text>
+              <Text style={[styles.viewAllText, { color: theme.colors.primary }]}>View All</Text>
             </TouchableOpacity>
           </View>
 
           {entries.map((entry) => (
-            <View key={entry.id} style={styles.entryCard}>
+            <View key={entry.id} style={[styles.entryCard, { backgroundColor: theme.colors.card, shadowColor: theme.colors.shadow }]}>
               <View style={styles.entryHeader}>
                 <View style={styles.entryMeta}>
-                  <Calendar size={14} color="#666" />
-                  <Text style={styles.entryDate}>{formatDate(entry.created_at)}</Text>
+                  <Calendar size={14} color={theme.colors.textTertiary} />
+                  <Text style={[styles.entryDate, { color: theme.colors.textSecondary }]}>{formatDate(entry.created_at)}</Text>
                 </View>
                 <View style={styles.entryMood}>
                   {getMoodIcon(entry.mood)}
@@ -234,18 +244,18 @@ export default function JournalScreen() {
                       { backgroundColor: getMoodColor(entry.mood) }
                     ]}
                   >
-                    <Text style={styles.stressIndicatorText}>{entry.stress_level}</Text>
+                    <Text style={[styles.stressIndicatorText, { color: theme.colors.surface }]}>{entry.stress_level}</Text>
                   </View>
                 </View>
               </View>
               
-              <Text style={styles.entryContent}>{entry.content}</Text>
+              <Text style={[styles.entryContent, { color: theme.colors.text }]}>{entry.content}</Text>
               
               {entry.tags && entry.tags.length > 0 && (
                 <View style={styles.entryTags}>
                   {entry.tags.map((tag, index) => (
-                    <View key={index} style={styles.tag}>
-                      <Text style={styles.tagText}>#{tag}</Text>
+                    <View key={index} style={[styles.tag, { backgroundColor: theme.colors.primaryLight }]}>
+                      <Text style={[styles.tagText, { color: theme.colors.primary }]}>#{tag}</Text>
                     </View>
                   ))}
                 </View>
@@ -255,18 +265,18 @@ export default function JournalScreen() {
         </View>
 
         <View style={styles.insightsSection}>
-          <Text style={styles.sectionTitle}>Weekly Insights</Text>
-          <View style={styles.insightCard}>
+          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Weekly Insights</Text>
+          <View style={[styles.insightCard, { backgroundColor: theme.colors.card, shadowColor: theme.colors.shadow }]}>
             <View style={styles.insightHeader}>
-              <TrendingUp size={20} color="#A8E6CF" />
-              <Text style={styles.insightTitle}>Stress Trend</Text>
+              <TrendingUp size={20} color={theme.colors.primary} />
+              <Text style={[styles.insightTitle, { color: theme.colors.text }]}>Stress Trend</Text>
             </View>
-            <Text style={styles.insightText}>
+            <Text style={[styles.insightText, { color: theme.colors.textSecondary }]}>
               Your average stress level decreased by 15% this week. Keep up the great work!
             </Text>
             <View style={styles.insightStats}>
-              <Text style={styles.insightStat}>Avg: 4.2/10</Text>
-              <Text style={styles.insightStat}>Best: 2/10</Text>
+              <Text style={[styles.insightStat, { color: theme.colors.primary, backgroundColor: theme.colors.primaryLight }]}>Avg: 4.2/10</Text>
+              <Text style={[styles.insightStat, { color: theme.colors.primary, backgroundColor: theme.colors.primaryLight }]}>Best: 2/10</Text>
             </View>
           </View>
         </View>
@@ -278,7 +288,6 @@ export default function JournalScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8FBFF',
   },
   scrollView: {
     flex: 1,
@@ -300,11 +309,9 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   newEntrySection: {
-    backgroundColor: '#FFFFFF',
     borderRadius: 20,
     padding: 20,
     marginBottom: 32,
-    shadowColor: '#87CEEB',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -327,16 +334,14 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 12,
     borderWidth: 2,
-    borderColor: '#E0E0E0',
   },
   moodOptionSelected: {
-    borderColor: '#B6D0E2',
-    backgroundColor: '#F0F7FF',
+    borderColor: '#B6D0E2', // Keep original for now, will be themed
+    backgroundColor: '#F0F7FF', // Keep original for now, will be themed
   },
   moodLabel: {
     fontFamily: 'Quicksand-Medium',
     fontSize: 12,
-    color: '#666',
     marginTop: 4,
   },
   moodLabelSelected: {
@@ -362,7 +367,6 @@ const styles = StyleSheet.create({
   stressValue: {
     fontFamily: 'Nunito-SemiBold',
     fontSize: 16,
-    color: '#B6D0E2',
     textAlign: 'center',
   },
   inputSection: {
@@ -383,21 +387,18 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: '#F0F7FF',
     alignItems: 'center',
     justifyContent: 'center',
   },
   recordButtonActive: {
-    backgroundColor: '#B6D0E2',
+    backgroundColor: '#B6D0E2', // Keep original for now
   },
   textInput: {
     borderWidth: 1,
-    borderColor: '#E0E0E0',
     borderRadius: 12,
     padding: 16,
     fontFamily: 'Quicksand-Regular',
     fontSize: 16,
-    color: '#333',
     height: 100,
   },
   recordingIndicator: {
@@ -409,18 +410,15 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: '#FFB6C1',
     marginRight: 8,
   },
   recordingText: {
     fontFamily: 'Quicksand-Medium',
     fontSize: 14,
-    color: '#B6D0E2',
   },
   saveButton: {
     borderRadius: 16,
     overflow: 'hidden',
-    shadowColor: '#87CEEB',
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.2,
     shadowRadius: 6,
@@ -439,7 +437,6 @@ const styles = StyleSheet.create({
   saveButtonText: {
     fontFamily: 'Quicksand-SemiBold',
     fontSize: 16,
-    color: '#FFFFFF',
   },
   entriesSection: {
     marginBottom: 32,
@@ -457,14 +454,11 @@ const styles = StyleSheet.create({
   viewAllText: {
     fontFamily: 'Quicksand-SemiBold',
     fontSize: 14,
-    color: '#B6D0E2',
   },
   entryCard: {
-    backgroundColor: '#FFFFFF',
     borderRadius: 20,
     padding: 20,
     marginBottom: 16,
-    shadowColor: '#87CEEB',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -483,7 +477,6 @@ const styles = StyleSheet.create({
   entryDate: {
     fontFamily: 'Quicksand-Medium',
     fontSize: 14,
-    color: '#666',
     marginLeft: 4,
   },
   entryMood: {
@@ -501,12 +494,10 @@ const styles = StyleSheet.create({
   stressIndicatorText: {
     fontFamily: 'Nunito-Bold',
     fontSize: 12,
-    color: '#FFFFFF',
   },
   entryContent: {
     fontFamily: 'Quicksand-Regular',
     fontSize: 16,
-    color: '#333',
     lineHeight: 22,
     marginBottom: 12,
   },
@@ -516,7 +507,6 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   tag: {
-    backgroundColor: '#F0F7FF',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 12,
@@ -524,16 +514,13 @@ const styles = StyleSheet.create({
   tagText: {
     fontFamily: 'Quicksand-Medium',
     fontSize: 12,
-    color: '#B6D0E2',
   },
   insightsSection: {
     paddingBottom: 32,
   },
   insightCard: {
-    backgroundColor: '#FFFFFF',
     borderRadius: 20,
     padding: 20,
-    shadowColor: '#87CEEB',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -547,13 +534,11 @@ const styles = StyleSheet.create({
   insightTitle: {
     fontFamily: 'Nunito-SemiBold',
     fontSize: 18,
-    color: '#333',
     marginLeft: 8,
   },
   insightText: {
     fontFamily: 'Quicksand-Regular',
     fontSize: 16,
-    color: '#666',
     lineHeight: 22,
     marginBottom: 12,
   },
@@ -564,8 +549,6 @@ const styles = StyleSheet.create({
   insightStat: {
     fontFamily: 'Quicksand-SemiBold',
     fontSize: 14,
-    color: '#B6D0E2',
-    backgroundColor: '#F0F7FF',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 12,

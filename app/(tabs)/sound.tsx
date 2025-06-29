@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
 import Slider from '@react-native-community/slider';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useTheme } from '@/contexts/ThemeContext';
 import { 
   Play, 
   Pause, 
@@ -26,6 +27,7 @@ interface SoundOption {
 }
 
 export default function SoundScreen() {
+  const { theme } = useTheme();
   const [masterVolume, setMasterVolume] = useState(70);
   const [noiseCancellation, setNoiseCancellation] = useState(true);
   const [sounds, setSounds] = useState<SoundOption[]>([
@@ -86,19 +88,19 @@ export default function SoundScreen() {
   const activeSounds = sounds.filter(sound => sound.isPlaying);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
-          <Text style={styles.title}>Soundscape Mixer</Text>
-          <Text style={styles.subtitle}>Create your perfect audio environment</Text>
+          <Text style={[styles.title, { color: theme.colors.text }]}>Soundscape Mixer</Text>
+          <Text style={[styles.subtitle, { color: theme.colors.textSecondary }]}>Create your perfect audio environment</Text>
         </View>
 
         <View style={styles.controlsSection}>
-          <View style={styles.masterControls}>
+          <View style={[styles.masterControls, { backgroundColor: theme.colors.card, shadowColor: theme.colors.shadow }]}>
             <View style={styles.volumeControl}>
-              <Volume2 size={20} color="#A8E6CF" />
-              <Text style={styles.controlLabel}>Master Volume</Text>
-              <Text style={styles.volumeValue}>{masterVolume}%</Text>
+              <Volume2 size={20} color={theme.colors.primary} />
+              <Text style={[styles.controlLabel, { color: theme.colors.text }]}>Master Volume</Text>
+              <Text style={[styles.volumeValue, { color: theme.colors.primary }]}>{masterVolume}%</Text>
             </View>
             <Slider
               style={styles.slider}
@@ -108,26 +110,28 @@ export default function SoundScreen() {
               maximumValue={100}
               thumbStyle={styles.sliderThumb}
               trackStyle={styles.sliderTrack}
-              minimumTrackTintColor="#A8E6CF"
-              maximumTrackTintColor="#E0E0E0"
+              minimumTrackTintColor={theme.colors.primary}
+              maximumTrackTintColor={theme.colors.border}
             />
           </View>
 
           <TouchableOpacity
             style={[
               styles.noiseCancelButton,
+              { backgroundColor: theme.colors.card, borderColor: theme.colors.border, shadowColor: theme.colors.shadow },
               noiseCancellation && styles.noiseCancelButtonActive
             ]}
             onPress={() => setNoiseCancellation(!noiseCancellation)}
           >
             <View style={styles.noiseCancelContent}>
               {noiseCancellation ? (
-                <VolumeX size={20} color="#FAFAFA" />
+                <VolumeX size={20} color={theme.colors.surface} />
               ) : (
-                <Volume2 size={20} color="#A8E6CF" />
+                <Volume2 size={20} color={theme.colors.primary} />
               )}
               <Text style={[
                 styles.noiseCancelText,
+                { color: theme.colors.primary },
                 noiseCancellation && styles.noiseCancelTextActive
               ]}>
                 Noise Cancellation
@@ -137,35 +141,35 @@ export default function SoundScreen() {
         </View>
 
         <View style={styles.currentMix}>
-          <Text style={styles.sectionTitle}>Current Mix</Text>
+          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Current Mix</Text>
           {activeSounds.length > 0 ? (
-            <View style={styles.activeSounds}>
+            <View style={[styles.activeSounds, { backgroundColor: theme.colors.card, shadowColor: theme.colors.shadow }]}>
               {activeSounds.map((sound) => (
                 <View key={sound.id} style={styles.activeSoundCard}>
                   <View style={styles.activeSoundInfo}>
                     <View style={[styles.activeSoundIcon, { backgroundColor: sound.color }]}>
                       {sound.icon}
                     </View>
-                    <Text style={styles.activeSoundName}>{sound.name}</Text>
+                    <Text style={[styles.activeSoundName, { color: theme.colors.text }]}>{sound.name}</Text>
                   </View>
-                  <Text style={styles.activeSoundVolume}>{sound.volume}%</Text>
+                  <Text style={[styles.activeSoundVolume, { color: theme.colors.primary }]}>{sound.volume}%</Text>
                 </View>
               ))}
             </View>
           ) : (
-            <View style={styles.emptyMix}>
-              <Headphones size={32} color="#DDD" />
-              <Text style={styles.emptyMixText}>No sounds playing</Text>
-              <Text style={styles.emptyMixSubtext}>Tap a sound below to start</Text>
+            <View style={[styles.emptyMix, { backgroundColor: theme.colors.card, shadowColor: theme.colors.shadow }]}>
+              <Headphones size={32} color={theme.colors.textTertiary} />
+              <Text style={[styles.emptyMixText, { color: theme.colors.textSecondary }]}>No sounds playing</Text>
+              <Text style={[styles.emptyMixSubtext, { color: theme.colors.textTertiary }]}>Tap a sound below to start</Text>
             </View>
           )}
         </View>
 
         <View style={styles.soundsSection}>
-          <Text style={styles.sectionTitle}>Available Sounds</Text>
+          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Available Sounds</Text>
           <View style={styles.soundsGrid}>
             {sounds.map((sound) => (
-              <View key={sound.id} style={styles.soundCard}>
+              <View key={sound.id} style={[styles.soundCard, { backgroundColor: theme.colors.card, shadowColor: theme.colors.shadow }]}>
                 <TouchableOpacity
                   style={styles.soundButton}
                   onPress={() => toggleSound(sound.id)}
@@ -184,13 +188,13 @@ export default function SoundScreen() {
                 </TouchableOpacity>
                 
                 <View style={styles.soundInfo}>
-                  <Text style={styles.soundName}>{sound.name}</Text>
-                  <Text style={styles.soundDescription}>{sound.description}</Text>
+                  <Text style={[styles.soundName, { color: theme.colors.text }]}>{sound.name}</Text>
+                  <Text style={[styles.soundDescription, { color: theme.colors.textSecondary }]}>{sound.description}</Text>
                 </View>
 
                 {sound.isPlaying && (
                   <View style={styles.soundVolumeControl}>
-                    <Text style={styles.volumeLabel}>Volume</Text>
+                    <Text style={[styles.volumeLabel, { color: theme.colors.textSecondary }]}>Volume</Text>
                     <Slider
                       style={styles.soundSlider}
                       value={sound.volume}
@@ -200,9 +204,9 @@ export default function SoundScreen() {
                       thumbStyle={styles.soundSliderThumb}
                       trackStyle={styles.soundSliderTrack}
                       minimumTrackTintColor={sound.color}
-                      maximumTrackTintColor="#E0E0E0"
+                      maximumTrackTintColor={theme.colors.border}
                     />
-                    <Text style={styles.soundVolumeValue}>{Math.round(sound.volume)}%</Text>
+                    <Text style={[styles.soundVolumeValue, { color: theme.colors.primary }]}>{Math.round(sound.volume)}%</Text>
                   </View>
                 )}
               </View>
@@ -211,16 +215,16 @@ export default function SoundScreen() {
         </View>
 
         <View style={styles.presetsSection}>
-          <Text style={styles.sectionTitle}>Presets</Text>
+          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Presets</Text>
           <View style={styles.presetButtons}>
-            <TouchableOpacity style={styles.presetButton}>
-              <Text style={styles.presetButtonText}>Focus</Text>
+            <TouchableOpacity style={[styles.presetButton, { backgroundColor: theme.colors.card, borderColor: theme.colors.border, shadowColor: theme.colors.shadow }]}>
+              <Text style={[styles.presetButtonText, { color: theme.colors.textSecondary }]}>Focus</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.presetButton}>
-              <Text style={styles.presetButtonText}>Relax</Text>
+            <TouchableOpacity style={[styles.presetButton, { backgroundColor: theme.colors.card, borderColor: theme.colors.border, shadowColor: theme.colors.shadow }]}>
+              <Text style={[styles.presetButtonText, { color: theme.colors.textSecondary }]}>Relax</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.presetButton}>
-              <Text style={styles.presetButtonText}>Sleep</Text>
+            <TouchableOpacity style={[styles.presetButton, { backgroundColor: theme.colors.card, borderColor: theme.colors.border, shadowColor: theme.colors.shadow }]}>
+              <Text style={[styles.presetButtonText, { color: theme.colors.textSecondary }]}>Sleep</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -232,7 +236,6 @@ export default function SoundScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8FBFF',
   },
   scrollView: {
     flex: 1,
@@ -257,11 +260,9 @@ const styles = StyleSheet.create({
     marginBottom: 32,
   },
   masterControls: {
-    backgroundColor: '#FFFFFF',
     borderRadius: 20,
     padding: 20,
     marginBottom: 16,
-    shadowColor: '#87CEEB',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -276,20 +277,17 @@ const styles = StyleSheet.create({
   controlLabel: {
     fontFamily: 'Quicksand-SemiBold',
     fontSize: 16,
-    color: '#333',
     flex: 1,
     marginLeft: 8,
   },
   volumeValue: {
     fontFamily: 'Nunito-SemiBold',
     fontSize: 16,
-    color: '#B6D0E2',
   },
   slider: {
     height: 40,
   },
   sliderThumb: {
-    backgroundColor: '#B6D0E2',
     width: 20,
     height: 20,
   },
@@ -298,12 +296,9 @@ const styles = StyleSheet.create({
     borderRadius: 2,
   },
   noiseCancelButton: {
-    backgroundColor: '#FFFFFF',
     borderRadius: 20,
     padding: 16,
     borderWidth: 2,
-    borderColor: '#E8E8E8',
-    shadowColor: '#87CEEB',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
     shadowRadius: 4,
@@ -321,11 +316,10 @@ const styles = StyleSheet.create({
   noiseCancelText: {
     fontFamily: 'Quicksand-SemiBold',
     fontSize: 16,
-    color: '#B6D0E2',
     marginLeft: 8,
   },
   noiseCancelTextActive: {
-    color: '#FFFFFF',
+    color: '#FFFFFF', // Keep white for active state
   },
   currentMix: {
     marginBottom: 32,
@@ -337,10 +331,8 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   activeSounds: {
-    backgroundColor: '#FFFFFF',
     borderRadius: 20,
     padding: 16,
-    shadowColor: '#87CEEB',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -369,19 +361,15 @@ const styles = StyleSheet.create({
   activeSoundName: {
     fontFamily: 'Quicksand-SemiBold',
     fontSize: 16,
-    color: '#333',
   },
   activeSoundVolume: {
     fontFamily: 'Nunito-SemiBold',
     fontSize: 14,
-    color: '#B6D0E2',
   },
   emptyMix: {
-    backgroundColor: '#FFFFFF',
     borderRadius: 20,
     padding: 40,
     alignItems: 'center',
-    shadowColor: '#87CEEB',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -390,13 +378,11 @@ const styles = StyleSheet.create({
   emptyMixText: {
     fontFamily: 'Nunito-SemiBold',
     fontSize: 16,
-    color: '#999',
     marginTop: 8,
   },
   emptyMixSubtext: {
     fontFamily: 'Quicksand-Medium',
     fontSize: 14,
-    color: '#CCC',
     marginTop: 4,
   },
   soundsSection: {
@@ -406,10 +392,8 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   soundCard: {
-    backgroundColor: '#FFFFFF',
     borderRadius: 20,
     padding: 20,
-    shadowColor: '#87CEEB',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -432,13 +416,11 @@ const styles = StyleSheet.create({
   soundName: {
     fontFamily: 'Nunito-SemiBold',
     fontSize: 18,
-    color: '#333',
     marginBottom: 4,
   },
   soundDescription: {
     fontFamily: 'Quicksand-Regular',
     fontSize: 14,
-    color: '#666',
     lineHeight: 20,
   },
   soundVolumeControl: {
@@ -447,7 +429,6 @@ const styles = StyleSheet.create({
   volumeLabel: {
     fontFamily: 'Quicksand-Medium',
     fontSize: 14,
-    color: '#666',
     marginBottom: 8,
   },
   soundSlider: {
@@ -465,7 +446,6 @@ const styles = StyleSheet.create({
   soundVolumeValue: {
     fontFamily: 'Nunito-SemiBold',
     fontSize: 12,
-    color: '#B6D0E2',
     textAlign: 'right',
   },
   presetsSection: {
@@ -477,14 +457,11 @@ const styles = StyleSheet.create({
   },
   presetButton: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
     borderRadius: 16,
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderWidth: 2,
-    borderColor: '#E8E8E8',
     alignItems: 'center',
-    shadowColor: '#87CEEB',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
     shadowRadius: 4,
@@ -493,6 +470,5 @@ const styles = StyleSheet.create({
   presetButtonText: {
     fontFamily: 'Quicksand-SemiBold',
     fontSize: 14,
-    color: '#666',
   },
 });
