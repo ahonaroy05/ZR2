@@ -43,9 +43,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signIn = async (email: string, password: string) => {
     // Check if this is demo login
     const isDemo = email === 'demo@example.com' && password === 'demo123';
-    setIsDemoMode(isDemo);
     
     if (isDemo) {
+      setIsDemoMode(true);
       // Create a mock user for demo mode
       const mockUser = {
         id: 'demo-user-id',
@@ -61,6 +61,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return { error: null };
     }
     
+    setIsDemoMode(false);
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
