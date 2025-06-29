@@ -65,7 +65,7 @@ export default function SplashScreen() {
   return (
     <View style={styles.container}>
       <LinearGradient
-        colors={['#F8FBFF', '#E6F3FF', '#B6D0E2']}
+        colors={['#FDF7FF', '#F5E1F3', '#E8B4E3']}
         style={styles.gradient}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
@@ -75,7 +75,7 @@ export default function SplashScreen() {
             <Animated.View style={[styles.ripple, rippleStyle]} />
             <Animated.View style={[styles.logoWrapper, logoStyle]}>
               <LinearGradient
-                colors={['#B6D0E2', '#87CEEB']}
+                colors={['#E8B4E3', '#C8A8E9']}
                 style={styles.logo}
               >
                 <Heart size={48} color="#FFFFFF" />

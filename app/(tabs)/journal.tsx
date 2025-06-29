@@ -28,26 +28,26 @@ export default function JournalScreen() {
   const [saving, setSaving] = useState(false);
 
   const moodOptions = [
-    { type: 'happy' as const, icon: <Smile size={24} color="#A8E6CF" />, label: 'Happy' },
-    { type: 'neutral' as const, icon: <Meh size={24} color="#DDA0DD" />, label: 'Neutral' },
-    { type: 'sad' as const, icon: <Frown size={24} color="#FFB6C1" />, label: 'Stressed' },
+    { type: 'happy' as const, icon: <Smile size={24} color={theme.colors.success} />, label: 'Happy' },
+    { type: 'neutral' as const, icon: <Meh size={24} color={theme.colors.primary} />, label: 'Neutral' },
+    { type: 'sad' as const, icon: <Frown size={24} color={theme.colors.accent} />, label: 'Stressed' },
   ];
 
   const getMoodIcon = (mood: string) => {
     switch (mood) {
-      case 'happy': return <Smile size={16} color="#A8E6CF" />;
-      case 'neutral': return <Meh size={16} color="#DDA0DD" />;
-      case 'sad': return <Frown size={16} color="#FFB6C1" />;
-      default: return <Meh size={16} color="#DDA0DD" />;
+      case 'happy': return <Smile size={16} color={theme.colors.success} />;
+      case 'neutral': return <Meh size={16} color={theme.colors.primary} />;
+      case 'sad': return <Frown size={16} color={theme.colors.accent} />;
+      default: return <Meh size={16} color={theme.colors.primary} />;
     }
   };
 
   const getMoodColor = (mood: string) => {
     switch (mood) {
-      case 'happy': return '#A8E6CF';
-      case 'neutral': return '#DDA0DD';
-      case 'sad': return '#FFB6C1';
-      default: return '#DDA0DD';
+      case 'happy': return theme.colors.success;
+      case 'neutral': return theme.colors.primary;
+      case 'sad': return theme.colors.accent;
+      default: return theme.colors.primary;
     }
   };
 
@@ -62,8 +62,8 @@ export default function JournalScreen() {
         >
           <Heart
             size={20}
-            color={i <= stressRating ? '#FFB6C1' : '#E0E0E0'}
-            fill={i <= stressRating ? '#FFB6C1' : 'transparent'}
+            color={i <= stressRating ? theme.colors.accent : theme.colors.border}
+            fill={i <= stressRating ? theme.colors.accent : 'transparent'}
           />
         </TouchableOpacity>
       );

@@ -47,7 +47,7 @@ export default function HomeScreen() {
         <View style={styles.header}>
           <View style={styles.headerContent}>
             <View>
-              <Text style={styles.greeting}>
+              <Text style={[styles.greeting, { color: theme.colors.text }]}>
                 Good morning, {user?.user_metadata?.username || 'Friend'}
               </Text>
               <Text style={[styles.subtitle, { color: theme.colors.textSecondary }]}>How are you feeling today?</Text>

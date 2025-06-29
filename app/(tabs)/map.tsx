@@ -26,7 +26,7 @@ export default function MapScreen() {
       stressLevel: 'low',
       traffic: 'Light',
       therapyType: 'Nature Sounds',
-      color: '#A8E6CF',
+      color: theme.colors.success,
     },
     {
       id: 'route2',
@@ -35,7 +35,7 @@ export default function MapScreen() {
       stressLevel: 'high',
       traffic: 'Heavy',
       therapyType: 'Guided Meditation',
-      color: '#FFB6C1',
+      color: theme.colors.accent,
     },
     {
       id: 'route3',
@@ -44,22 +44,22 @@ export default function MapScreen() {
       stressLevel: 'medium',
       traffic: 'Moderate',
       therapyType: 'Breathing Exercise',
-      color: '#DDA0DD',
+      color: theme.colors.primary,
     },
   ];
 
   const stressZones = [
-    { name: 'Downtown Construction', level: 'High', color: '#FFB6C1' },
-    { name: 'Highway Junction', level: 'Medium', color: '#DDA0DD' },
-    { name: 'Park Avenue', level: 'Low', color: '#A8E6CF' },
+    { name: 'Downtown Construction', level: 'High', color: theme.colors.accent },
+    { name: 'Highway Junction', level: 'Medium', color: theme.colors.primary },
+    { name: 'Park Avenue', level: 'Low', color: theme.colors.success },
   ];
 
   const getStressIcon = (level: string) => {
     switch (level) {
-      case 'low': return <TrendingDown size={16} color="#A8E6CF" />;
-      case 'medium': return <AlertTriangle size={16} color="#DDA0DD" />;
-      case 'high': return <AlertTriangle size={16} color="#FFB6C1" />;
-      default: return <TrendingDown size={16} color="#A8E6CF" />;
+      case 'low': return <TrendingDown size={16} color={theme.colors.success} />;
+      case 'medium': return <AlertTriangle size={16} color={theme.colors.primary} />;
+      case 'high': return <AlertTriangle size={16} color={theme.colors.accent} />;
+      default: return <TrendingDown size={16} color={theme.colors.success} />;
     }
   };
 

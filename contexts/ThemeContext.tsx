@@ -44,59 +44,59 @@ export interface Theme {
 const lightTheme: Theme = {
   isDark: false,
   colors: {
-    background: '#F8FBFF',
+    background: '#FDF7FF',
     surface: '#FFFFFF',
     card: '#FFFFFF',
     
-    text: '#1A1A1A',
-    textSecondary: '#4A4A4A',
-    textTertiary: '#6A6A6A',
+    text: '#2D1B3D',
+    textSecondary: '#6B4C7A',
+    textTertiary: '#9B7BA8',
     
-    primary: '#B6D0E2',
-    primaryLight: '#E6F3FF',
-    primaryDark: '#87CEEB',
+    primary: '#E8B4E3',
+    primaryLight: '#F5E1F3',
+    primaryDark: '#D896D1',
     
-    accent: '#87CEEB',
-    accentLight: '#B6D0E2',
+    accent: '#C8A8E9',
+    accentLight: '#E5D4F1',
     
-    success: '#4CAF50',
-    warning: '#FF9800',
-    error: '#F44336',
+    success: '#A8E6CF',
+    warning: '#FFD3A5',
+    error: '#FFB3BA',
     
-    border: '#E8E8E8',
-    shadow: '#87CEEB',
+    border: '#F0E6F7',
+    shadow: '#E8B4E3',
     
-    ripple: 'rgba(182, 208, 226, 0.2)',
-    overlay: 'rgba(0, 0, 0, 0.5)',
+    ripple: 'rgba(232, 180, 227, 0.3)',
+    overlay: 'rgba(45, 27, 61, 0.5)',
   },
 };
 
 const darkTheme: Theme = {
   isDark: true,
   colors: {
-    background: '#0F1419',
-    surface: '#1A1F2E',
-    card: '#252B3A',
+    background: '#1A0F1F',
+    surface: '#2D1B3D',
+    card: '#3D2A4A',
     
-    text: '#FFFFFF',
-    textSecondary: '#B8C5D1',
-    textTertiary: '#8A9BA8',
+    text: '#F5E1F3',
+    textSecondary: '#D4B8E0',
+    textTertiary: '#B39BC7',
     
-    primary: '#4A90E2',
-    primaryLight: '#6BB6FF',
-    primaryDark: '#2171B5',
+    primary: '#D896D1',
+    primaryLight: '#E8B4E3',
+    primaryDark: '#C67BB8',
     
-    accent: '#5DADE2',
-    accentLight: '#85C1E9',
+    accent: '#B084CC',
+    accentLight: '#C8A8E9',
     
-    success: '#66BB6A',
-    warning: '#FFA726',
-    error: '#EF5350',
+    success: '#7DDBB0',
+    warning: '#FFB366',
+    error: '#FF8A95',
     
-    border: '#3A4553',
+    border: '#4A3757',
     shadow: '#000000',
     
-    ripple: 'rgba(74, 144, 226, 0.2)',
+    ripple: 'rgba(216, 150, 209, 0.3)',
     overlay: 'rgba(0, 0, 0, 0.7)',
   },
 };
