@@ -3,6 +3,7 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { ThemeProvider, useTheme } from '@/contexts/ThemeContext';
+import { ThemeProvider, useTheme } from '@/contexts/ThemeContext';
 import { useFrameworkReady } from '@/hooks/useFrameworkReady';
 import { useFonts } from 'expo-font';
 import {
@@ -21,25 +22,39 @@ import * as SplashScreen from 'expo-splash-screen';
 SplashScreen.preventAutoHideAsync();
 
 function RootLayoutContent() {
-  const { theme } = useTheme();
+  const { isDarkMode } = useTheme();
 
   return (
-    <AuthProvider>
+    <>
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="onboarding" options={{ headerShown: false }} />
         <Stack.Screen name="auth" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="+not-found" />
       </Stack>
-      <StatusBar 
-        style={theme.isDark ? "light" : "dark"} 
-        backgroundColor={theme.colors.background} 
-      />
-    </AuthProvider>
+      <StatusBar style={isDarkMode ? "light" : "dark"} backgroundColor={isDarkMode ? "#0F1419" : "#F8FBFF"} />
+    </>
+  );
+}
+
+function RootLayoutContent() {
+  const { theme } = useTheme();
+
+  return (
+    <AuthProvider>
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="onboarding" options={{ headerShown: false }} />
+    <ThemeProvider>
+      <AuthProvider>
+        <RootLayoutContent />
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
 
 export default function RootLayout() {
+    }
+  )
   useFrameworkReady();
 
   const [fontsLoaded, fontError] = useFonts({

@@ -8,7 +8,6 @@ import Animated, {
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '@/contexts/ThemeContext';
-import { useTheme } from '@/contexts/ThemeContext';
 
 interface StressMeterProps {
   stressLevel: number; // 0-100
@@ -16,9 +15,8 @@ interface StressMeterProps {
 }
 
 export function StressMeter({ stressLevel, size = 120 }: StressMeterProps) {
-  const { theme } = useTheme();
-  const progress = useSharedValue(0);
   const { colors } = useTheme();
+  const progress = useSharedValue(0);
 
   useEffect(() => {
     progress.value = withTiming(stressLevel / 100, { duration: 1000 });
@@ -31,8 +29,8 @@ export function StressMeter({ stressLevel, size = 120 }: StressMeterProps) {
       strokeDashoffset,
       stroke: interpolateColor(
         progress.value,
-        [0, 0.5, 1],
-        [theme.colors.success, theme.colors.warning, theme.colors.error]
+        [0, 0.4, 0.7, 1],
+        [colors.success, colors.primary, colors.warning, colors.error]
       ),
     };
   });
@@ -89,6 +87,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   levelText: {
+    fontFamily: 'Nunito-Bold',
     fontSize: 24,
   },
   labelText: {

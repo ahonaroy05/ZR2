@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
+import { useTheme } from '@/contexts/ThemeContext';
 import Animated, {
   useSharedValue,
   withRepeat,
@@ -13,6 +14,7 @@ import { Heart } from 'lucide-react-native';
 
 export default function SplashScreen() {
   const rippleScale = useSharedValue(1);
+  const { colors } = useTheme();
   const logoScale = useSharedValue(0.8);
   const textOpacity = useSharedValue(0);
 
@@ -65,7 +67,7 @@ export default function SplashScreen() {
   return (
     <View style={styles.container}>
       <LinearGradient
-        colors={['#FDF7FF', '#F5E1F3', '#E8B4E3']}
+        colors={colors.gradient.background}
         style={styles.gradient}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
@@ -75,17 +77,17 @@ export default function SplashScreen() {
             <Animated.View style={[styles.ripple, rippleStyle]} />
             <Animated.View style={[styles.logoWrapper, logoStyle]}>
               <LinearGradient
-                colors={['#E8B4E3', '#C8A8E9']}
+                colors={colors.gradient.primary}
                 style={styles.logo}
               >
-                <Heart size={48} color="#FFFFFF" />
+                <Heart size={48} color={colors.textInverse} />
               </LinearGradient>
             </Animated.View>
           </View>
           
           <Animated.View style={[styles.textContainer, textStyle]}>
-            <Text style={styles.title}>ZenRoute</Text>
-            <Text style={styles.tagline}>Transform your commute into calm</Text>
+            <Text style={[styles.title, { color: colors.text }]}>ZenRoute</Text>
+            <Text style={[styles.tagline, { color: colors.textSecondary }]}>Transform your commute into calm</Text>
           </Animated.View>
         </View>
       </LinearGradient>
@@ -116,10 +118,8 @@ const styles = StyleSheet.create({
     width: 200,
     height: 200,
     borderRadius: 100,
-    backgroundColor: 'rgba(182, 208, 226, 0.3)',
   },
   logoWrapper: {
-    shadowColor: '#B6D0E2',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.4,
     shadowRadius: 16,
@@ -138,7 +138,6 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: 'Nunito-Bold',
     fontSize: 42,
-    color: '#333',
     marginBottom: 12,
     textShadowColor: 'rgba(255, 255, 255, 0.6)',
     textShadowOffset: { width: 0, height: 2 },
@@ -147,7 +146,6 @@ const styles = StyleSheet.create({
   tagline: {
     fontFamily: 'Quicksand-Medium',
     fontSize: 18,
-    color: '#555',
     textAlign: 'center',
     lineHeight: 24,
     textShadowColor: 'rgba(255, 255, 255, 0.4)',

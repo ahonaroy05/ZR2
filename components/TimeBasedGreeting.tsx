@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Text, StyleSheet } from 'react-native';
+import { useTheme } from '@/contexts/ThemeContext';
 import { getTimeBasedGreeting } from '@/utils/timeGreeting';
 
 interface TimeBasedGreetingProps {
@@ -10,6 +11,7 @@ interface TimeBasedGreetingProps {
 
 export function TimeBasedGreeting({ 
   username = 'Friend', 
+  const { colors } = useTheme();
   style, 
   updateInterval = 60000 
 }: TimeBasedGreetingProps) {
@@ -39,6 +41,5 @@ const styles = StyleSheet.create({
   greeting: {
     fontFamily: 'Nunito-Bold',
     fontSize: 28,
-    color: '#333',
   },
 });

@@ -2,13 +2,16 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
+import { useTheme } from '@/contexts/ThemeContext';
 import { Check } from 'lucide-react-native';
 
 export default function OnboardingStep3() {
+  const { colors } = useTheme();
+
   return (
     <View style={styles.container}>
       <LinearGradient
-        colors={['#FDF7FF', '#F5E1F3', '#E8B4E3']}
+        colors={colors.gradient.background}
         style={styles.gradient}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
@@ -23,26 +26,26 @@ export default function OnboardingStep3() {
           </View>
           
           <View style={styles.textContainer}>
-            <Text style={styles.title}>Begin your journey to mindful commuting</Text>
+            <Text style={[styles.title, { color: colors.text }]}>Begin your journey to mindful commuting</Text>
           </View>
           
           <View style={styles.footer}>
             <View style={styles.progressIndicator}>
               <View style={styles.dot} />
               <View style={styles.dot} />
-              <View style={[styles.dot, styles.activeDot]} />
+              <View style={[styles.dot, styles.activeDot, { backgroundColor: colors.primary }]} />
             </View>
             
             <TouchableOpacity
-              style={styles.getStartedButton}
+              style={[styles.getStartedButton, { shadowColor: colors.shadow }]}
               onPress={() => router.replace('/auth')}
             >
               <LinearGradient
-                colors={['#E8B4E3', '#C8A8E9']}
+                colors={colors.gradient.primary}
                 style={styles.getStartedGradient}
               >
-                <Text style={styles.getStartedText}>Get Started</Text>
-                <Check size={20} color="#FFFFFF" />
+                <Text style={[styles.getStartedText, { color: colors.textInverse }]}>Get Started</Text>
+                <Check size={20} color={colors.textInverse} />
               </LinearGradient>
             </TouchableOpacity>
           </View>
@@ -87,7 +90,6 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: 'Nunito-Bold',
     fontSize: 28,
-    color: '#333',
     textAlign: 'center',
     lineHeight: 36,
     textShadowColor: 'rgba(255, 255, 255, 0.6)',
@@ -106,16 +108,14 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: 'rgba(255, 255, 255, 0.4)',
+    backgroundColor: 'rgba(255, 255, 255, 0.4)', // Keep this as is for inactive dots
   },
   activeDot: {
-    backgroundColor: '#B6D0E2',
     width: 24,
   },
   getStartedButton: {
     borderRadius: 24,
     overflow: 'hidden',
-    shadowColor: '#B6D0E2',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -131,6 +131,5 @@ const styles = StyleSheet.create({
   getStartedText: {
     fontFamily: 'Quicksand-SemiBold',
     fontSize: 16,
-    color: '#FFFFFF',
   },
 });

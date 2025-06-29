@@ -9,7 +9,6 @@ import Animated, {
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '@/contexts/ThemeContext';
-import { useTheme } from '@/contexts/ThemeContext';
 
 interface BreathingBubbleProps {
   isActive?: boolean;
@@ -17,9 +16,8 @@ interface BreathingBubbleProps {
 }
 
 export function BreathingBubble({ isActive = false, size = 150 }: BreathingBubbleProps) {
-  const { theme } = useTheme();
-  const scale = useSharedValue(0.8);
   const { colors } = useTheme();
+  const scale = useSharedValue(0.8);
   const opacity = useSharedValue(0.7);
 
   useEffect(() => {
@@ -82,7 +80,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   bubble: {
-    alignItems: 'center',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -99,12 +96,10 @@ const styles = StyleSheet.create({
   },
   breathText: {
     fontFamily: 'Nunito-Bold',
-    fontSize: 18,
     textAlign: 'center',
   },
   instructionText: {
     fontFamily: 'Quicksand-Medium',
-    fontSize: 12,
     marginTop: 4,
     opacity: 0.9,
   },

@@ -64,7 +64,7 @@ export function EmergencyCalm({ visible, onClose }: EmergencyCalmProps) {
                   style={[
                     styles.progressDot,
                     { backgroundColor: colors.border },
-                    index <= currentStep && styles.progressDotActive
+                    index <= currentStep && { backgroundColor: colors.primary }
                   ]}
                 />
               ))}
@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 4,
   },
   progressDotActive: {
-    backgroundColor: 'transparent',
+    backgroundColor: 'transparent', // This style is now handled inline
   },
   nextButton: {
     paddingHorizontal: 32,

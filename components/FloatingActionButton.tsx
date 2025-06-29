@@ -8,7 +8,6 @@ import Animated, {
   Easing,
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useTheme } from '@/contexts/ThemeContext';
 import { Heart } from 'lucide-react-native';
 import { useTheme } from '@/contexts/ThemeContext';
 
@@ -18,9 +17,8 @@ interface FloatingActionButtonProps {
 }
 
 export function FloatingActionButton({ onPress, isActive = false }: FloatingActionButtonProps) {
-  const { theme } = useTheme();
-  const scale = useSharedValue(1);
   const { colors } = useTheme();
+  const scale = useSharedValue(1);
   const pulseOpacity = useSharedValue(0.7);
 
   useEffect(() => {
@@ -61,7 +59,7 @@ export function FloatingActionButton({ onPress, isActive = false }: FloatingActi
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
         >
-          <Heart size={24} color={theme.colors.surface} strokeWidth={2} />
+          <Heart size={24} color={colors.textInverse} strokeWidth={2} />
         </LinearGradient>
       </TouchableOpacity>
     </Animated.View>
@@ -84,7 +82,6 @@ const styles = StyleSheet.create({
   },
   button: {
     width: 56,
-    height: 56,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
