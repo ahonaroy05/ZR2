@@ -1,5 +1,3 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -31,7 +29,7 @@ interface RouteRequest {
   };
 }
 
-serve(async (req) => {
+Deno.serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
@@ -45,7 +43,7 @@ serve(async (req) => {
       return new Response(
         JSON.stringify({ 
           success: false, 
-          error: 'Google Maps API key not configured' 
+          error: 'Google Maps API key not configured. Please set up your Google Maps API key in the Supabase dashboard.' 
         }),
         { 
           status: 500, 
@@ -55,7 +53,22 @@ serve(async (req) => {
     }
 
     // Parse request body
-    const body: RouteRequest = await req.json()
+    let body: RouteRequest
+    try {
+      body = await req.json()
+    } catch (parseError) {
+      console.error('Failed to parse request body:', parseError)
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: 'Invalid request body format' 
+        }),
+        { 
+          status: 400, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      )
+    }
     
     // Validate required fields
     if (!body.origin || !body.destination) {
@@ -63,6 +76,21 @@ serve(async (req) => {
         JSON.stringify({ 
           success: false, 
           error: 'Origin and destination are required' 
+        }),
+        { 
+          status: 400, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      )
+    }
+
+    // Validate coordinates
+    if (typeof body.origin.lat !== 'number' || typeof body.origin.lng !== 'number' ||
+        typeof body.destination.lat !== 'number' || typeof body.destination.lng !== 'number') {
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: 'Invalid coordinates format' 
         }),
         { 
           status: 400, 
@@ -88,7 +116,12 @@ serve(async (req) => {
       if (body.options.avoidHighways) params.append('avoid', 'highways')
       if (body.options.avoidFerries) params.append('avoid', 'ferries')
       if (body.options.departureTime) {
-        params.append('departure_time', Math.floor(new Date(body.options.departureTime).getTime() / 1000).toString())
+        try {
+          const timestamp = Math.floor(new Date(body.options.departureTime).getTime() / 1000)
+          params.append('departure_time', timestamp.toString())
+        } catch (dateError) {
+          console.warn('Invalid departure time format:', body.options.departureTime)
+        }
       }
     }
 
@@ -100,16 +133,54 @@ serve(async (req) => {
       params.append('waypoints', waypointsStr)
     }
 
-    // Make request to Google Maps API
-    const response = await fetch(`${baseUrl}?${params.toString()}`)
-    const data = await response.json()
+    const apiUrl = `${baseUrl}?${params.toString()}`
+    console.log('Making request to Google Maps API...')
 
-    if (!response.ok) {
-      console.error('Google Maps API error:', data)
+    // Make request to Google Maps API with timeout and error handling
+    let response: Response
+    try {
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 10000) // 10 second timeout
+
+      response = await fetch(apiUrl, {
+        signal: controller.signal,
+        headers: {
+          'User-Agent': 'Supabase-Edge-Function/1.0',
+        }
+      })
+
+      clearTimeout(timeoutId)
+    } catch (fetchError) {
+      console.error('Network error when calling Google Maps API:', fetchError)
+      
+      let errorMessage = 'Failed to connect to Google Maps API'
+      if (fetchError instanceof Error) {
+        if (fetchError.name === 'AbortError') {
+          errorMessage = 'Request to Google Maps API timed out'
+        } else if (fetchError.message.includes('fetch')) {
+          errorMessage = 'Network error: Unable to reach Google Maps API. This may be due to network restrictions or API configuration issues.'
+        }
+      }
+
       return new Response(
         JSON.stringify({ 
           success: false, 
-          error: 'Failed to fetch routes from Google Maps API' 
+          error: errorMessage,
+          details: 'Please check your Google Maps API key configuration and ensure the Directions API is enabled.'
+        }),
+        { 
+          status: 503, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      )
+    }
+
+    if (!response.ok) {
+      console.error('Google Maps API HTTP error:', response.status, response.statusText)
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: `Google Maps API returned HTTP ${response.status}: ${response.statusText}` 
         }),
         { 
           status: response.status, 
@@ -118,13 +189,54 @@ serve(async (req) => {
       )
     }
 
-    // Check if Google Maps returned an error
-    if (data.status !== 'OK') {
-      console.error('Google Maps API status error:', data.status, data.error_message)
+    // Parse Google Maps response
+    let data: any
+    try {
+      data = await response.json()
+    } catch (jsonError) {
+      console.error('Failed to parse Google Maps API response:', jsonError)
       return new Response(
         JSON.stringify({ 
           success: false, 
-          error: data.error_message || `Google Maps API error: ${data.status}` 
+          error: 'Invalid response from Google Maps API' 
+        }),
+        { 
+          status: 502, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      )
+    }
+
+    // Check if Google Maps returned an error
+    if (data.status !== 'OK') {
+      console.error('Google Maps API status error:', data.status, data.error_message)
+      
+      let userFriendlyError = 'Failed to get route information'
+      switch (data.status) {
+        case 'NOT_FOUND':
+          userFriendlyError = 'Could not find a route between the specified locations'
+          break
+        case 'ZERO_RESULTS':
+          userFriendlyError = 'No routes found between the specified locations'
+          break
+        case 'OVER_QUERY_LIMIT':
+          userFriendlyError = 'API quota exceeded. Please try again later.'
+          break
+        case 'REQUEST_DENIED':
+          userFriendlyError = 'API access denied. Please check your API key configuration.'
+          break
+        case 'INVALID_REQUEST':
+          userFriendlyError = 'Invalid route request parameters'
+          break
+        default:
+          userFriendlyError = data.error_message || `Google Maps API error: ${data.status}`
+      }
+
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: userFriendlyError,
+          status: data.status
         }),
         { 
           status: 400, 
@@ -133,30 +245,46 @@ serve(async (req) => {
       )
     }
 
+    // Validate that we have routes
+    if (!data.routes || data.routes.length === 0) {
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: 'No routes returned from Google Maps API' 
+        }),
+        { 
+          status: 404, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      )
+    }
+
     // Transform Google Maps response to our format
     const transformedRoutes = data.routes.map((route: any) => ({
-      summary: route.summary,
-      distance: route.legs[0].distance,
-      duration: route.legs[0].duration,
-      durationInTraffic: route.legs[0].duration_in_traffic,
-      legs: route.legs.map((leg: any) => ({
-        distance: leg.distance,
-        duration: leg.duration,
-        startAddress: leg.start_address,
-        endAddress: leg.end_address,
-        steps: leg.steps.map((step: any) => ({
-          distance: step.distance,
-          duration: step.duration,
-          htmlInstructions: step.html_instructions,
+      summary: route.summary || 'Route',
+      distance: route.legs[0]?.distance || { text: '0 km', value: 0 },
+      duration: route.legs[0]?.duration || { text: '0 mins', value: 0 },
+      durationInTraffic: route.legs[0]?.duration_in_traffic,
+      legs: route.legs?.map((leg: any) => ({
+        distance: leg.distance || { text: '0 km', value: 0 },
+        duration: leg.duration || { text: '0 mins', value: 0 },
+        startAddress: leg.start_address || '',
+        endAddress: leg.end_address || '',
+        steps: leg.steps?.map((step: any) => ({
+          distance: step.distance || { text: '0 m', value: 0 },
+          duration: step.duration || { text: '0 mins', value: 0 },
+          htmlInstructions: step.html_instructions || '',
           maneuver: step.maneuver,
-          startLocation: step.start_location,
-          endLocation: step.end_location,
-        })),
-      })),
-      overviewPolyline: route.overview_polyline,
+          startLocation: step.start_location || { lat: 0, lng: 0 },
+          endLocation: step.end_location || { lat: 0, lng: 0 },
+        })) || [],
+      })) || [],
+      overviewPolyline: route.overview_polyline || { points: '' },
       warnings: route.warnings || [],
-      copyrights: route.copyrights,
+      copyrights: route.copyrights || '',
     }))
+
+    console.log(`Successfully processed ${transformedRoutes.length} routes`)
 
     return new Response(
       JSON.stringify({
@@ -174,10 +302,17 @@ serve(async (req) => {
 
   } catch (error) {
     console.error('Edge function error:', error)
+    
+    let errorMessage = 'Internal server error'
+    if (error instanceof Error) {
+      errorMessage = error.message
+    }
+
     return new Response(
       JSON.stringify({ 
         success: false, 
-        error: 'Internal server error' 
+        error: errorMessage,
+        details: 'An unexpected error occurred while processing your request'
       }),
       { 
         status: 500, 

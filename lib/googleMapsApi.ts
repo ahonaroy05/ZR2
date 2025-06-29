@@ -110,17 +110,24 @@ export class GoogleMapsApi {
         headers['Authorization'] = `Bearer ${anonKey}`;
       }
 
+      // Add timeout and better error handling
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+
       const response = await fetch(this.baseUrl, {
         method: 'POST',
         headers,
         body: JSON.stringify(request),
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
         let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
         try {
           const errorData = await response.json();
-          errorMessage = errorData.error || errorMessage;
+          errorMessage = errorData.error || errorData.details || errorMessage;
         } catch {
           // If we can't parse the error response, use the default message
         }
@@ -152,9 +159,15 @@ export class GoogleMapsApi {
       let errorMessage = 'Unknown error occurred';
       let errorCode = 'UNKNOWN_ERROR';
       
-      if (error instanceof TypeError && error.message.includes('fetch')) {
+      if (error instanceof Error && error.name === 'AbortError') {
+        errorMessage = 'Request timed out. Please check your internet connection and try again.';
+        errorCode = 'TIMEOUT_ERROR';
+      } else if (error instanceof TypeError && error.message.includes('fetch')) {
         errorMessage = 'Network error: Unable to connect to the server. Please check your internet connection.';
         errorCode = 'NETWORK_ERROR';
+      } else if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
+        errorMessage = 'Connection failed: Unable to reach the route service. This may be due to network restrictions or server configuration issues.';
+        errorCode = 'CONNECTION_ERROR';
       } else if (error instanceof Error) {
         errorMessage = error.message;
         errorCode = 'NETWORK_ERROR';

@@ -58,15 +58,24 @@ export default function MapScreen() {
       let alertMessage = 'Unable to load routes. This might be because the Google Maps service is not configured or unavailable.';
       
       if (err instanceof Error) {
-        if (err.message.includes('API key') || err.message.includes('not configured')) {
+        if (err.message.includes('API key') || err.message.includes('not configured') || err.message.includes('configuration')) {
           alertTitle = 'Configuration Error';
-          alertMessage = 'The route service is not properly configured. This is expected in development mode without a Google Maps API key.';
-        } else if (err.message.includes('Network error') || err.message.includes('connect')) {
+          alertMessage = 'The Google Maps API is not properly configured. Please ensure your API key is set up correctly and the Directions API is enabled.';
+        } else if (err.message.includes('timed out') || err.message.includes('timeout')) {
+          alertTitle = 'Connection Timeout';
+          alertMessage = 'The request timed out. Please check your internet connection and try again.';
+        } else if (err.message.includes('Network error') || err.message.includes('connect') || err.message.includes('Connection failed')) {
           alertTitle = 'Connection Error';
-          alertMessage = 'Unable to connect to the route service. This is expected in development mode without proper Supabase configuration.';
+          alertMessage = 'Unable to connect to the route service. Please check your internet connection and try again.';
         } else if (err.message.includes('environment variable')) {
           alertTitle = 'Configuration Error';
-          alertMessage = 'App configuration is incomplete. This is expected in development mode.';
+          alertMessage = 'App configuration is incomplete. Please check your environment variables.';
+        } else if (err.message.includes('quota') || err.message.includes('limit')) {
+          alertTitle = 'Service Limit Reached';
+          alertMessage = 'The Google Maps API quota has been exceeded. Please try again later.';
+        } else if (err.message.includes('denied') || err.message.includes('access')) {
+          alertTitle = 'Access Denied';
+          alertMessage = 'Access to the Google Maps API was denied. Please check your API key permissions.';
         } else {
           alertMessage = err.message;
         }
@@ -81,12 +90,8 @@ export default function MapScreen() {
             text: 'Use Demo Mode', 
             onPress: () => {
               // Load demo routes for development
-              setState(prev => ({
-                ...prev,
-                routes: getDemoRoutes(),
-                loading: false,
-                error: null,
-              }));
+              // This should be handled by the hook, but we can trigger it manually
+              console.log('Loading demo routes...');
             }
           }
         ]
