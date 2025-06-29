@@ -162,7 +162,6 @@ export default function HomeScreen() {
           </View>
         </View>
       </ScrollView>
-
       <FloatingActionButton 
         onPress={() => setIsBreathing(!isBreathing)}
         isActive={isBreathing}
