@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { Platform } from 'react-native';
+import { Platform, View } from 'react-native';
 import { View, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
 import { useAuth } from '@/contexts/AuthContext';
 import { Redirect } from 'expo-router';
@@ -23,9 +23,9 @@ export default function TabLayout() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={{ flex: 1 }}>
       {isDemoMode && <DemoBanner />}
-      
+      <Tabs
       {/* Settings Button */}
       <TouchableOpacity
         style={[styles.settingsButton, { backgroundColor: '#F5F5F5' }]}
@@ -101,6 +101,6 @@ export default function TabLayout() {
         visible={showSettings}
         onClose={() => setShowSettings(false)}
       />
-    </SafeAreaView>
+    </View>
   );
 }
