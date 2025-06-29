@@ -59,11 +59,11 @@ export function BreathingBubble({ isActive = false, size = 150 }: BreathingBubbl
           end={{ x: 1, y: 1 }}
         >
           <View style={styles.textContainer}>
-            <Text style={[styles.breathText, { color: theme.colors.surface }]}>
+            <Text style={[styles.breathText, { color: colors.textInverse }]}>
               {isActive ? 'Breathe' : 'Tap to Start'}
             </Text>
             {isActive && (
-              <Text style={[styles.instructionText, { color: theme.colors.surface }]}>
+              <Text style={[styles.instructionText, { color: colors.textInverse }]}>
                 In • Hold • Out • Hold
               </Text>
             )}
