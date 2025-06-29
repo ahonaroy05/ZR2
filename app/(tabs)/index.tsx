@@ -67,9 +67,9 @@ export default function HomeScreen() {
               Good morning, {user?.user_metadata?.username || 'Friend'}
             </Text>
             <Text style={styles.subtitle}>How are you feeling today?</Text>
+            <TouchableOpacity>
                 <Text style={[styles.signOutText, { color: theme.colors.surface }]}>Sign Out</Text>
-              </TouchableOpacity>
-            </View>
+            </TouchableOpacity>
           </View>
         </View>
 
@@ -208,6 +208,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#666',
     marginTop: 8,
+  },
   settingsButton: {
     position: 'absolute',
     left: 24,
@@ -355,4 +356,10 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     borderRadius: 12,
   },
+  actionText: {
+    color: '#FFFFFF',
+    marginTop: 8,
+    fontFamily: 'Quicksand-SemiBold',
+    fontSize: 14,
+  }
 });
