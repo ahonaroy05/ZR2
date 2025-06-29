@@ -8,6 +8,7 @@ import Animated, {
   Easing,
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useTheme } from '@/contexts/ThemeContext';
 import { Heart } from 'lucide-react-native';
 import { useTheme } from '@/contexts/ThemeContext';
 
@@ -19,6 +20,7 @@ interface FloatingActionButtonProps {
 export function FloatingActionButton({ onPress, isActive = false }: FloatingActionButtonProps) {
   const { theme } = useTheme();
   const scale = useSharedValue(1);
+  const { colors } = useTheme();
   const pulseOpacity = useSharedValue(0.7);
 
   useEffect(() => {
@@ -51,10 +53,10 @@ export function FloatingActionButton({ onPress, isActive = false }: FloatingActi
 
   return (
     <Animated.View style={[styles.container, animatedButtonStyle]}>
-      <Animated.View style={[styles.pulseRing, { backgroundColor: theme.colors.primary }, animatedPulseStyle]} />
+      <Animated.View style={[styles.pulseRing, { backgroundColor: colors.primary }, animatedPulseStyle]} />
       <TouchableOpacity onPress={onPress} style={styles.button} activeOpacity={0.8}>
         <LinearGradient
-          colors={isActive ? [theme.colors.accent, theme.colors.primary] : [theme.colors.primary, theme.colors.accent]}
+          colors={isActive ? colors.gradient.accent : colors.gradient.primary}
           style={styles.gradient}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
@@ -78,13 +80,11 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: 80,
     height: 80,
-    borderRadius: 40,
     opacity: 0.3,
   },
   button: {
     width: 56,
     height: 56,
-    borderRadius: 28,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,

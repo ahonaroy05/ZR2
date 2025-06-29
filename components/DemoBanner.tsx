@@ -8,12 +8,14 @@ import Animated, {
   Easing,
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useTheme } from '@/contexts/ThemeContext';
 import { Shield } from 'lucide-react-native';
 import { useTheme } from '@/contexts/ThemeContext';
 
 export function DemoBanner() {
   const { theme } = useTheme();
   const shimmer = useSharedValue(0);
+  const { colors } = useTheme();
 
   useEffect(() => {
     shimmer.value = withRepeat(
@@ -33,7 +35,7 @@ export function DemoBanner() {
   return (
     <View style={styles.container}>
       <LinearGradient
-        colors={[theme.colors.primary, theme.colors.accent]}
+        colors={colors.gradient.primary}
         style={styles.gradient}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}

@@ -8,6 +8,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useTheme } from '@/contexts/ThemeContext';
 
 interface StressMeterProps {
   stressLevel: number; // 0-100
@@ -17,6 +18,7 @@ interface StressMeterProps {
 export function StressMeter({ stressLevel, size = 120 }: StressMeterProps) {
   const { theme } = useTheme();
   const progress = useSharedValue(0);
+  const { colors } = useTheme();
 
   useEffect(() => {
     progress.value = withTiming(stressLevel / 100, { duration: 1000 });
@@ -45,6 +47,7 @@ export function StressMeter({ stressLevel, size = 120 }: StressMeterProps) {
           <Animated.View
             style={[
               styles.progressRing,
+              { borderColor: colors.border },
               {
                 width: size,
                 height: size,
@@ -55,8 +58,8 @@ export function StressMeter({ stressLevel, size = 120 }: StressMeterProps) {
         </Animated.View>
         
         <View style={styles.textContainer}>
-          <Text style={[styles.levelText, { color: theme.colors.text }]}>{Math.round(stressLevel)}</Text>
-          <Text style={[styles.labelText, { color: theme.colors.textSecondary }]}>Stress Level</Text>
+          <Text style={[styles.levelText, { color: colors.text }]}>{Math.round(stressLevel)}</Text>
+          <Text style={[styles.labelText, { color: colors.textSecondary }]}>Stress Level</Text>
         </View>
       </View>
     </View>
@@ -79,7 +82,6 @@ const styles = StyleSheet.create({
   },
   progressRing: {
     borderWidth: 8,
-    borderColor: '#F0F0F0',
     position: 'absolute',
   },
   textContainer: {
@@ -87,12 +89,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   levelText: {
-    fontFamily: 'Nunito-Bold',
     fontSize: 24,
   },
   labelText: {
     fontFamily: 'Quicksand-Medium',
-    fontSize: 12,
     marginTop: 4,
   },
 });

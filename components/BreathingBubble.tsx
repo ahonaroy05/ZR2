@@ -9,6 +9,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useTheme } from '@/contexts/ThemeContext';
 
 interface BreathingBubbleProps {
   isActive?: boolean;
@@ -18,6 +19,7 @@ interface BreathingBubbleProps {
 export function BreathingBubble({ isActive = false, size = 150 }: BreathingBubbleProps) {
   const { theme } = useTheme();
   const scale = useSharedValue(0.8);
+  const { colors } = useTheme();
   const opacity = useSharedValue(0.7);
 
   useEffect(() => {
@@ -53,7 +55,7 @@ export function BreathingBubble({ isActive = false, size = 150 }: BreathingBubbl
     <View style={[styles.container, { width: size, height: size }]}>
       <Animated.View style={[styles.bubble, animatedStyle, { width: size, height: size }]}>
         <LinearGradient
-          colors={[theme.colors.primary, theme.colors.accent]}
+          colors={colors.gradient.primary}
           style={[styles.gradient, { borderRadius: size / 2 }]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
@@ -81,7 +83,6 @@ const styles = StyleSheet.create({
   },
   bubble: {
     alignItems: 'center',
-    justifyContent: 'center',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,

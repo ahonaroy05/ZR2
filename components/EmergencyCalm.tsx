@@ -18,8 +18,8 @@ const groundingSteps = [
 ];
 
 export function EmergencyCalm({ visible, onClose }: EmergencyCalmProps) {
-  const { theme } = useTheme();
   const [currentStep, setCurrentStep] = useState(0);
+  const { colors } = useTheme();
 
   const handleNext = () => {
     if (currentStep < groundingSteps.length - 1) {
@@ -37,24 +37,24 @@ export function EmergencyCalm({ visible, onClose }: EmergencyCalmProps) {
 
   return (
     <Modal visible={visible} transparent animationType="fade">
-      <BlurView intensity={20} style={[styles.overlay, { backgroundColor: theme.colors.overlay }]}>
-        <View style={[styles.container, { backgroundColor: theme.colors.surface }]}>
+      <BlurView intensity={20} style={styles.overlay}>
+        <View style={[styles.container, { backgroundColor: colors.background }]}>
           <TouchableOpacity style={styles.closeButton} onPress={handleReset}>
-            <X size={24} color={theme.colors.textSecondary} />
+            <X size={24} color={colors.textSecondary} />
           </TouchableOpacity>
           
           <View style={styles.content}>
             <View style={styles.header}>
-              <Shield size={32} color={theme.colors.primary} />
-              <Text style={[styles.title, { color: theme.colors.text }]}>5-4-3-2-1 Grounding</Text>
-              <Text style={[styles.subtitle, { color: theme.colors.textSecondary }]}>Take a deep breath and focus</Text>
+              <Shield size={32} color={colors.primary} />
+              <Text style={[styles.title, { color: colors.text }]}>5-4-3-2-1 Grounding</Text>
+              <Text style={[styles.subtitle, { color: colors.textSecondary }]}>Take a deep breath and focus</Text>
             </View>
             
             <View style={styles.stepContainer}>
-              <View style={[styles.stepNumber, { backgroundColor: theme.colors.primary }]}>
-                <Text style={[styles.stepNumberText, { color: theme.colors.surface }]}>{currentStep + 1}</Text>
+              <View style={[styles.stepNumber, { backgroundColor: colors.primary }]}>
+                <Text style={[styles.stepNumberText, { color: colors.surface }]}>{currentStep + 1}</Text>
               </View>
-              <Text style={[styles.stepText, { color: theme.colors.text }]}>{groundingSteps[currentStep]}</Text>
+              <Text style={[styles.stepText, { color: colors.text }]}>{groundingSteps[currentStep]}</Text>
             </View>
             
             <View style={styles.progressContainer}>
@@ -63,15 +63,15 @@ export function EmergencyCalm({ visible, onClose }: EmergencyCalmProps) {
                   key={index}
                   style={[
                     styles.progressDot,
-                    { backgroundColor: theme.colors.border },
+                    { backgroundColor: colors.border },
                     index <= currentStep && styles.progressDotActive
                   ]}
                 />
               ))}
             </View>
             
-            <TouchableOpacity style={[styles.nextButton, { backgroundColor: theme.colors.primary }]} onPress={handleNext}>
-              <Text style={[styles.nextButtonText, { color: theme.colors.surface }]}>
+            <TouchableOpacity style={[styles.nextButton, { backgroundColor: colors.primary }]} onPress={handleNext}>
+              <Text style={[styles.nextButtonText, { color: colors.surface }]}>
                 {currentStep < groundingSteps.length - 1 ? 'Next' : 'Complete'}
               </Text>
             </TouchableOpacity>
@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 4,
   },
   progressDotActive: {
-    backgroundColor: '#B6D0E2', // Keep original for visibility
+    backgroundColor: 'transparent',
   },
   nextButton: {
     paddingHorizontal: 32,
