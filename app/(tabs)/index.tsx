@@ -1,27 +1,25 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { router } from 'expo-router';
 import { useAuth } from '@/contexts/AuthContext';
 import { useStressTracking } from '@/hooks/useStressTracking';
 import { useMeditationTracking } from '@/hooks/useMeditationTracking';
-import { useTheme } from '@/contexts/ThemeContext';
 import { getTimeBasedGreeting } from '@/utils/timeGreeting';
-import { ThemeToggle } from '@/components/ThemeToggle';
 import { StressMeter } from '@/components/StressMeter';
 import { BreathingBubble } from '@/components/BreathingBubble';
 import { FloatingActionButton } from '@/components/FloatingActionButton';
 import { EmergencyCalm } from '@/components/EmergencyCalm';
+import { SettingsDrawer } from '@/components/SettingsDrawer';
 import { Calendar, Clock, TrendingUp, Shield, MapPin, Menu } from 'lucide-react-native';
 
 export default function HomeScreen() {
   const { user, isDemoMode } = useAuth();
-  const { theme } = useTheme();
   const { getCurrentStressLevel, getAverageStressLevel, recordStressLevel } = useStressTracking();
   const { sessions, getWeeklyStats } = useMeditationTracking();
   const [stressLevel] = useState(72);
   const [isBreathing, setIsBreathing] = useState(false);
   const [showEmergencyCalm, setShowEmergencyCalm] = useState(false);
+  const [showSettingsDrawer, setShowSettingsDrawer] = useState(false);
   const [weeklyStats, setWeeklyStats] = useState<any>(null);
 
   // Get current stress level or use default
@@ -44,13 +42,13 @@ export default function HomeScreen() {
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+    <SafeAreaView style={styles.container}>
       <TouchableOpacity 
         style={[
           styles.settingsButton,
           { top: isDemoMode ? 60 : 20 } // Adjust for demo banner
         ]}
-        onPress={() => router.push('/settings')}
+        onPress={() => setShowSettingsDrawer(true)}
         activeOpacity={0.7}
       >
         <LinearGradient
@@ -68,9 +66,6 @@ export default function HomeScreen() {
               {getTimeBasedGreeting()}{user?.user_metadata?.username || 'Friend'}
             </Text>
             <Text style={styles.subtitle}>How are you feeling today?</Text>
-            <TouchableOpacity>
-              <Text style={[styles.signOutText, { color: theme.colors.surface }]}>Sign Out</Text>
-            </TouchableOpacity>
           </View>
         </View>
 
@@ -99,7 +94,7 @@ export default function HomeScreen() {
         </View>
 
         <View style={styles.quickActions}>
-          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Quick Actions</Text>
+          <Text style={styles.sectionTitle}>Quick Actions</Text>
           <View style={styles.actionGrid}>
             <TouchableOpacity style={[styles.actionCard, { shadowColor: theme.colors.shadow }]}>
               <LinearGradient
@@ -131,7 +126,7 @@ export default function HomeScreen() {
         </View>
 
         <View style={styles.todayStats}>
-          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Today's Progress</Text>
+          <Text style={styles.sectionTitle}>Today's Progress</Text>
           <View style={styles.statsGrid}>
             <View style={[styles.statCard, { backgroundColor: theme.colors.card, shadowColor: theme.colors.shadow }]}>
               <Calendar size={20} color={theme.colors.primary} />
@@ -151,7 +146,7 @@ export default function HomeScreen() {
           </View>
         </View>
         <View style={styles.recentSessions}>
-          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Recent Sessions</Text>
+          <Text style={styles.sectionTitle}>Recent Sessions</Text>
           <View style={[styles.sessionCard, { backgroundColor: theme.colors.card, shadowColor: theme.colors.shadow }]}>
             <View style={styles.sessionHeader}>
               <Text style={[styles.sessionTitle, { color: theme.colors.text }]}>Morning Commute</Text>
@@ -172,6 +167,10 @@ export default function HomeScreen() {
         isActive={isBreathing}
       />
 
+      <SettingsDrawer
+        visible={showSettingsDrawer}
+        onClose={() => setShowSettingsDrawer(false)}
+      />
       <EmergencyCalm 
         visible={showEmergencyCalm}
         onClose={() => setShowEmergencyCalm(false)}
@@ -183,6 +182,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#F8FBFF',
   },
   scrollView: {
     flex: 1,
@@ -220,8 +220,6 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   signOutText: {
-    fontFamily: 'Quicksand-SemiBold',
-    fontSize: 12,
   },
   stressSection: {
     alignItems: 'center',
@@ -356,9 +354,10 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   actionText: {
-    color: '#FFFFFF',
-    marginTop: 8,
     fontFamily: 'Quicksand-SemiBold',
     fontSize: 14,
-  }
+    color: '#FFFFFF',
+    marginTop: 8,
+    textAlign: 'center',
+  },
 });
