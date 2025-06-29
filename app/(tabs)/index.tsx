@@ -6,13 +6,13 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useStressTracking } from '@/hooks/useStressTracking';
 import { useMeditationTracking } from '@/hooks/useMeditationTracking';
 import { useTheme } from '@/contexts/ThemeContext';
+import { getTimeBasedGreeting } from '@/utils/timeGreeting';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { StressMeter } from '@/components/StressMeter';
 import { BreathingBubble } from '@/components/BreathingBubble';
 import { FloatingActionButton } from '@/components/FloatingActionButton';
 import { EmergencyCalm } from '@/components/EmergencyCalm';
 import { Calendar, Clock, TrendingUp, Shield, MapPin, Settings } from 'lucide-react-native';
-import { getCurrentGreeting } from '@/utils/timeGreeting';
 
 export default function HomeScreen() {
   const { user, isDemoMode } = useAuth();
@@ -65,9 +65,12 @@ export default function HomeScreen() {
         <View style={styles.header}>
           <View>
             <Text style={styles.greeting}>
-              {getCurrentGreeting()}{user?.user_metadata?.username || 'Friend'}
+              {getTimeBasedGreeting()}{user?.user_metadata?.username || 'Friend'}
             </Text>
-            <Text style={[styles.subtitle, { color: theme.colors.textSecondary }]}>How are you feeling today?</Text>
+            <Text style={styles.subtitle}>How are you feeling today?</Text>
+            <TouchableOpacity>
+                <Text style={[styles.signOutText, { color: theme.colors.surface }]}>Sign Out</Text>
+            </TouchableOpacity>
           </View>
         </View>
 
