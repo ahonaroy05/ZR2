@@ -14,9 +14,11 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAuth } from '@/contexts/AuthContext';
 import { router } from 'expo-router';
+import { useTheme } from '@/contexts/ThemeContext';
 import { Heart, Mail, Lock, User, Play, Info } from 'lucide-react-native';
 
 export default function AuthScreen() {
+  const { theme } = useTheme();
   const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -99,9 +101,12 @@ export default function AuthScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <LinearGradient
-        colors={['#F8FBFF', '#E6F3FF', '#B6D0E2']}
+        colors={theme.isDark 
+          ? ['#0F1419', '#1A1F2E', '#252B3A'] 
+          : ['#F8FBFF', '#E6F3FF', '#B6D0E2']
+        }
         style={styles.backgroundGradient}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
@@ -114,10 +119,10 @@ export default function AuthScreen() {
             <View style={styles.header}>
               <View style={styles.logoContainer}>
                 <LinearGradient
-                  colors={['#B6D0E2', '#87CEEB']}
+                  colors={[theme.colors.primary, theme.colors.accent]}
                   style={styles.logoGradient}
                 >
-                  <Heart size={32} color="#FFFFFF" />
+                  <Heart size={32} color={theme.colors.surface} />
                 </LinearGradient>
                 <View style={styles.rippleContainer}>
                   <Animated.View style={[styles.ripple, styles.ripple1]} />
@@ -125,16 +130,17 @@ export default function AuthScreen() {
                   <Animated.View style={[styles.ripple, styles.ripple3]} />
                 </View>
               </View>
-              <Text style={styles.title}>ZenRoute</Text>
-              <Text style={styles.tagline}>Transform your commute into calm</Text>
+              <Text style={[styles.title, { color: theme.colors.text }]}>ZenRoute</Text>
+              <Text style={[styles.tagline, { color: theme.colors.textSecondary }]}>Transform your commute into calm</Text>
             </View>
 
             <View style={styles.form}>
-              <View style={styles.inputContainer}>
-                <Mail size={20} color="#B6D0E2" style={styles.inputIcon} />
+              <View style={[styles.inputContainer, { backgroundColor: theme.colors.card, borderColor: theme.colors.border, shadowColor: theme.colors.shadow }]}>
+                <Mail size={20} color={theme.colors.primary} style={styles.inputIcon} />
                 <TextInput
-                  style={styles.input}
+                  style={[styles.input, { color: theme.colors.text }]}
                   placeholder="Email"
+                  placeholderTextColor={theme.colors.textTertiary}
                   value={email}
                   onChangeText={setEmail}
                   keyboardType="email-address"
@@ -144,11 +150,12 @@ export default function AuthScreen() {
               </View>
 
               {isSignUp && (
-                <View style={styles.inputContainer}>
-                  <User size={20} color="#B6D0E2" style={styles.inputIcon} />
+                <View style={[styles.inputContainer, { backgroundColor: theme.colors.card, borderColor: theme.colors.border, shadowColor: theme.colors.shadow }]}>
+                  <User size={20} color={theme.colors.primary} style={styles.inputIcon} />
                   <TextInput
-                    style={styles.input}
+                    style={[styles.input, { color: theme.colors.text }]}
                     placeholder="Username"
+                    placeholderTextColor={theme.colors.textTertiary}
                     value={username}
                     onChangeText={setUsername}
                     autoCapitalize="none"
@@ -157,11 +164,12 @@ export default function AuthScreen() {
                 </View>
               )}
 
-              <View style={styles.inputContainer}>
-                <Lock size={20} color="#B6D0E2" style={styles.inputIcon} />
+              <View style={[styles.inputContainer, { backgroundColor: theme.colors.card, borderColor: theme.colors.border, shadowColor: theme.colors.shadow }]}>
+                <Lock size={20} color={theme.colors.primary} style={styles.inputIcon} />
                 <TextInput
-                  style={styles.input}
+                  style={[styles.input, { color: theme.colors.text }]}
                   placeholder="Password"
+                  placeholderTextColor={theme.colors.textTertiary}
                   value={password}
                   onChangeText={setPassword}
                   secureTextEntry
@@ -170,15 +178,15 @@ export default function AuthScreen() {
               </View>
 
               <TouchableOpacity
-                style={[styles.authButton, loading && styles.authButtonDisabled]}
+                style={[styles.authButton, { shadowColor: theme.colors.shadow }, loading && styles.authButtonDisabled]}
                 onPress={handleAuth}
                 disabled={loading}
               >
                 <LinearGradient
-                  colors={['#B6D0E2', '#87CEEB']}
+                  colors={[theme.colors.primary, theme.colors.accent]}
                   style={styles.authGradient}
                 >
-                  <Text style={styles.authButtonText}>
+                  <Text style={[styles.authButtonText, { color: theme.colors.surface }]}>
                     {loading ? 'Loading...' : isSignUp ? 'Create Account' : 'Sign In'}
                   </Text>
                 </LinearGradient>
@@ -192,19 +200,19 @@ export default function AuthScreen() {
                   disabled={loading}
                 >
                   <LinearGradient
-                    colors={['#87CEEB', '#B6D0E2']}
+                    colors={[theme.colors.accent, theme.colors.primary]}
                     style={styles.demoGradient}
                   >
-                    <Play size={16} color="#FFFFFF" />
-                    <Text style={styles.demoButtonText}>Try Demo</Text>
+                    <Play size={16} color={theme.colors.surface} />
+                    <Text style={[styles.demoButtonText, { color: theme.colors.surface }]}>Try Demo</Text>
                   </LinearGradient>
                 </TouchableOpacity>
                 
                 <TouchableOpacity 
-                  style={styles.infoButton}
+                  style={[styles.infoButton, { backgroundColor: theme.colors.card, shadowColor: theme.colors.shadow }]}
                   onPress={toggleTooltip}
                 >
-                  <Info size={16} color="#B6D0E2" />
+                  <Info size={16} color={theme.colors.primary} />
                 </TouchableOpacity>
               </Animated.View>
 
@@ -224,7 +232,7 @@ export default function AuthScreen() {
                 ]}
                 pointerEvents={showTooltip ? 'auto' : 'none'}
               >
-                <Text style={styles.tooltipText}>
+                <Text style={[styles.tooltipText, { color: theme.colors.surface }]}>
                   Click to instantly access a sample account with pre-populated data
                 </Text>
                 <View style={styles.tooltipArrow} />
@@ -234,7 +242,7 @@ export default function AuthScreen() {
                 style={styles.switchButton}
                 onPress={() => setIsSignUp(!isSignUp)}
               >
-                <Text style={styles.switchText}>
+                <Text style={[styles.switchText, { color: theme.colors.textSecondary }]}>
                   {isSignUp 
                     ? 'Already have an account? Sign In' 
                     : "Don't have an account? Sign Up"
@@ -243,13 +251,13 @@ export default function AuthScreen() {
               </TouchableOpacity>
             </View>
 
-            <View style={styles.features}>
-              <Text style={styles.featuresTitle}>What awaits you:</Text>
+            <View style={[styles.features, { backgroundColor: theme.colors.card, borderColor: theme.colors.border, shadowColor: theme.colors.shadow }]}>
+              <Text style={[styles.featuresTitle, { color: theme.colors.text }]}>What awaits you:</Text>
               <View style={styles.featuresList}>
-                <Text style={styles.featureItem}>🧘 Guided meditation during commutes</Text>
-                <Text style={styles.featureItem}>🎵 Calming soundscapes and music</Text>
-                <Text style={styles.featureItem}>📊 Track your stress levels</Text>
-                <Text style={styles.featureItem}>📝 Mindful journaling</Text>
+                <Text style={[styles.featureItem, { color: theme.colors.textSecondary }]}>🧘 Guided meditation during commutes</Text>
+                <Text style={[styles.featureItem, { color: theme.colors.textSecondary }]}>🎵 Calming soundscapes and music</Text>
+                <Text style={[styles.featureItem, { color: theme.colors.textSecondary }]}>📊 Track your stress levels</Text>
+                <Text style={[styles.featureItem, { color: theme.colors.textSecondary }]}>📝 Mindful journaling</Text>
               </View>
             </View>
           </View>
@@ -290,7 +298,6 @@ const styles = StyleSheet.create({
     borderRadius: 40,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#B6D0E2',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -325,7 +332,6 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: 'Nunito-Bold',
     fontSize: 32,
-    color: '#333',
     marginBottom: 8,
     textShadowColor: 'rgba(255, 255, 255, 0.5)',
     textShadowOffset: { width: 0, height: 1 },
@@ -334,7 +340,6 @@ const styles = StyleSheet.create({
   tagline: {
     fontFamily: 'Quicksand-Medium',
     fontSize: 16,
-    color: '#555',
     textAlign: 'center',
     lineHeight: 22,
     textShadowColor: 'rgba(255, 255, 255, 0.3)',
@@ -347,18 +352,15 @@ const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
     borderRadius: 20,
     paddingHorizontal: 16,
     paddingVertical: 4,
     marginBottom: 16,
-    shadowColor: '#87CEEB',
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.15,
     shadowRadius: 8,
     elevation: 3,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.5)',
   },
   inputIcon: {
     marginRight: 12,
@@ -367,7 +369,6 @@ const styles = StyleSheet.create({
     flex: 1,
     fontFamily: 'Quicksand-Medium',
     fontSize: 16,
-    color: '#333',
     paddingVertical: 16,
   },
   authButton: {
@@ -375,7 +376,6 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     marginTop: 8,
     marginBottom: 16,
-    shadowColor: '#B6D0E2',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -392,7 +392,6 @@ const styles = StyleSheet.create({
   authButtonText: {
     fontFamily: 'Quicksand-SemiBold',
     fontSize: 16,
-    color: '#FFFFFF',
   },
   demoContainer: {
     flexDirection: 'row',
@@ -405,7 +404,6 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     overflow: 'hidden',
     marginRight: 8,
-    shadowColor: '#87CEEB',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -421,16 +419,13 @@ const styles = StyleSheet.create({
   demoButtonText: {
     fontFamily: 'Quicksand-SemiBold',
     fontSize: 16,
-    color: '#FFFFFF',
   },
   infoButton: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#87CEEB',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.15,
     shadowRadius: 4,
@@ -450,7 +445,6 @@ const styles = StyleSheet.create({
   tooltipText: {
     fontFamily: 'Quicksand-Medium',
     fontSize: 12,
-    color: '#FFFFFF',
     textAlign: 'center',
     lineHeight: 16,
   },
@@ -474,27 +468,22 @@ const styles = StyleSheet.create({
   switchText: {
     fontFamily: 'Quicksand-Medium',
     fontSize: 14,
-    color: '#555',
     textShadowColor: 'rgba(255, 255, 255, 0.5)',
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 1,
   },
   features: {
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
     borderRadius: 20,
     padding: 20,
-    shadowColor: '#87CEEB',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.15,
     shadowRadius: 8,
     elevation: 3,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.5)',
   },
   featuresTitle: {
     fontFamily: 'Nunito-SemiBold',
     fontSize: 18,
-    color: '#333',
     marginBottom: 12,
   },
   featuresList: {
@@ -503,7 +492,6 @@ const styles = StyleSheet.create({
   featureItem: {
     fontFamily: 'Quicksand-Regular',
     fontSize: 14,
-    color: '#666',
     lineHeight: 20,
   },
 });
