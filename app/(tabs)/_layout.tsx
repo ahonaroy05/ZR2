@@ -1,12 +1,16 @@
 import { Tabs } from 'expo-router';
 import { Platform } from 'react-native';
 import { Redirect } from 'expo-router';
+import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { DemoBanner } from '@/components/DemoBanner';
+import { AiAssistantFab } from '@/components/AiAssistantFab';
+import { AiAssistantChat } from '@/components/AiAssistantChat';
 import { House, Map, Volume2, BookOpen, Settings } from 'lucide-react-native';
 
 export default function TabLayout() {
   const { user, loading, isDemoMode } = useAuth();
+  const [showAiChat, setShowAiChat] = useState(false);
 
   if (loading) {
     return null; // Or a loading screen
@@ -78,6 +82,18 @@ export default function TabLayout() {
           }}
         />
       </Tabs>
+      
+      {/* AI Assistant FAB */}
+      <AiAssistantFab 
+        onPress={() => setShowAiChat(true)}
+        isActive={showAiChat}
+      />
+      
+      {/* AI Assistant Chat Modal */}
+      <AiAssistantChat
+        visible={showAiChat}
+        onClose={() => setShowAiChat(false)}
+      />
     </>
   );
 }
