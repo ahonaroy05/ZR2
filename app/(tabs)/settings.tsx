@@ -2,21 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, SafeAreaView, Switch } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAuth } from '@/contexts/AuthContext';
-import { 
-  User, 
-  Bell, 
-  Shield, 
-  Palette, 
-  Volume2, 
-  Moon, 
-  Globe, 
-  HelpCircle, 
-  MessageSquare, 
-  Star, 
-  LogOut,
-  ChevronRight,
-  Settings as SettingsIcon
-} from 'lucide-react-native';
+import { User, Bell, Shield, Palette, Volume2, Moon, Globe, CircleHelp as HelpCircle, MessageSquare, Star, LogOut, ChevronRight, Settings as SettingsIcon } from 'lucide-react-native';
 
 interface SettingItem {
   id: string;
