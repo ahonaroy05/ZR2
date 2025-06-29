@@ -1,9 +1,9 @@
 import { Tabs } from 'expo-router';
-import { Platform, View, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
+import { Platform } from 'react-native';
 import { Redirect } from 'expo-router';
 import { useAuth } from '@/contexts/AuthContext';
 import { DemoBanner } from '@/components/DemoBanner';
-import { Chrome as Home, Map, Volume2, BookOpen, Heart } from 'lucide-react-native';
+import { Chrome as Home, Map, Volume2, BookOpen } from 'lucide-react-native';
 
 export default function TabLayout() {
   const { user, loading, isDemoMode } = useAuth();
