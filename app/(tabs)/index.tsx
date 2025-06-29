@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { router } from 'expo-router';
 import { useAuth } from '@/contexts/AuthContext';
 import { useStressTracking } from '@/hooks/useStressTracking';
 import { useMeditationTracking } from '@/hooks/useMeditationTracking';
@@ -10,10 +11,10 @@ import { StressMeter } from '@/components/StressMeter';
 import { BreathingBubble } from '@/components/BreathingBubble';
 import { FloatingActionButton } from '@/components/FloatingActionButton';
 import { EmergencyCalm } from '@/components/EmergencyCalm';
-import { Calendar, Clock, TrendingUp, Shield, MapPin } from 'lucide-react-native';
+import { Calendar, Clock, TrendingUp, Shield, MapPin, Settings } from 'lucide-react-native';
 
 export default function HomeScreen() {
-  const { user, signOut } = useAuth();
+  const { user, isDemoMode } = useAuth();
   const { theme } = useTheme();
   const { getCurrentStressLevel, getAverageStressLevel, recordStressLevel } = useStressTracking();
   const { sessions, getWeeklyStats } = useMeditationTracking();
@@ -43,18 +44,29 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <TouchableOpacity 
+        style={[
+          styles.settingsButton,
+          { top: isDemoMode ? 60 : 20 } // Adjust for demo banner
+        ]}
+        onPress={() => router.push('/settings')}
+        activeOpacity={0.7}
+      >
+        <LinearGradient
+          colors={['#B6D0E2', '#87CEEB']}
+          style={styles.settingsGradient}
+        >
+          <Settings size={20} color="#FFFFFF" />
+        </LinearGradient>
+      </TouchableOpacity>
+      
       <ScrollView style={[styles.scrollView]} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
-          <View style={styles.headerContent}>
-            <View>
-              <Text style={[styles.greeting, { color: theme.colors.text }]}>
-                Good morning, {user?.user_metadata?.username || 'Friend'}
-              </Text>
-              <Text style={[styles.subtitle, { color: theme.colors.textSecondary }]}>How are you feeling today?</Text>
-            </View>
-            <View style={styles.headerActions}>
-              <ThemeToggle size={36} />
-              <TouchableOpacity onPress={signOut} style={[styles.signOutButton, { backgroundColor: theme.colors.primary }]}>
+          <View>
+            <Text style={styles.greeting}>
+              Good morning, {user?.user_metadata?.username || 'Friend'}
+            </Text>
+            <Text style={styles.subtitle}>How are you feeling today?</Text>
                 <Text style={[styles.signOutText, { color: theme.colors.surface }]}>Sign Out</Text>
               </TouchableOpacity>
             </View>
@@ -186,11 +198,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  headerActions: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
   greeting: {
     fontFamily: 'Nunito-Bold',
     fontSize: 28,
@@ -201,15 +208,16 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#666',
     marginTop: 8,
-  },
-  signOutButton: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
+  settingsButton: {
+    position: 'absolute',
+    left: 24,
+    zIndex: 1000,
+    borderRadius: 20,
+    overflow: 'hidden',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.25,
     shadowRadius: 4,
-    elevation: 3,
+    elevation: 5,
   },
   signOutText: {
     fontFamily: 'Quicksand-SemiBold',
@@ -264,10 +272,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 16,
   },
-  actionText: {
-    fontFamily: 'Quicksand-SemiBold',
-    fontSize: 14,
-    color: '#FFFFFF',
+  settingsGradient: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
     marginTop: 8,
     textAlign: 'center',
   },
