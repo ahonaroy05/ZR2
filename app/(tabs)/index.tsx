@@ -69,8 +69,9 @@ export default function HomeScreen() {
             </Text>
             <Text style={styles.subtitle}>How are you feeling today?</Text>
             <TouchableOpacity>
-              <Text style={[styles.signOutText, { color: theme.colors.surface }]}>Sign Out</Text>
+                <Text style={[styles.signOutText, { color: theme.colors.surface }]}>Sign Out</Text>
             </TouchableOpacity>
+          </View>
         </View>
 
         <View style={styles.stressSection}>
@@ -149,7 +150,6 @@ export default function HomeScreen() {
             </View>
           </View>
         </View>
-      </ScrollView>
 
         <View style={styles.recentSessions}>
           <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Recent Sessions</Text>
@@ -177,6 +177,7 @@ export default function HomeScreen() {
       <EmergencyCalm 
         visible={showEmergencyCalm}
         onClose={() => setShowEmergencyCalm(false)}
+      />
     </SafeAreaView>
   );
 }
