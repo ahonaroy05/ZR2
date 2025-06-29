@@ -14,7 +14,7 @@ import { Heart } from 'lucide-react-native';
 
 export default function SplashScreen() {
   const rippleScale = useSharedValue(1);
-  const { colors } = useTheme();
+  const { colors, theme } = useTheme();
   const logoScale = useSharedValue(0.8);
   const textOpacity = useSharedValue(0);
 
@@ -67,7 +67,7 @@ export default function SplashScreen() {
   return (
     <View style={styles.container}>
       <LinearGradient
-        colors={colors.gradient.background}
+        colors={theme.gradient.background}
         style={styles.gradient}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
@@ -77,7 +77,7 @@ export default function SplashScreen() {
             <Animated.View style={[styles.ripple, rippleStyle]} />
             <Animated.View style={[styles.logoWrapper, logoStyle]}>
               <LinearGradient
-                colors={colors.gradient.primary}
+                colors={theme.gradient.primary}
                 style={styles.logo}
               >
                 <Heart size={48} color={colors.textInverse} />
