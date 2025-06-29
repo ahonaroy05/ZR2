@@ -1,18 +1,12 @@
 import { Tabs } from 'expo-router';
-import { Platform, View } from 'react-native';
-import { View, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
+import { Platform, View, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
 import { useAuth } from '@/contexts/AuthContext';
 import { Redirect } from 'expo-router';
 import { DemoBanner } from '@/components/DemoBanner';
-import { SettingsMenu } from '@/components/SettingsMenu';
-import { useTheme } from '@/contexts/ThemeContext';
-import { Chrome as Home, Map, Volume2, BookOpen, Heart, Settings } from 'lucide-react-native';
-import { useState } from 'react';
+import { Chrome as Home, Map, Volume2, BookOpen, Heart } from 'lucide-react-native';
 
 export default function TabLayout() {
   const { user, loading, isDemoMode } = useAuth();
-  const { theme } = useTheme();
-  const [showSettings, setShowSettings] = useState(false);
 
   if (loading) {
     return null; // Or a loading screen
@@ -23,25 +17,13 @@ export default function TabLayout() {
   }
 
   return (
-    <View style={{ flex: 1 }}>
+    <>
       {isDemoMode && <DemoBanner />}
-      <Tabs
-      {/* Settings Button */}
-      <TouchableOpacity
-        style={[styles.settingsButton, { backgroundColor: '#F5F5F5' }]}
-        onPress={() => setShowSettings(true)}
-        activeOpacity={0.8}
-        accessibilityLabel="Open settings menu"
-        accessibilityRole="button"
-      >
-        <Settings size={24} color="#333333" strokeWidth={2} />
-      </TouchableOpacity>
-
       <Tabs
         screenOptions={{
           headerShown: false,
           tabBarStyle: {
-            backgroundColor: theme.colors.surface,
+            backgroundColor: '#F8FBFF',
             borderTopWidth: 0,
             elevation: 0,
             shadowOpacity: 0,
@@ -51,8 +33,8 @@ export default function TabLayout() {
             borderTopLeftRadius: 20,
             borderTopRightRadius: 20,
           },
-          tabBarActiveTintColor: theme.colors.primary,
-          tabBarInactiveTintColor: theme.colors.textTertiary,
+          tabBarActiveTintColor: '#B6D0E2',
+          tabBarInactiveTintColor: '#87CEEB',
           tabBarLabelStyle: {
             fontFamily: 'Quicksand-Medium',
             fontSize: 12,
@@ -96,12 +78,6 @@ export default function TabLayout() {
           }}
         />
       </Tabs>
-      {/* Settings Menu */}
-      <SettingsMenu
-        visible={showSettings}
-        onClose={() => setShowSettings(false)}
-      />
-    </View>
-  )
+    </>
   );
 }
