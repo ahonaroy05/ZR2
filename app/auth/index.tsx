@@ -29,12 +29,21 @@ export default function AuthScreen() {
   const [showTooltip, setShowTooltip] = useState(false);
   const [forgotPasswordLoading, setForgotPasswordLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const { signIn, signUp } = useAuth();
+  const { signIn, signUp, isDemoMode } = useAuth();
 
   // Animation values
   const pulseAnim = new Animated.Value(1);
   const tooltipOpacity = new Animated.Value(0);
   const errorOpacity = new Animated.Value(0);
+
+  // Check if Supabase is properly configured
+  const isSupabaseConfigured = () => {
+    const url = process.env.EXPO_PUBLIC_SUPABASE_URL;
+    const key = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
+    return url && key && 
+           url !== 'https://placeholder.supabase.co' && 
+           key !== 'placeholder-anon-key';
+  };
 
   useEffect(() => {
     // Pulse animation for demo button
@@ -125,7 +134,11 @@ export default function AuthScreen() {
             result.error.message.includes('Invalid email or password') ||
             result.error.message.includes('wrong password') ||
             result.error.message.includes('incorrect password')) {
-          userFriendlyMessage = 'Invalid password';
+          if (!isSupabaseConfigured()) {
+            userFriendlyMessage = 'Supabase is not configured. Click "Try Demo" to explore the app with sample data.';
+          } else {
+            userFriendlyMessage = 'Invalid password';
+          }
         } else if (result.error.message.includes('Email not confirmed')) {
           userFriendlyMessage = 'Please check your email and confirm your account before signing in.';
         } else if (result.error.message.includes('User not found') ||
@@ -142,6 +155,8 @@ export default function AuthScreen() {
           userFriendlyMessage = 'Password is too weak. Please choose a stronger password.';
         } else if (result.error.message.includes('signup_disabled')) {
           userFriendlyMessage = 'New account registration is currently disabled. Please contact support.';
+        } else if (result.error.message.includes('Supabase is not configured')) {
+          userFriendlyMessage = result.error.message;
         }
         
         showError(userFriendlyMessage);
@@ -150,29 +165,41 @@ export default function AuthScreen() {
       }
     } catch (error) {
       console.error('Authentication error:', error);
-      showError('Unable to connect to the server. Please check your internet connection and try again.');
+      if (!isSupabaseConfigured()) {
+        showError('Supabase is not configured. Click "Try Demo" to explore the app with sample data.');
+      } else {
+        showError('Unable to connect to the server. Please check your internet connection and try again.');
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  const handleDemoLogin = () => {
+  const handleDemoLogin = async () => {
     // Clear any existing errors
     hideError();
+    setLoading(true);
     
-    // Directly call signIn with demo credentials to activate client-side demo mode
-    signIn('demo@example.com', 'demo123').then((result) => {
+    try {
+      const result = await signIn('demo@example.com', 'demo123');
       if (result.error) {
         showError('Unable to start demo mode. Please try again.');
       } else {
         router.replace('/(tabs)');
       }
-    }).catch((error) => {
+    } catch (error) {
       showError('An unexpected error occurred while starting demo mode.');
-    });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleForgotPassword = async () => {
+    if (!isSupabaseConfigured()) {
+      showError('Password reset is not available in demo mode. Supabase configuration is required.');
+      return;
+    }
+
     if (!email.trim()) {
       showError('Please enter your email address first, then tap "Forgot Password?" to reset your password.');
       return;
@@ -251,6 +278,16 @@ export default function AuthScreen() {
               <Text style={[styles.title, { color: colors.text }]}>ZenRoute</Text>
               <Text style={[styles.tagline, { color: colors.textSecondary }]}>Transform your commute into calm</Text>
             </View>
+
+            {/* Configuration Notice */}
+            {!isSupabaseConfigured() && (
+              <View style={[styles.configNotice, { backgroundColor: colors.warning, borderColor: colors.border }]}>
+                <Info size={16} color={colors.text} />
+                <Text style={[styles.configNoticeText, { color: colors.text }]}>
+                  Demo mode available - Supabase not configured
+                </Text>
+              </View>
+            )}
 
             {/* Error Message */}
             {errorMessage !== '' && (
@@ -341,8 +378,8 @@ export default function AuthScreen() {
                 </LinearGradient>
               </TouchableOpacity>
 
-              {/* Forgot Password Link - Only show during sign in */}
-              {!isSignUp && (
+              {/* Forgot Password Link - Only show during sign in and when Supabase is configured */}
+              {!isSignUp && isSupabaseConfigured() && (
                 <TouchableOpacity
                   style={styles.forgotPasswordButton}
                   onPress={handleForgotPassword}
@@ -500,6 +537,22 @@ const styles = StyleSheet.create({
     textShadowColor: 'rgba(255, 255, 255, 0.3)',
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 1,
+  },
+  configNotice: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    marginHorizontal: 8,
+    marginBottom: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+  },
+  configNoticeText: {
+    fontFamily: 'Quicksand-Medium',
+    fontSize: 14,
+    marginLeft: 8,
+    lineHeight: 18,
   },
   errorContainer: {
     flexDirection: 'row',
