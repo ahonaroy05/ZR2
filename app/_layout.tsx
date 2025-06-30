@@ -58,19 +58,16 @@ export default function RootLayout() {
     }
   }, [fontsLoaded, fontError]);
 
-  // Show a custom loading screen while fonts are loading
-  if (!fontsLoaded && !fontError) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ZenRouteLogo size={120} animated={false} />
-      </View>
-    );
-  }
-
   return (
     <ThemeProvider>
       <AuthProvider>
-        {!fontsLoaded && !fontError && Platform.OS !== 'web' ? null : <RootLayoutContent />}
+        {!fontsLoaded && !fontError ? (
+          <View style={styles.loadingContainer}>
+            <ZenRouteLogo size={120} animated={false} />
+          </View>
+        ) : (
+          <RootLayoutContent />
+        )}
       </AuthProvider>
     </ThemeProvider>
   );
