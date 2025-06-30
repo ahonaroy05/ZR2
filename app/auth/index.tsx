@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -22,7 +22,6 @@ import { Mail, Lock, User, Play, Info, CircleAlert as AlertCircle } from 'lucide
 export default function AuthScreen() {
   const [isSignUp, setIsSignUp] = useState(false);
   const { colors, theme } = useTheme();
-  const mounted = useRef(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
@@ -36,13 +35,6 @@ export default function AuthScreen() {
   const pulseAnim = new Animated.Value(1);
   const tooltipOpacity = new Animated.Value(0);
   const errorOpacity = new Animated.Value(0);
-
-  useEffect(() => {
-    mounted.current = true;
-    return () => {
-      mounted.current = false;
-    };
-  }, []);
 
   // Check if Supabase is properly configured
   const isSupabaseConfigured = () => {
@@ -76,7 +68,6 @@ export default function AuthScreen() {
 
   // Show error message with animation
   const showError = (message: string) => {
-    if (!mounted.current) return;
     setErrorMessage(message);
     Animated.timing(errorOpacity, {
       toValue: 1,
@@ -86,23 +77,18 @@ export default function AuthScreen() {
 
     // Auto-hide error after 5 seconds
     setTimeout(() => {
-      if (mounted.current) {
-        hideError();
-      }
+      hideError();
     }, 5000);
   };
 
   // Hide error message with animation
   const hideError = () => {
-    if (!mounted.current) return;
     Animated.timing(errorOpacity, {
       toValue: 0,
       duration: 300,
       useNativeDriver: true,
     }).start(() => {
-      if (mounted.current) {
-        setErrorMessage('');
-      }
+      setErrorMessage('');
     });
   };
 
@@ -128,9 +114,7 @@ export default function AuthScreen() {
       return;
     }
 
-    if (mounted.current) {
-      setLoading(true);
-    }
+    setLoading(true);
     
     try {
       let result;
@@ -187,18 +171,14 @@ export default function AuthScreen() {
         showError('Unable to connect to the server. Please check your internet connection and try again.');
       }
     } finally {
-      if (mounted.current) {
-        setLoading(false);
-      }
+      setLoading(false);
     }
   };
 
   const handleDemoLogin = async () => {
     // Clear any existing errors
     hideError();
-    if (mounted.current) {
-      setLoading(true);
-    }
+    setLoading(true);
     
     try {
       const result = await signIn('demo@zenroute.app', 'demo123');
@@ -210,9 +190,7 @@ export default function AuthScreen() {
     } catch (error) {
       showError('An unexpected error occurred while starting demo mode.');
     } finally {
-      if (mounted.current) {
-        setLoading(false);
-      }
+      setLoading(false);
     }
   };
 
@@ -234,9 +212,7 @@ export default function AuthScreen() {
       return;
     }
 
-    if (mounted.current) {
-      setForgotPasswordLoading(true);
-    }
+    setForgotPasswordLoading(true);
     hideError();
     
     try {
@@ -264,9 +240,7 @@ export default function AuthScreen() {
     } catch (error) {
       showError('Unable to send password reset email. Please check your internet connection and try again.');
     } finally {
-      if (mounted.current) {
-        setForgotPasswordLoading(false);
-      }
+      setForgotPasswordLoading(false);
     }
   };
 

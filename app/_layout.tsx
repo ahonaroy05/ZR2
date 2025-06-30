@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { Platform, View, StyleSheet } from 'react-native';
@@ -52,7 +52,6 @@ function RootLayoutContent() {
 
 export default function RootLayout() {
   useFrameworkReady();
-  const mounted = useRef(false);
 
   const [fontsLoaded, fontError] = useFonts({
     'Inter-Regular': Inter_400Regular,
@@ -70,14 +69,7 @@ export default function RootLayout() {
   });
 
   useEffect(() => {
-    mounted.current = true;
-    return () => {
-      mounted.current = false;
-    };
-  }, []);
-
-  useEffect(() => {
-    if ((fontsLoaded || fontError) && Platform.OS !== 'web' && mounted.current) {
+    if ((fontsLoaded || fontError) && Platform.OS !== 'web') {
       SplashScreen.hideAsync();
     }
   }, [fontsLoaded, fontError]);
