@@ -69,9 +69,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         },
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
+        app_metadata: {},
+        aud: 'authenticated',
+        confirmation_sent_at: null,
+        confirmed_at: new Date().toISOString(),
+        email_confirmed_at: new Date().toISOString(),
+        last_sign_in_at: new Date().toISOString(),
+        phone: null,
+        recovery_sent_at: null,
+        role: 'authenticated',
       } as User;
       
       setUser(mockUser);
+      setSession({
+        access_token: 'demo-access-token',
+        refresh_token: 'demo-refresh-token',
+        expires_in: 3600,
+        expires_at: Date.now() + 3600000,
+        token_type: 'bearer',
+        user: mockUser,
+      } as Session);
       return { error: null };
     }
     
