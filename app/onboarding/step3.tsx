@@ -26,7 +26,7 @@ export default function OnboardingStep3() {
           </View>
           
           <View style={styles.textContainer}>
-            <Text style={[styles.title, { color: colors.text }]}>Begin your journey to mindful commuting</Text>
+            <Text style={styles.title}>Begin your journey to mindful commuting</Text>
           </View>
           
           <View style={styles.footer}>

@@ -26,7 +26,7 @@ export default function OnboardingStep2() {
           </View>
           
           <View style={styles.textContainer}>
-            <Text style={[styles.title, { color: colors.text }]}>Track your wellness with mindful insights</Text>
+            <Text style={styles.title}>Track your wellness with mindful insights</Text>
           </View>
           
           <View style={styles.footer}>

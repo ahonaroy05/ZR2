@@ -26,7 +26,7 @@ export default function OnboardingStep1() {
           </View>
           
           <View style={styles.textContainer}>
-            <Text style={[styles.title, { color: colors.text }]}>Find peace in your daily journey</Text>
+            <Text style={styles.title}>Find peace in your daily journey</Text>
           </View>
           
           <View style={styles.footer}>
