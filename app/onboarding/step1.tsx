@@ -138,7 +138,7 @@ export default function OnboardingStep1() {
           <Animated.View style={[styles.imageContainer, imageStyle]}>
             <View style={styles.imageWrapper}>
               <Image
-                source={require('@/assets/images/image copy copy.png')}
+                source={require('@/assets/images/image-onboarding-step1.png')}
                 style={styles.image}
                 resizeMode="cover"
               />
