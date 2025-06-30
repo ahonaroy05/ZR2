@@ -92,9 +92,10 @@ const styles = StyleSheet.create({
     fontSize: 28,
     textAlign: 'center',
     lineHeight: 36,
-    textShadowColor: 'rgba(255, 255, 255, 0.6)',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 2,
+    color: '#FFFFFF',
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 4,
   },
   footer: {
     alignItems: 'center',
