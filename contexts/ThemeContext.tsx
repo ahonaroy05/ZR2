@@ -108,37 +108,43 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 const THEME_STORAGE_KEY = '@zenroute_theme_preference';
 
+// Helper function to get initial theme preference synchronously on web
+const getInitialThemePreference = (): boolean => {
+  if (Platform.OS === 'web') {
+    try {
+      const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+      return savedTheme !== null ? JSON.parse(savedTheme) : false;
+    } catch (error) {
+      console.error('Error loading theme preference from localStorage:', error);
+      return false;
+    }
+  }
+  return false; // Default for mobile platforms
+};
+
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isDarkMode, setIsDarkMode] = useState(getInitialThemePreference);
+  const [isLoading, setIsLoading] = useState(Platform.OS !== 'web');
 
   // Load theme preference from storage
   useEffect(() => {
+    if (Platform.OS === 'web') {
+      // For web, we already loaded synchronously, so just mark as loaded
+      setIsLoading(false);
+      return;
+    }
+
     const loadThemePreference = async () => {
-      if (Platform.OS === 'web') {
-        // Use localStorage for web
-        try {
-          const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
-          if (savedTheme !== null) {
-            setIsDarkMode(JSON.parse(savedTheme));
-          }
-        } catch (error) {
-          console.error('Error loading theme preference from localStorage:', error);
-        } finally {
-          setIsLoading(false);
+      // Use AsyncStorage for mobile
+      try {
+        const savedTheme = await AsyncStorage.getItem(THEME_STORAGE_KEY);
+        if (savedTheme !== null) {
+          setIsDarkMode(JSON.parse(savedTheme));
         }
-      } else {
-        // Use AsyncStorage for mobile
-        try {
-          const savedTheme = await AsyncStorage.getItem(THEME_STORAGE_KEY);
-          if (savedTheme !== null) {
-            setIsDarkMode(JSON.parse(savedTheme));
-          }
-        } catch (error) {
-          console.error('Error loading theme preference from AsyncStorage:', error);
-        } finally {
-          setIsLoading(false);
-        }
+      } catch (error) {
+        console.error('Error loading theme preference from AsyncStorage:', error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
