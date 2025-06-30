@@ -14,6 +14,7 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
+import { supabase } from '@/lib/supabase';
 import { ZenRouteLogo } from '@/components/ZenRouteLogo';
 import { router } from 'expo-router';
 import { Mail, Lock, User, Play, Info } from 'lucide-react-native';
@@ -26,6 +27,7 @@ export default function AuthScreen() {
   const [username, setUsername] = useState('');
   const [loading, setLoading] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
+  const [forgotPasswordLoading, setForgotPasswordLoading] = useState(false);
   const { signIn, signUp } = useAuth();
 
   // Animation values
@@ -91,6 +93,35 @@ export default function AuthScreen() {
     setTimeout(() => {
       handleAuth();
     }, 500);
+  };
+
+  const handleForgotPassword = async () => {
+    if (!email.trim()) {
+      Alert.alert('Email Required', 'Please enter your email address to reset your password.');
+      return;
+    }
+
+    setForgotPasswordLoading(true);
+    
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: 'https://your-app-domain.com/reset-password', // You can customize this URL
+      });
+
+      if (error) {
+        Alert.alert('Error', error.message);
+      } else {
+        Alert.alert(
+          'Password Reset Email Sent',
+          `We've sent a password reset link to ${email}. Please check your email and follow the instructions to reset your password.`,
+          [{ text: 'OK', style: 'default' }]
+        );
+      }
+    } catch (error) {
+      Alert.alert('Error', 'An unexpected error occurred. Please try again.');
+    } finally {
+      setForgotPasswordLoading(false);
+    }
   };
 
   const toggleTooltip = () => {
@@ -185,6 +216,19 @@ export default function AuthScreen() {
                   </Text>
                 </LinearGradient>
               </TouchableOpacity>
+
+              {/* Forgot Password Link - Only show during sign in */}
+              {!isSignUp && (
+                <TouchableOpacity
+                  style={styles.forgotPasswordButton}
+                  onPress={handleForgotPassword}
+                  disabled={forgotPasswordLoading}
+                >
+                  <Text style={[styles.forgotPasswordText, { color: colors.primary }]}>
+                    {forgotPasswordLoading ? 'Sending...' : 'Forgot Password?'}
+                  </Text>
+                </TouchableOpacity>
+              )}
 
               {/* Demo Button */}
               <Animated.View style={[styles.demoContainer, { transform: [{ scale: pulseAnim }] }]}>
@@ -476,5 +520,15 @@ const styles = StyleSheet.create({
     fontFamily: 'Quicksand-Regular',
     fontSize: 14,
     lineHeight: 20,
+  },
+  forgotPasswordButton: {
+    alignItems: 'center',
+    paddingVertical: 12,
+    marginBottom: 8,
+  },
+  forgotPasswordText: {
+    fontFamily: 'Quicksand-Medium',
+    fontSize: 14,
+    textDecorationLine: 'underline',
   },
 });
