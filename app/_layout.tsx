@@ -63,6 +63,10 @@ export default function RootLayout() {
     return (
       <View style={styles.loadingContainer}>
         <ZenRouteLogo size={120} animated={false} />
+      </View>
+    );
+  }
+
   return (
     <ThemeProvider>
       <AuthProvider>
@@ -73,9 +77,6 @@ export default function RootLayout() {
 }
 
 const styles = StyleSheet.create({
-      }
-    )
-  }
   loadingContainer: {
     flex: 1,
     backgroundColor: '#FDF7FD',
