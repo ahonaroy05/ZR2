@@ -160,7 +160,7 @@ export default function OnboardingStep3() {
           <Animated.View style={[styles.imageContainer, imageStyle]}>
             <View style={styles.imageWrapper}>
               <Image
-                source={require('@/assets/images/image copy copy copy.png')}
+                source={{ uri: 'https://images.pexels.com/photos/3771837/pexels-photo-3771837.jpeg' }}
                 style={styles.image}
                 resizeMode="cover"
               />
@@ -169,26 +169,6 @@ export default function OnboardingStep3() {
                 style={styles.imageOverlay}
               />
               
-              {/* Journey Progress Overlay */}
-              <View style={styles.journeyOverlay}>
-                <View style={[styles.journeyCard, { backgroundColor: 'rgba(255, 255, 255, 0.95)' }]}>
-                  <Text style={[styles.journeyTitle, { color: colors.primary }]}>Ready to Begin</Text>
-                  <View style={styles.journeySteps}>
-                    <View style={styles.stepIndicator}>
-                      <View style={[styles.stepDot, { backgroundColor: colors.success }]} />
-                      <Text style={[styles.stepText, { color: colors.text }]}>Mindful Routes</Text>
-                    </View>
-                    <View style={styles.stepIndicator}>
-                      <View style={[styles.stepDot, { backgroundColor: colors.success }]} />
-                      <Text style={[styles.stepText, { color: colors.text }]}>Wellness Tracking</Text>
-                    </View>
-                    <View style={styles.stepIndicator}>
-                      <View style={[styles.stepDot, { backgroundColor: colors.success }]} />
-                      <Text style={[styles.stepText, { color: colors.text }]}>Peaceful Commuting</Text>
-                    </View>
-                  </View>
-                </View>
-              </View>
             </View>
             
             {/* Enhanced Glow Effects */}
@@ -199,8 +179,8 @@ export default function OnboardingStep3() {
           
           {/* Text Container */}
           <Animated.View style={[styles.textContainer, textStyle]}>
-            <Text style={styles.title}>Begin your journey to mindful commuting</Text>
-            <Text style={[styles.description, { color: colors.textInverse }]}>
+            <Text style={[styles.title, { color: colors.text }]}>Begin your journey to mindful commuting</Text>
+            <Text style={[styles.description, { color: colors.text }]}>
               You're all set! Start transforming your daily commute into moments of peace and mindfulness
             </Text>
           </Animated.View>
@@ -337,44 +317,6 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 28,
     borderBottomRightRadius: 28,
   },
-  journeyOverlay: {
-    position: 'absolute',
-    bottom: 20,
-    left: 20,
-    right: 20,
-  },
-  journeyCard: {
-    padding: 16,
-    borderRadius: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  journeyTitle: {
-    fontFamily: 'Poppins-SemiBold',
-    fontSize: 16,
-    marginBottom: 12,
-    textAlign: 'center',
-  },
-  journeySteps: {
-    gap: 8,
-  },
-  stepIndicator: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-  },
-  stepText: {
-    fontFamily: 'Inter-Medium',
-    fontSize: 12,
-  },
   imageGlow: {
     position: 'absolute',
     borderRadius: 32,
@@ -405,10 +347,6 @@ const styles = StyleSheet.create({
     fontSize: 32,
     textAlign: 'center',
     lineHeight: 40,
-    color: '#FFFFFF',
-    textShadowColor: 'rgba(0, 0, 0, 0.3)',
-    textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 4,
     marginBottom: 16,
   },
   description: {
@@ -417,9 +355,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     lineHeight: 24,
     opacity: 0.9,
-    textShadowColor: 'rgba(0, 0, 0, 0.2)',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 2,
   },
   footer: {
     alignItems: 'center',

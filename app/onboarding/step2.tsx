@@ -149,7 +149,7 @@ export default function OnboardingStep2() {
           <Animated.View style={[styles.imageContainer, imageStyle]}>
             <View style={styles.imageWrapper}>
               <Image
-                source={require('@/assets/images/image copy.png')}
+                source={{ uri: 'https://images.pexels.com/photos/3771835/pexels-photo-3771835.jpeg' }}
                 style={styles.image}
                 resizeMode="cover"
               />
@@ -174,8 +174,8 @@ export default function OnboardingStep2() {
           
           {/* Text Container */}
           <Animated.View style={[styles.textContainer, textStyle]}>
-            <Text style={styles.title}>Track your wellness with mindful insights</Text>
-            <Text style={[styles.description, { color: colors.textInverse }]}>
+            <Text style={[styles.title, { color: colors.text }]}>Track your wellness with mindful insights</Text>
+            <Text style={[styles.description, { color: colors.text }]}>
               Monitor your stress levels, meditation progress, and emotional well-being with beautiful analytics
             </Text>
           </Animated.View>
@@ -352,10 +352,6 @@ const styles = StyleSheet.create({
     fontSize: 32,
     textAlign: 'center',
     lineHeight: 40,
-    color: '#FFFFFF',
-    textShadowColor: 'rgba(0, 0, 0, 0.3)',
-    textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 4,
     marginBottom: 16,
   },
   description: {
@@ -364,9 +360,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     lineHeight: 24,
     opacity: 0.9,
-    textShadowColor: 'rgba(0, 0, 0, 0.2)',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 2,
   },
   footer: {
     alignItems: 'center',

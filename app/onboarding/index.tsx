@@ -82,7 +82,7 @@ export default function SplashScreen() {
           
           <Animated.View style={[styles.textContainer, textStyle]}>
             <Text style={[styles.title, { color: colors.text }]}>ZenRoute</Text>
-            <Text style={[styles.tagline, { color: colors.textSecondary }]}>Transform your commute into calm</Text>
+            <Text style={[styles.tagline, { color: colors.text }]}>Transform your commute into calm</Text>
           </Animated.View>
         </View>
       </LinearGradient>
@@ -129,17 +129,11 @@ const styles = StyleSheet.create({
     fontFamily: 'Nunito-Bold',
     fontSize: 42,
     marginBottom: 12,
-    textShadowColor: 'rgba(255, 255, 255, 0.6)',
-    textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 4,
   },
   tagline: {
     fontFamily: 'Quicksand-Medium',
     fontSize: 18,
     textAlign: 'center',
     lineHeight: 24,
-    textShadowColor: 'rgba(255, 255, 255, 0.4)',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 2,
   },
 });
