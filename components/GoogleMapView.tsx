@@ -57,7 +57,7 @@ export function GoogleMapView({
     return new Promise<void>((resolve, reject) => {
       // Check if API key is available
       const apiKey = process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY;
-      if (!apiKey) {
+      if (!apiKey || typeof apiKey !== 'string' || apiKey.trim() === '') {
         reject(new Error('Google Maps API key is not configured. Please set EXPO_PUBLIC_GOOGLE_MAPS_API_KEY in your environment variables.'));
         return;
       }
@@ -84,7 +84,7 @@ export function GoogleMapView({
 
       // Create and load the script
       const script = document.createElement('script');
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=geometry`;
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey.trim()}&libraries=geometry`;
       script.async = true;
       script.defer = true;
       
