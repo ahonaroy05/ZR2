@@ -104,7 +104,7 @@ export default function AchievementsScreen() {
   const getAchievementIcon = (iconName: string, isUnlocked: boolean) => {
     const iconProps = { 
       size: 32, 
-      color: isUnlocked ? '#FFFFFF' : '#999999',
+      color: '#FFFFFF',
       strokeWidth: 2
     };
     
@@ -184,14 +184,32 @@ export default function AchievementsScreen() {
                 styles.scalloppedBadge,
                 { opacity: milestone.unlocked ? 1 : 0.4 }
               ]}>
-                <LinearGradient
-                  colors={milestone.unlocked ? milestone.color : ['#E0E0E0', '#BDBDBD']}
-                  style={styles.scalloppedGradient}
-                >
-                  <Text style={[styles.milestoneNumber, { color: '#FFFFFF' }]}>
-                    {milestone.days}
-                  </Text>
-                </LinearGradient>
+                <View style={styles.scalloppedContainer}>
+                  <LinearGradient
+                    colors={milestone.unlocked ? milestone.color : ['#E0E0E0', '#BDBDBD']}
+                    style={styles.scalloppedGradient}
+                  >
+                    <Text style={[styles.milestoneNumber, { color: '#FFFFFF' }]}>
+                      {milestone.days}
+                    </Text>
+                  </LinearGradient>
+                  
+                  {/* Scalloped edges */}
+                  <View style={styles.scalloppedEdges}>
+                    {[...Array(12)].map((_, i) => (
+                      <View
+                        key={i}
+                        style={[
+                          styles.scallop,
+                          {
+                            transform: [{ rotate: `${i * 30}deg` }],
+                            backgroundColor: milestone.unlocked ? milestone.color[0] : '#E0E0E0',
+                          }
+                        ]}
+                      />
+                    ))}
+                  </View>
+                </View>
                 
                 {/* Decorative sparkles */}
                 {milestone.unlocked && (
@@ -278,7 +296,7 @@ export default function AchievementsScreen() {
         
         <Text style={[
           styles.badgeTitle,
-          { color: isUnlocked ? colors.text : colors.textSecondary }
+          { color: isUnlocked ? '#5A5A5A' : colors.textSecondary }
         ]}>
           {achievement.title}
         </Text>
@@ -514,20 +532,38 @@ const styles = StyleSheet.create({
     position: 'relative',
     marginBottom: 8,
   },
-  scalloppedGradient: {
+  scalloppedContainer: {
+    position: 'relative',
     width: 70,
     height: 70,
-    borderRadius: 35,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  scalloppedGradient: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
     alignItems: 'center',
     justifyContent: 'center',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 8,
     elevation: 4,
-    // Scalloped edge effect
-    borderWidth: 8,
-    borderColor: 'transparent',
-    borderStyle: 'solid',
+    zIndex: 2,
+  },
+  scalloppedEdges: {
+    position: 'absolute',
+    width: 70,
+    height: 70,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  scallop: {
+    position: 'absolute',
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    top: -4,
   },
   milestoneNumber: {
     fontFamily: 'Nunito-Bold',
@@ -640,7 +676,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: 'center',
     lineHeight: 20,
-    color: '#5A5A5A', // Darker text like in the images
   },
   unlockedIndicator: {
     position: 'absolute',
