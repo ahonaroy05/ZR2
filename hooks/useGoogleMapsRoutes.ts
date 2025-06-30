@@ -143,6 +143,8 @@ export function useGoogleMapsRoutes() {
         }
       }
       
+      
+      
       setState(prev => ({
         ...prev,
         loading: false,
@@ -158,7 +160,7 @@ export function useGoogleMapsRoutes() {
   const getDemoRoutes = () => {
     return [
       {
-        id: 'demo-route-1',
+        id: 'route-1',
         name: 'Scenic Route',
         summary: 'Via Park Avenue',
         distance: { text: '5.2 km', value: 5200 },
@@ -174,7 +176,7 @@ export function useGoogleMapsRoutes() {
         warnings: [],
       },
       {
-        id: 'demo-route-2',
+        id: 'route-2',
         name: 'Express Route',
         summary: 'Via Highway 101',
         distance: { text: '4.8 km', value: 4800 },
@@ -190,7 +192,7 @@ export function useGoogleMapsRoutes() {
         warnings: ['Construction ahead'],
       },
       {
-        id: 'demo-route-3',
+        id: 'route-3',
         name: 'Balanced Route',
         summary: 'Via Main Street',
         distance: { text: '5.0 km', value: 5000 },

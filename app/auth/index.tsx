@@ -181,7 +181,7 @@ export default function AuthScreen() {
     setLoading(true);
     
     try {
-      const result = await signIn('demo@example.com', 'demo123');
+      const result = await signIn('demo@zenroute.app', 'demo123');
       if (result.error) {
         showError('Unable to start demo mode. Please try again.');
       } else {

@@ -11,18 +11,9 @@ export function useStressTracking() {
   const loadStressReadings = async () => {
     if (!user) return;
     
-    // In demo mode, use minimal demo data
+    // In demo mode, start with empty data
     if (isDemoMode) {
-      const mockReadings: StressReading[] = [
-        {
-          id: 'demo-1',
-          user_id: user.id,
-          stress_level: 65,
-          location: 'Current Location',
-          created_at: new Date().toISOString(),
-        },
-      ];
-      setStressReadings(mockReadings);
+      setStressReadings([]);
       return;
     }
     

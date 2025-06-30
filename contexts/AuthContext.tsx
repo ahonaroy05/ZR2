@@ -17,7 +17,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 // Demo user data
 const DEMO_USER = {
   id: 'demo-user-id',
-  email: 'demo@example.com',
+  email: 'demo@zenroute.app',
   user_metadata: { username: 'Demo User' },
   app_metadata: {},
   aud: 'authenticated',
@@ -94,7 +94,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signIn = async (email: string, password: string) => {
     try {
       // Check for demo credentials
-      if (email === 'demo@example.com' && password === 'demo123') {
+      if (email === 'demo@zenroute.app' && password === 'demo123') {
         setSession(DEMO_SESSION);
         setUser(DEMO_USER);
         setIsDemoMode(true);
@@ -105,7 +105,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (!isSupabaseConfigured()) {
         return { 
           error: { 
-            message: 'Supabase is not configured. Use demo@example.com / demo123 for demo mode.' 
+            message: 'Supabase is not configured. Use demo@zenroute.app / demo123 for demo mode.' 
           } 
         };
       }
@@ -130,7 +130,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (!isSupabaseConfigured()) {
         return { 
           error: { 
-            message: 'Supabase is not configured. Use demo@example.com / demo123 for demo mode.' 
+            message: 'Supabase is not configured. Use demo@zenroute.app / demo123 for demo mode.' 
           } 
         };
       }
