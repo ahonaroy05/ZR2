@@ -6,7 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { DemoBanner } from '@/components/DemoBanner';
 import { AiAssistantFab } from '@/components/AiAssistantFab';
 import { AiAssistantChat } from '@/components/AiAssistantChat';
-import { House, Map, Volume2, BookOpen, Settings } from 'lucide-react-native';
+import { House, Map, Volume2, BookOpen, Trophy } from 'lucide-react-native';
 
 export default function TabLayout() {
   const { user, loading, isDemoMode } = useAuth();
@@ -78,6 +78,15 @@ export default function TabLayout() {
             title: 'Journal',
             tabBarIcon: ({ size, color }) => (
               <BookOpen size={size} color={color} strokeWidth={2} />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="achievements"
+          options={{
+            title: 'Achievements',
+            tabBarIcon: ({ size, color }) => (
+              <Trophy size={size} color={color} strokeWidth={2} />
             ),
           }}
         />
