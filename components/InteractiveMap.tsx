@@ -21,7 +21,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { GoogleMapView } from '@/components/GoogleMapView';
 import { useGoogleMapsRoutes } from '@/hooks/useGoogleMapsRoutes';
 import { useLocationPermissions } from '@/hooks/useLocationPermissions';
-import { MapPin, Navigation, Search, Clock, Car, Brain as Train, Bike, User, Star, Chrome as Home, Briefcase, Coffee, Heart, X, RotateCcw, Zap, TriangleAlert as AlertTriangle, TrendingUp, ZoomIn, ZoomOut, RotateCw, CircleHelp as HelpCircle, Route } from 'lucide-react-native';
+import { MapPin, Navigation, Search, Clock, Car, Brain as Train, Bike, User, Star, Chrome as Home, Briefcase, Coffee, Heart, X, RotateCcw, Zap, TriangleAlert as AlertTriangle, TrendingUp, ZoomIn, ZoomOut, RotateCw, CircleHelp as HelpCircle, Route, Crosshair, Loader } from 'lucide-react-native';
 
 const { width, height } = Dimensions.get('window');
 
@@ -67,6 +67,7 @@ export function InteractiveMap() {
   const [destination, setDestination] = useState<Location | null>({ lat: 20.2700, lng: 85.8400 });
   const [selectedRoute, setSelectedRoute] = useState<string | null>(null);
   const [isTrackingLocation, setIsTrackingLocation] = useState(false);
+  const [locationAccuracy, setLocationAccuracy] = useState<number | null>(null);
   
   // UI states
   const [searchQuery, setSearchQuery] = useState('');
@@ -78,6 +79,7 @@ export function InteractiveMap() {
   // Animation values
   const searchBarScale = useSharedValue(1);
   const fabScale = useSharedValue(1);
+  const locationPulse = useSharedValue(1);
   
   // Location tracking ref
   const unsubscribeLocationWatchRef = useRef<(() => void) | null>(null);
@@ -149,33 +151,68 @@ export function InteractiveMap() {
     },
   ];
 
-  // Get current location
+  // Get current location with better error handling
   const getCurrentLocation = async () => {
     try {
+      setIsTrackingLocation(true);
+      
+      // Request permissions first
+      const permStatus = await requestPermissions();
+      if (!permStatus.granted) {
+        Alert.alert(
+          'Location Permission Required',
+          'Please enable location services to see your current location on the map.',
+          [
+            { text: 'Cancel', style: 'cancel' },
+            { text: 'Settings', onPress: () => {
+              if (Platform.OS === 'web') {
+                Alert.alert(
+                  'Enable Location',
+                  'Please allow location access in your browser and refresh the page.'
+                );
+              }
+            }}
+          ]
+        );
+        setIsTrackingLocation(false);
+        return;
+      }
+
       const location = await getDeviceLocation({
         enableHighAccuracy: true,
-        timeout: 10000,
+        timeout: 15000,
         maximumAge: 60000,
       });
       
       if (location) {
-        setCurrentLocation({
+        const newLocation = {
           lat: location.latitude,
           lng: location.longitude,
-        });
-      } else {
-        // Fallback to default location if unable to get device location
-        setCurrentLocation({ lat: 20.2960, lng: 85.8246 });
+        };
+        setCurrentLocation(newLocation);
+        setLocationAccuracy(location.accuracy || null);
         
-        if (locationError) {
-          Alert.alert('Location Error', locationError);
-        }
+        Alert.alert(
+          'Location Found',
+          `Your current location has been set.\nAccuracy: ${location.accuracy ? Math.round(location.accuracy) + 'm' : 'Unknown'}`,
+          [{ text: 'OK' }]
+        );
+      } else {
+        throw new Error('Unable to get location');
       }
     } catch (error) {
       console.error('Error getting location:', error);
+      
       // Fallback to default location
       setCurrentLocation({ lat: 20.2960, lng: 85.8246 });
-      Alert.alert('Location Error', 'Unable to get your current location. Using default location.');
+      
+      Alert.alert(
+        'Location Error', 
+        locationError || 'Unable to get your current location. Using default location in Bhubaneswar.',
+        [{ text: 'OK' }]
+      );
+    } finally {
+      setIsTrackingLocation(false);
     }
   };
 
@@ -187,7 +224,7 @@ export function InteractiveMap() {
       return;
     }
 
-    // Mock search results
+    // Mock search results for Bhubaneswar area
     const mockResults = [
       {
         id: '1',
@@ -206,6 +243,18 @@ export function InteractiveMap() {
         name: 'Shri Ram Temple',
         address: 'Shri Ram Temple, Bhubaneswar, Odisha',
         location: { lat: 20.2650, lng: 85.8450 },
+      },
+      {
+        id: '4',
+        name: 'Biju Patnaik International Airport',
+        address: 'Biju Patnaik International Airport, Bhubaneswar, Odisha',
+        location: { lat: 20.2444, lng: 85.8178 },
+      },
+      {
+        id: '5',
+        name: 'Esplanade One Mall',
+        address: 'Esplanade One Mall, Rasulgarh, Bhubaneswar, Odisha',
+        location: { lat: 20.3019, lng: 85.8449 },
       },
     ].filter(result => 
       result.name.toLowerCase().includes(query.toLowerCase()) ||
@@ -271,37 +320,24 @@ export function InteractiveMap() {
       fabScale.value = withSpring(1);
     });
     
-    if (isTrackingLocation) {
-      // Stop tracking
-      if (unsubscribeLocationWatchRef.current) {
-        unsubscribeLocationWatchRef.current();
-        unsubscribeLocationWatchRef.current = null;
-      }
-      setIsTrackingLocation(false);
-      Alert.alert('Location Tracking', 'Location tracking stopped.');
-    } else {
-      // Start tracking
-      startLocationTracking();
-    }
+    getCurrentLocation();
   };
 
-  // Start location tracking
+  // Start location tracking with continuous updates
   const startLocationTracking = async () => {
     try {
-      // Request permissions first
       const permStatus = await requestPermissions();
       if (!permStatus.granted) {
         Alert.alert(
           'Location Permission Required',
-          'Please enable location services to track your current location on the map.',
+          'Please enable location services to track your location in real-time.',
           [
             { text: 'Cancel', style: 'cancel' },
             { text: 'Settings', onPress: () => {
-              // On web, we can't open settings, so just show instructions
               if (Platform.OS === 'web') {
                 Alert.alert(
                   'Enable Location',
-                  'Please allow location access in your browser settings and refresh the page.'
+                  'Please allow location access in your browser settings.'
                 );
               }
             }}
@@ -324,6 +360,7 @@ export function InteractiveMap() {
           lat: initialLocation.latitude,
           lng: initialLocation.longitude,
         });
+        setLocationAccuracy(initialLocation.accuracy || null);
       }
 
       // Start watching location changes
@@ -332,18 +369,24 @@ export function InteractiveMap() {
           lat: location.latitude, 
           lng: location.longitude 
         });
+        setLocationAccuracy(location.accuracy || null);
+        
+        // Pulse animation for location updates
+        locationPulse.value = withSpring(1.2, {}, () => {
+          locationPulse.value = withSpring(1);
+        });
       }, {
         enableHighAccuracy: true,
-        distanceInterval: 10, // Update every 10 meters
+        distanceInterval: 5, // Update every 5 meters
         timeout: 5000,
       });
       
       if (unsubscribe) {
         unsubscribeLocationWatchRef.current = unsubscribe;
-        Alert.alert('Location Tracking', 'Location tracking started. Your position will be updated in real-time.');
+        Alert.alert('Location Tracking', 'Real-time location tracking started.');
       } else {
         setIsTrackingLocation(false);
-        Alert.alert('Error', 'Failed to start location tracking. Please try again.');
+        Alert.alert('Error', 'Failed to start location tracking.');
       }
     } catch (error) {
       console.error('Error starting location tracking:', error);
@@ -351,6 +394,17 @@ export function InteractiveMap() {
       Alert.alert('Error', 'Failed to start location tracking. Please check your location settings.');
     }
   };
+
+  // Stop location tracking
+  const stopLocationTracking = () => {
+    if (unsubscribeLocationWatchRef.current) {
+      unsubscribeLocationWatchRef.current();
+      unsubscribeLocationWatchRef.current = null;
+    }
+    setIsTrackingLocation(false);
+    Alert.alert('Location Tracking', 'Location tracking stopped.');
+  };
+
   // Animated styles
   const searchBarAnimatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: searchBarScale.value }],
@@ -360,9 +414,13 @@ export function InteractiveMap() {
     transform: [{ scale: fabScale.value }],
   }));
 
-  // Initialize location on mount
+  const locationPulseStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: locationPulse.value }],
+  }));
+
+  // Initialize with default location
   useEffect(() => {
-    // Set default location initially
+    // Set default location for Bhubaneswar
     setCurrentLocation({ lat: 20.2960, lng: 85.8246 });
     
     // Cleanup function
@@ -381,25 +439,35 @@ export function InteractiveMap() {
     }
   }, [currentLocation, destination, selectedTransportMode]);
 
+  // Update location from device location
+  useEffect(() => {
+    if (deviceLocation) {
+      setCurrentLocation({
+        lat: deviceLocation.latitude,
+        lng: deviceLocation.longitude,
+      });
+      setLocationAccuracy(deviceLocation.accuracy || null);
+    }
+  }, [deviceLocation]);
+
   return (
     <ScrollView style={[styles.container, { backgroundColor: colors.background }]} showsVerticalScrollIndicator={false}>
       {/* Map Card */}
       <View style={[styles.mapCard, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}>
-        {/* Find My Location Button */}
-        <TouchableOpacity 
-          style={[styles.findLocationButton, { backgroundColor: colors.overlay }]}
-          onPress={handleFabPress}
-          disabled={locationLoading}
-        >
-          {locationLoading || isTrackingLocation ? (
-            <RotateCcw size={16} color={colors.text} />
-          ) : (
-            <MapPin size={16} color={colors.text} />
-          )}
-          <Text style={[styles.findLocationText, { color: colors.text }]}>
-            {locationLoading ? 'Locating...' : (isTrackingLocation ? 'Stop Tracking' : 'Track Location')}
+        {/* Location Status */}
+        <View style={[styles.locationStatus, { backgroundColor: colors.overlay }]}>
+          <Animated.View style={locationPulseStyle}>
+            {isTrackingLocation ? (
+              <Loader size={16} color={colors.primary} />
+            ) : (
+              <Crosshair size={16} color={currentLocation ? colors.success : colors.textSecondary} />
+            )}
+          </Animated.View>
+          <Text style={[styles.locationStatusText, { color: colors.text }]}>
+            {isTrackingLocation ? 'Tracking...' : 
+             currentLocation ? `Located ${locationAccuracy ? `(±${Math.round(locationAccuracy)}m)` : ''}` : 'No location'}
           </Text>
-        </TouchableOpacity>
+        </View>
 
         {/* Map Controls */}
         <View style={styles.mapControls}>
@@ -442,19 +510,50 @@ export function InteractiveMap() {
         </View>
         
         <Text style={[styles.journeyRoute, { color: colors.textInverse }]}>
-          Home → Downtown Office
+          {currentLocation && destination ? 
+            `Current Location → ${destination.name || 'Destination'}` :
+            'Set your origin and destination'
+          }
         </Text>
         
-        <Text style={[styles.journeyCoordinates, { color: colors.textSecondary }]}>
-          Current: 20.2960, 85.8246
-        </Text>
-
-        <TouchableOpacity style={[styles.helpButton, { backgroundColor: colors.primary }]}>
-          <HelpCircle size={16} color={colors.textInverse} />
-          <Text style={[styles.helpButtonText, { color: colors.textInverse }]}>
-            Need help with your route planning?
+        {currentLocation && (
+          <Text style={[styles.journeyCoordinates, { color: colors.textSecondary }]}>
+            Current: {currentLocation.lat.toFixed(4)}, {currentLocation.lng.toFixed(4)}
+            {locationAccuracy && ` (±${Math.round(locationAccuracy)}m)`}
           </Text>
-        </TouchableOpacity>
+        )}
+
+        <View style={styles.locationButtons}>
+          <Animated.View style={fabAnimatedStyle}>
+            <TouchableOpacity 
+              style={[styles.locationButton, { backgroundColor: colors.primary }]}
+              onPress={handleFabPress}
+              disabled={locationLoading}
+            >
+              {locationLoading ? (
+                <Loader size={16} color={colors.textInverse} />
+              ) : (
+                <Crosshair size={16} color={colors.textInverse} />
+              )}
+              <Text style={[styles.locationButtonText, { color: colors.textInverse }]}>
+                {locationLoading ? 'Getting Location...' : 'Get My Location'}
+              </Text>
+            </TouchableOpacity>
+          </Animated.View>
+
+          <TouchableOpacity 
+            style={[
+              styles.trackingButton, 
+              { backgroundColor: isTrackingLocation ? colors.error : colors.success }
+            ]}
+            onPress={isTrackingLocation ? stopLocationTracking : startLocationTracking}
+          >
+            <Navigation size={16} color={colors.textInverse} />
+            <Text style={[styles.trackingButtonText, { color: colors.textInverse }]}>
+              {isTrackingLocation ? 'Stop Tracking' : 'Track Live'}
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       {/* Search Section */}
@@ -657,7 +756,7 @@ const styles = StyleSheet.create({
     elevation: 4,
     overflow: 'hidden',
   },
-  findLocationButton: {
+  locationStatus: {
     position: 'absolute',
     top: 16,
     left: 16,
@@ -668,7 +767,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     zIndex: 10,
   },
-  findLocationText: {
+  locationStatusText: {
     marginLeft: 6,
     fontSize: 12,
     fontFamily: 'Quicksand-Medium',
@@ -716,7 +815,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.15,
     shadowRadius: 8,
     elevation: 4,
-    backgroundColor: '#4A3B4A', // Dark purple background like in the image
+    backgroundColor: '#4A3B4A',
   },
   journeyHeader: {
     flexDirection: 'row',
@@ -730,7 +829,7 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
   journeyRoute: {
-    fontSize: 24,
+    fontSize: 20,
     fontFamily: 'Nunito-Bold',
     marginBottom: 8,
     color: '#FFFFFF',
@@ -741,18 +840,37 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     color: '#B8A8B8',
   },
-  helpButton: {
+  locationButtons: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  locationButton: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 16,
+    justifyContent: 'center',
     paddingVertical: 12,
+    paddingHorizontal: 16,
     borderRadius: 25,
-    alignSelf: 'flex-end',
   },
-  helpButtonText: {
+  locationButtonText: {
     marginLeft: 8,
     fontSize: 14,
-    fontFamily: 'Quicksand-Medium',
+    fontFamily: 'Quicksand-SemiBold',
+  },
+  trackingButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 25,
+  },
+  trackingButtonText: {
+    marginLeft: 8,
+    fontSize: 14,
+    fontFamily: 'Quicksand-SemiBold',
   },
   searchSection: {
     paddingHorizontal: 20,
