@@ -33,6 +33,8 @@ export function GoogleMapView({
   const { colors, isDarkMode } = useTheme();
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<any>(null);
+  const originMarkerRef = useRef<any>(null);
+  const destinationMarkerRef = useRef<any>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const polylinesRef = useRef<any[]>([]);
@@ -122,7 +124,7 @@ export function GoogleMapView({
       mapInstanceRef.current = map;
 
       // Add origin marker
-      new window.google.maps.Marker({
+      originMarkerRef.current = new window.google.maps.Marker({
         position: origin,
         map: map,
         title: 'Origin',
@@ -137,7 +139,7 @@ export function GoogleMapView({
       });
 
       // Add destination marker
-      new window.google.maps.Marker({
+      destinationMarkerRef.current = new window.google.maps.Marker({
         position: destination,
         map: map,
         title: 'Destination',
@@ -171,6 +173,52 @@ export function GoogleMapView({
       setError('Failed to initialize map');
     }
   };
+
+  // Update origin marker when origin changes
+  useEffect(() => {
+    if (originMarkerRef.current && window.google && isLoaded) {
+      originMarkerRef.current.setPosition(origin);
+      
+      // Update map bounds to include both markers
+      if (destinationMarkerRef.current) {
+        const bounds = new window.google.maps.LatLngBounds();
+        bounds.extend(origin);
+        bounds.extend(destination);
+        mapInstanceRef.current?.fitBounds(bounds);
+        
+        // Prevent over-zooming
+        setTimeout(() => {
+          const currentZoom = mapInstanceRef.current?.getZoom();
+          if (currentZoom && currentZoom > 16) {
+            mapInstanceRef.current?.setZoom(16);
+          }
+        }, 100);
+      }
+    }
+  }, [origin.lat, origin.lng, isLoaded]);
+
+  // Update destination marker when destination changes
+  useEffect(() => {
+    if (destinationMarkerRef.current && window.google && isLoaded) {
+      destinationMarkerRef.current.setPosition(destination);
+      
+      // Update map bounds to include both markers
+      if (originMarkerRef.current) {
+        const bounds = new window.google.maps.LatLngBounds();
+        bounds.extend(origin);
+        bounds.extend(destination);
+        mapInstanceRef.current?.fitBounds(bounds);
+        
+        // Prevent over-zooming
+        setTimeout(() => {
+          const currentZoom = mapInstanceRef.current?.getZoom();
+          if (currentZoom && currentZoom > 16) {
+            mapInstanceRef.current?.setZoom(16);
+          }
+        }, 100);
+      }
+    }
+  }, [destination.lat, destination.lng, isLoaded]);
 
   const updateRoutes = () => {
     if (!mapInstanceRef.current || !window.google || !isLoaded) return;
