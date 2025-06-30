@@ -63,7 +63,7 @@ export default function SoundScreen() {
       icon: <Waves size={24} color="#FAFAFA" />,
       color: theme.colors.primaryLight,
       description: 'Calming ocean waves and seagulls',
-      isPlaying: true,
+      isPlaying: false,
       volume: 75,
     },
     {
@@ -327,36 +327,40 @@ export default function SoundScreen() {
                   colors={activePreset === preset.id ? [preset.color, theme.colors.primary] : [theme.colors.card, theme.colors.surface]}
                   style={styles.presetGradient}
                 >
-                  <View style={[
-                    styles.presetIconContainer,
-                    { backgroundColor: activePreset === preset.id ? 'rgba(255,255,255,0.2)' : preset.color }
-                  ]}>
-                    {preset.icon}
-                  </View>
-                  <Text style={[
-                    styles.presetButtonText,
-                    { color: activePreset === preset.id ? theme.colors.textInverse : theme.colors.text }
-                  ]}>
-                    {preset.name}
-                  </Text>
-                  <Text style={[
-                    styles.presetDescription,
-                    { color: activePreset === preset.id ? theme.colors.textInverse : theme.colors.textSecondary }
-                  ]}>
-                    {preset.description}
-                  </Text>
-                  
-                  {/* Show sound count */}
-                  <View style={[
-                    styles.soundCount,
-                    { backgroundColor: activePreset === preset.id ? 'rgba(255,255,255,0.2)' : theme.colors.primaryLight }
-                  ]}>
-                    <Text style={[
-                      styles.soundCountText,
-                      { color: activePreset === preset.id ? theme.colors.textInverse : theme.colors.primary }
+                  <View style={styles.presetContent}>
+                    <View style={[
+                      styles.presetIconContainer,
+                      { backgroundColor: activePreset === preset.id ? 'rgba(255,255,255,0.2)' : preset.color }
                     ]}>
-                      {preset.sounds.length} sounds
-                    </Text>
+                      {preset.icon}
+                    </View>
+                    <View style={styles.presetTextContainer}>
+                      <Text style={[
+                        styles.presetButtonText,
+                        { color: activePreset === preset.id ? theme.colors.textInverse : theme.colors.text }
+                      ]}>
+                        {preset.name}
+                      </Text>
+                      <Text style={[
+                        styles.presetDescription,
+                        { color: activePreset === preset.id ? theme.colors.textInverse : theme.colors.textSecondary }
+                      ]}>
+                        {preset.description}
+                      </Text>
+                    </View>
+                    
+                    {/* Show sound count */}
+                    <View style={[
+                      styles.soundCount,
+                      { backgroundColor: activePreset === preset.id ? 'rgba(255,255,255,0.2)' : theme.colors.primaryLight }
+                    ]}>
+                      <Text style={[
+                        styles.soundCountText,
+                        { color: activePreset === preset.id ? theme.colors.textInverse : theme.colors.primary }
+                      ]}>
+                        {preset.sounds.length}
+                      </Text>
+                    </View>
                   </View>
                 </LinearGradient>
               </TouchableOpacity>
@@ -628,6 +632,8 @@ const styles = StyleSheet.create({
   },
   presetGradient: {
     padding: 20,
+  },
+  presetContent: {
     flexDirection: 'row',
     alignItems: 'center',
   },
@@ -639,28 +645,31 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginRight: 16,
   },
+  presetTextContainer: {
+    flex: 1,
+  },
   presetButtonText: {
     fontFamily: 'Nunito-SemiBold',
     fontSize: 18,
-    flex: 1,
+    marginBottom: 4,
   },
   presetDescription: {
     fontFamily: 'Quicksand-Regular',
-    fontSize: 12,
-    position: 'absolute',
-    left: 84,
-    top: 40,
-    right: 80,
+    fontSize: 14,
+    lineHeight: 18,
   },
   soundCount: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-    marginLeft: 8,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: 12,
   },
   soundCountText: {
     fontFamily: 'Quicksand-SemiBold',
-    fontSize: 11,
+    fontSize: 14,
+    fontWeight: '600',
   },
   soundsSection: {
     marginBottom: 32,
