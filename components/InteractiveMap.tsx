@@ -65,6 +65,7 @@ export function InteractiveMap() {
   const [currentLocation, setCurrentLocation] = useState<Location | null>(null);
   const [destination, setDestination] = useState<Location | null>({ lat: 20.2700, lng: 85.8400 });
   const [selectedRoute, setSelectedRoute] = useState<string | null>(null);
+  const [isTrackingLocation, setIsTrackingLocation] = useState(false);
   
   // UI states
   const [searchQuery, setSearchQuery] = useState('');
@@ -76,6 +77,9 @@ export function InteractiveMap() {
   // Animation values
   const searchBarScale = useSharedValue(1);
   const fabScale = useSharedValue(1);
+  
+  // Location tracking ref
+  const unsubscribeLocationWatchRef = useRef<(() => void) | null>(null);
 
   // Mock saved locations
   const savedLocations: SavedLocation[] = [
@@ -265,9 +269,87 @@ export function InteractiveMap() {
     fabScale.value = withSpring(0.95, {}, () => {
       fabScale.value = withSpring(1);
     });
-    getCurrentLocation();
+    
+    if (isTrackingLocation) {
+      // Stop tracking
+      if (unsubscribeLocationWatchRef.current) {
+        unsubscribeLocationWatchRef.current();
+        unsubscribeLocationWatchRef.current = null;
+      }
+      setIsTrackingLocation(false);
+      Alert.alert('Location Tracking', 'Location tracking stopped.');
+    } else {
+      // Start tracking
+      startLocationTracking();
+    }
   };
 
+  // Start location tracking
+  const startLocationTracking = async () => {
+    try {
+      // Request permissions first
+      const permStatus = await requestPermissions();
+      if (!permStatus.granted) {
+        Alert.alert(
+          'Location Permission Required',
+          'Please enable location services to track your current location on the map.',
+          [
+            { text: 'Cancel', style: 'cancel' },
+            { text: 'Settings', onPress: () => {
+              // On web, we can't open settings, so just show instructions
+              if (Platform.OS === 'web') {
+                Alert.alert(
+                  'Enable Location',
+                  'Please allow location access in your browser settings and refresh the page.'
+                );
+              }
+            }}
+          ]
+        );
+        return;
+      }
+
+      setIsTrackingLocation(true);
+      
+      // Get initial location
+      const initialLocation = await getDeviceLocation({
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 60000,
+      });
+      
+      if (initialLocation) {
+        setCurrentLocation({
+          lat: initialLocation.latitude,
+          lng: initialLocation.longitude,
+        });
+      }
+
+      // Start watching location changes
+      const unsubscribe = watchLocation((location) => {
+        setCurrentLocation({ 
+          lat: location.latitude, 
+          lng: location.longitude 
+        });
+      }, {
+        enableHighAccuracy: true,
+        distanceInterval: 10, // Update every 10 meters
+        timeout: 5000,
+      });
+      
+      if (unsubscribe) {
+        unsubscribeLocationWatchRef.current = unsubscribe;
+        Alert.alert('Location Tracking', 'Location tracking started. Your position will be updated in real-time.');
+      } else {
+        setIsTrackingLocation(false);
+        Alert.alert('Error', 'Failed to start location tracking. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error starting location tracking:', error);
+      setIsTrackingLocation(false);
+      Alert.alert('Error', 'Failed to start location tracking. Please check your location settings.');
+    }
+  };
   // Animated styles
   const searchBarAnimatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: searchBarScale.value }],
@@ -282,8 +364,13 @@ export function InteractiveMap() {
     // Set default location initially
     setCurrentLocation({ lat: 20.2960, lng: 85.8246 });
     
-    // Try to get actual location
-    getCurrentLocation();
+    // Cleanup function
+    return () => {
+      if (unsubscribeLocationWatchRef.current) {
+        unsubscribeLocationWatchRef.current();
+        unsubscribeLocationWatchRef.current = null;
+      }
+    };
   }, []);
 
   // Plan route when both locations are set
@@ -303,13 +390,13 @@ export function InteractiveMap() {
           onPress={handleFabPress}
           disabled={locationLoading}
         >
-          {locationLoading ? (
+          {locationLoading || isTrackingLocation ? (
             <RotateCcw size={16} color={colors.text} />
           ) : (
             <MapPin size={16} color={colors.text} />
           )}
           <Text style={[styles.findLocationText, { color: colors.text }]}>
-            {locationLoading ? 'Locating...' : 'Find My Location'}
+            {locationLoading ? 'Locating...' : (isTrackingLocation ? 'Stop Tracking' : 'Track Location')}
           </Text>
         </TouchableOpacity>
 
