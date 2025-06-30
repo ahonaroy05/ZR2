@@ -3,6 +3,8 @@ import { View, Text, ScrollView, TouchableOpacity, StyleSheet, SafeAreaView, Ale
 import Slider from '@react-native-community/slider';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { BoltLogo } from '@/components/BoltLogo';
 import { 
   Play, 
   Pause, 
@@ -44,6 +46,7 @@ interface SoundPreset {
 
 export default function SoundScreen() {
   const { theme } = useTheme();
+  const { isDemoMode } = useAuth();
   const [masterVolume, setMasterVolume] = useState(70);
   const [noiseCancellation, setNoiseCancellation] = useState(true);
   const [activePreset, setActivePreset] = useState<string | null>(null);
@@ -205,6 +208,14 @@ export default function SoundScreen() {
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      {/* Bolt Logo */}
+      <View style={[
+        styles.boltLogoContainer,
+        { top: isDemoMode ? 120 : 80 }
+      ]}>
+        <BoltLogo size={36} />
+      </View>
+
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
           <Text style={[styles.title, { color: theme.colors.text }]}>Soundscape Mixer</Text>
@@ -448,6 +459,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#666',
     marginTop: 8,
+  },
+  boltLogoContainer: {
+    position: 'absolute',
+    right: 24,
+    zIndex: 1000,
   },
   controlsSection: {
     marginBottom: 32,

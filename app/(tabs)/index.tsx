@@ -15,6 +15,7 @@ import { StressMeter } from '@/components/StressMeter';
 import { BreathingBubble } from '@/components/BreathingBubble';
 import { EmergencyCalm } from '@/components/EmergencyCalm';
 import { SettingsDrawer } from '@/components/SettingsDrawer';
+import { BoltLogo } from '@/components/BoltLogo';
 import { Calendar, Clock, TrendingUp, Shield, MapPin, Menu } from 'lucide-react-native';
 
 export default function HomeScreen() {
@@ -100,6 +101,14 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      {/* Bolt Logo */}
+      <View style={[
+        styles.boltLogoContainer,
+        { top: isDemoMode ? 120 : 80 }
+      ]}>
+        <BoltLogo size={36} />
+      </View>
+
       <TouchableOpacity 
         style={[
           styles.settingsButton,
@@ -286,6 +295,11 @@ const styles = StyleSheet.create({
     fontFamily: 'Quicksand-Medium',
     fontSize: 16,
     marginTop: 8,
+  },
+  boltLogoContainer: {
+    position: 'absolute',
+    right: 24,
+    zIndex: 1000,
   },
   settingsButton: {
     position: 'absolute',

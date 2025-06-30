@@ -4,6 +4,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useJournalEntries } from '@/hooks/useJournalEntries';
 import { useStressTracking } from '@/hooks/useStressTracking';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { BoltLogo } from '@/components/BoltLogo';
 import { 
   Mic, 
   MicOff, 
@@ -19,6 +21,7 @@ import {
 
 export default function JournalScreen() {
   const { theme } = useTheme();
+  const { isDemoMode } = useAuth();
   const { entries, createEntry, loading: entriesLoading } = useJournalEntries();
   const { recordStressLevel } = useStressTracking();
   const [isRecording, setIsRecording] = useState(false);
@@ -122,6 +125,14 @@ export default function JournalScreen() {
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      {/* Bolt Logo */}
+      <View style={[
+        styles.boltLogoContainer,
+        { top: isDemoMode ? 120 : 80 }
+      ]}>
+        <BoltLogo size={36} />
+      </View>
+
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
           <Text style={[styles.title, { color: theme.colors.text }]}>Mindful Journal</Text>
@@ -307,6 +318,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#666',
     marginTop: 8,
+  },
+  boltLogoContainer: {
+    position: 'absolute',
+    right: 24,
+    zIndex: 1000,
   },
   newEntrySection: {
     borderRadius: 20,

@@ -22,6 +22,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useAchievements } from '@/hooks/useAchievements';
 import { useStreakTracking } from '@/hooks/useStreakTracking';
 import { useDailyAffirmations } from '@/hooks/useDailyAffirmations';
+import { BoltLogo } from '@/components/BoltLogo';
 import { 
   Trophy, 
   Flame, 
@@ -351,6 +352,14 @@ export default function AchievementsScreen() {
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      {/* Bolt Logo */}
+      <View style={[
+        styles.boltLogoContainer,
+        { top: isDemoMode ? 120 : 80 }
+      ]}>
+        <BoltLogo size={36} />
+      </View>
+
       {/* Confetti Animation */}
       {showConfetti && (
         <Animated.View style={[styles.confettiContainer, confettiStyle]}>
@@ -429,6 +438,11 @@ const styles = StyleSheet.create({
     fontFamily: 'Quicksand-Medium',
     fontSize: 16,
     marginTop: 8,
+  },
+  boltLogoContainer: {
+    position: 'absolute',
+    right: 24,
+    zIndex: 1000,
   },
   confettiContainer: {
     position: 'absolute',
