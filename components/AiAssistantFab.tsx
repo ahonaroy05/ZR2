@@ -107,7 +107,7 @@ export function AiAssistantFab({ onPress, isActive = false }: AiAssistantFabProp
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
-    bottom: 20,
+    bottom: 120, // Moved up from 20 to 120 to be above the tab bar
     right: 20,
     alignItems: 'center',
     justifyContent: 'center',
