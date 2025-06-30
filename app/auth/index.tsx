@@ -122,8 +122,10 @@ export default function AuthScreen() {
         // Handle specific error cases with user-friendly messages
         if (result.error.message.includes('Invalid login credentials') || 
             result.error.message.includes('invalid_credentials') ||
-            result.error.message.includes('Invalid email or password')) {
-          userFriendlyMessage = 'Invalid password. Please check your password and try again.';
+            result.error.message.includes('Invalid email or password') ||
+            result.error.message.includes('wrong password') ||
+            result.error.message.includes('incorrect password')) {
+          userFriendlyMessage = 'Invalid password';
         } else if (result.error.message.includes('Email not confirmed')) {
           userFriendlyMessage = 'Please check your email and confirm your account before signing in.';
         } else if (result.error.message.includes('User not found') ||
