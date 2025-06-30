@@ -185,15 +185,6 @@ export default function AchievementsScreen() {
                 { opacity: milestone.unlocked ? 1 : 0.4 }
               ]}>
                 <View style={styles.scalloppedContainer}>
-                  <LinearGradient
-                    colors={milestone.unlocked ? milestone.color : ['#E0E0E0', '#BDBDBD']}
-                    style={styles.scalloppedGradient}
-                  >
-                    <Text style={[styles.milestoneNumber, { color: '#FFFFFF' }]}>
-                      {milestone.days}
-                    </Text>
-                  </LinearGradient>
-                  
                   {/* Scalloped edges */}
                   <View style={styles.scalloppedEdges}>
                     {[...Array(12)].map((_, i) => (
@@ -209,6 +200,15 @@ export default function AchievementsScreen() {
                       />
                     ))}
                   </View>
+                  
+                  <LinearGradient
+                    colors={milestone.unlocked ? milestone.color : ['#E0E0E0', '#BDBDBD']}
+                    style={styles.scalloppedGradient}
+                  >
+                    <Text style={[styles.milestoneNumber, { color: '#FFFFFF' }]}>
+                      {milestone.days}
+                    </Text>
+                  </LinearGradient>
                 </View>
                 
                 {/* Decorative sparkles */}

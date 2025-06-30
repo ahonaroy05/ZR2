@@ -81,7 +81,7 @@ const ACHIEVEMENTS: Achievement[] = [
     title: 'Mood Alchemist',
     description: 'Write 5 journal entries',
     icon: 'palette',
-    colors: ['#FFB6C1', '#F48FB1'],
+    colors: ['#FFB6C1', '#F48FB1', '#E91E63', '#AD1457'],
     category: 'journal',
     requirement: {
       type: 'journal_count',
