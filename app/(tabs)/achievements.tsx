@@ -34,7 +34,14 @@ import {
   Award,
   Crown,
   Shield,
-  Gem
+  Gem,
+  Leaf,
+  RotateCcw,
+  Magnet,
+  Sun,
+  Palette,
+  Headphones,
+  User
 } from 'lucide-react-native';
 
 const { width } = Dimensions.get('window');
@@ -94,27 +101,31 @@ export default function AchievementsScreen() {
     opacity: confettiScale.value,
   }));
 
-  const getAchievementIcon = (iconName: string) => {
-    const iconProps = { size: 24, color: colors.textInverse };
+  const getAchievementIcon = (iconName: string, isUnlocked: boolean) => {
+    const iconProps = { 
+      size: 32, 
+      color: isUnlocked ? '#FFFFFF' : '#999999',
+      strokeWidth: 2
+    };
     
     switch (iconName) {
-      case 'sprout': return <Sparkles {...iconProps} />;
-      case 'loop': return <RefreshCw {...iconProps} />;
-      case 'magnet': return <Target {...iconProps} />;
-      case 'sun': return <Star {...iconProps} />;
-      case 'palette': return <Heart {...iconProps} />;
+      case 'sprout': return <Leaf {...iconProps} />;
+      case 'loop': return <RotateCcw {...iconProps} />;
+      case 'magnet': return <Magnet {...iconProps} />;
+      case 'sun': return <Sun {...iconProps} />;
+      case 'palette': return <Palette {...iconProps} />;
       case 'shield': return <Shield {...iconProps} />;
-      case 'headphones': return <Zap {...iconProps} />;
-      case 'meditation': return <Crown {...iconProps} />;
+      case 'headphones': return <Headphones {...iconProps} />;
+      case 'meditation': return <User {...iconProps} />;
       default: return <Trophy {...iconProps} />;
     }
   };
 
   const getStreakBadgeColor = (streak: number) => {
-    if (streak >= 30) return ['#FF6B9D', '#C44569'];
-    if (streak >= 14) return ['#FFA726', '#FF8F00'];
-    if (streak >= 7) return ['#AB47BC', '#8E24AA'];
-    if (streak >= 3) return ['#26A69A', '#00695C'];
+    if (streak >= 30) return ['#E91E63', '#AD1457']; // Pink
+    if (streak >= 14) return ['#FF9800', '#F57C00']; // Orange
+    if (streak >= 7) return ['#9C27B0', '#7B1FA2']; // Purple
+    if (streak >= 3) return ['#009688', '#00695C']; // Teal
     return [colors.primary, colors.accent];
   };
 
@@ -155,6 +166,58 @@ export default function AchievementsScreen() {
     </View>
   );
 
+  const renderStreakMilestones = () => {
+    const milestones = [
+      { days: 3, color: ['#26A69A', '#00695C'], unlocked: currentStreak >= 3 },
+      { days: 7, color: ['#AB47BC', '#8E24AA'], unlocked: currentStreak >= 7 },
+      { days: 14, color: ['#FF9800', '#F57C00'], unlocked: currentStreak >= 14 },
+      { days: 30, color: ['#E91E63', '#AD1457'], unlocked: currentStreak >= 30 },
+    ];
+
+    return (
+      <View style={styles.streakMilestonesSection}>
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>Streak Milestones</Text>
+        <View style={styles.milestonesGrid}>
+          {milestones.map((milestone) => (
+            <View key={milestone.days} style={styles.milestoneCard}>
+              <View style={[
+                styles.scalloppedBadge,
+                { opacity: milestone.unlocked ? 1 : 0.4 }
+              ]}>
+                <LinearGradient
+                  colors={milestone.unlocked ? milestone.color : ['#E0E0E0', '#BDBDBD']}
+                  style={styles.scalloppedGradient}
+                >
+                  <Text style={[styles.milestoneNumber, { color: '#FFFFFF' }]}>
+                    {milestone.days}
+                  </Text>
+                </LinearGradient>
+                
+                {/* Decorative sparkles */}
+                {milestone.unlocked && (
+                  <>
+                    <View style={[styles.sparkle, styles.sparkle1]}>
+                      <Star size={8} color="#FFD700" fill="#FFD700" />
+                    </View>
+                    <View style={[styles.sparkle, styles.sparkle2]}>
+                      <Star size={6} color="#FF69B4" fill="#FF69B4" />
+                    </View>
+                    <View style={[styles.sparkle, styles.sparkle3]}>
+                      <Star size={10} color="#00CED1" fill="#00CED1" />
+                    </View>
+                  </>
+                )}
+              </View>
+              <Text style={[styles.milestoneLabel, { color: colors.text }]}>
+                {milestone.days} days
+              </Text>
+            </View>
+          ))}
+        </View>
+      </View>
+    );
+  };
+
   const renderAchievementBadge = (achievement: any, isUnlocked: boolean) => {
     const progress = getAchievementProgress(achievement.id);
     
@@ -163,7 +226,6 @@ export default function AchievementsScreen() {
         key={achievement.id}
         style={[
           styles.achievementBadge,
-          { backgroundColor: colors.card, shadowColor: colors.shadow },
           !isUnlocked && styles.lockedBadge
         ]}
         onPress={() => {
@@ -181,11 +243,30 @@ export default function AchievementsScreen() {
           { opacity: isUnlocked ? 1 : 0.4 }
         ]}>
           <LinearGradient
-            colors={isUnlocked ? achievement.colors : [colors.border, colors.border]}
+            colors={isUnlocked ? achievement.colors : ['#F5F5F5', '#E0E0E0']}
             style={styles.badgeIconGradient}
           >
-            {getAchievementIcon(achievement.icon)}
+            {getAchievementIcon(achievement.icon, isUnlocked)}
           </LinearGradient>
+          
+          {/* Decorative sparkles for unlocked badges */}
+          {isUnlocked && (
+            <>
+              <View style={[styles.badgeSparkle, styles.badgeSparkle1]}>
+                <Star size={8} color="#FFD700" fill="#FFD700" />
+              </View>
+              <View style={[styles.badgeSparkle, styles.badgeSparkle2]}>
+                <Star size={6} color="#FF69B4" fill="#FF69B4" />
+              </View>
+              <View style={[styles.badgeSparkle, styles.badgeSparkle3]}>
+                <Star size={10} color="#00CED1" fill="#00CED1" />
+              </View>
+              <View style={[styles.badgeSparkle, styles.badgeSparkle4]}>
+                <Star size={7} color="#32CD32" fill="#32CD32" />
+              </View>
+            </>
+          )}
+          
           {!isUnlocked && progress > 0 && (
             <View style={[styles.progressRing, { borderColor: colors.primary }]}>
               <Text style={[styles.progressPercentage, { color: colors.primary }]}>
@@ -204,7 +285,7 @@ export default function AchievementsScreen() {
         
         {isUnlocked && (
           <View style={styles.unlockedIndicator}>
-            <Star size={12} color={colors.warning} fill={colors.warning} />
+            <Star size={12} color="#FFD700" fill="#FFD700" />
           </View>
         )}
       </TouchableOpacity>
@@ -283,6 +364,9 @@ export default function AchievementsScreen() {
 
         {/* Streak Section */}
         {renderStreakSection()}
+
+        {/* Streak Milestones */}
+        {renderStreakMilestones()}
 
         {/* Achievements Grid */}
         <View style={styles.achievementsSection}>
@@ -414,6 +498,64 @@ const styles = StyleSheet.create({
     marginTop: 8,
     textAlign: 'center',
   },
+  streakMilestonesSection: {
+    marginBottom: 32,
+  },
+  milestonesGrid: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 12,
+  },
+  milestoneCard: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  scalloppedBadge: {
+    position: 'relative',
+    marginBottom: 8,
+  },
+  scalloppedGradient: {
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
+    // Scalloped edge effect
+    borderWidth: 8,
+    borderColor: 'transparent',
+    borderStyle: 'solid',
+  },
+  milestoneNumber: {
+    fontFamily: 'Nunito-Bold',
+    fontSize: 24,
+    textShadowColor: 'rgba(0,0,0,0.3)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
+  },
+  milestoneLabel: {
+    fontFamily: 'Quicksand-SemiBold',
+    fontSize: 14,
+    textAlign: 'center',
+  },
+  sparkle: {
+    position: 'absolute',
+  },
+  sparkle1: {
+    top: -5,
+    right: 5,
+  },
+  sparkle2: {
+    bottom: 5,
+    left: -5,
+  },
+  sparkle3: {
+    top: 10,
+    left: -8,
+  },
   achievementsSection: {
     marginBottom: 32,
   },
@@ -430,6 +572,7 @@ const styles = StyleSheet.create({
   },
   achievementBadge: {
     width: (width - 80) / 2,
+    backgroundColor: '#F8F6F0', // Cream background like in the images
     borderRadius: 20,
     padding: 20,
     alignItems: 'center',
@@ -447,15 +590,34 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   badgeIconGradient: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
+    width: 80,
+    height: 80,
+    borderRadius: 40,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowOffset: { width: 0, height: 3 },
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
-    shadowRadius: 6,
-    elevation: 3,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  badgeSparkle: {
+    position: 'absolute',
+  },
+  badgeSparkle1: {
+    top: -8,
+    right: 8,
+  },
+  badgeSparkle2: {
+    bottom: 8,
+    left: -8,
+  },
+  badgeSparkle3: {
+    top: 15,
+    left: -12,
+  },
+  badgeSparkle4: {
+    bottom: -5,
+    right: -5,
   },
   progressRing: {
     position: 'absolute',
@@ -475,9 +637,10 @@ const styles = StyleSheet.create({
   },
   badgeTitle: {
     fontFamily: 'Quicksand-SemiBold',
-    fontSize: 14,
+    fontSize: 16,
     textAlign: 'center',
-    lineHeight: 18,
+    lineHeight: 20,
+    color: '#5A5A5A', // Darker text like in the images
   },
   unlockedIndicator: {
     position: 'absolute',
