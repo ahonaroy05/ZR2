@@ -2,17 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '@/contexts/ThemeContext';
-import { 
-  Clock, 
-  MapPin, 
-  AlertTriangle, 
-  TrendingUp, 
-  TrendingDown,
-  Car,
-  Train,
-  Bike,
-  User
-} from 'lucide-react-native';
+import { Clock, MapPin, TriangleAlert as AlertTriangle, TrendingUp, TrendingDown, Car, Brain as Train, Bike, User } from 'lucide-react-native';
 
 interface RouteCardProps {
   route: {

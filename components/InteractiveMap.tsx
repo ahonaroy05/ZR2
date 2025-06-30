@@ -19,26 +19,7 @@ import Animated, {
 import { useTheme } from '@/contexts/ThemeContext';
 import { GoogleMapView } from '@/components/GoogleMapView';
 import { useGoogleMapsRoutes } from '@/hooks/useGoogleMapsRoutes';
-import {
-  MapPin,
-  Navigation,
-  Search,
-  Clock,
-  Car,
-  Train,
-  Bike,
-  User,
-  Star,
-  Home,
-  Briefcase,
-  Coffee,
-  Heart,
-  X,
-  RotateCcw,
-  Zap,
-  AlertTriangle,
-  TrendingUp,
-} from 'lucide-react-native';
+import { MapPin, Navigation, Search, Clock, Car, Brain as Train, Bike, User, Star, Chrome as Home, Briefcase, Coffee, Heart, X, RotateCcw, Zap, TriangleAlert as AlertTriangle, TrendingUp } from 'lucide-react-native';
 
 const { width, height } = Dimensions.get('window');
 
