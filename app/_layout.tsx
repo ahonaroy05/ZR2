@@ -63,14 +63,10 @@ export default function RootLayout() {
     return (
       <View style={styles.loadingContainer}>
         <ZenRouteLogo size={120} animated={false} />
-      </View>
-    );
-  }
-
   return (
     <ThemeProvider>
       <AuthProvider>
-        <RootLayoutContent />
+        {!fontsLoaded && !fontError && Platform.OS !== 'web' ? null : <RootLayoutContent />}
       </AuthProvider>
     </ThemeProvider>
   );
