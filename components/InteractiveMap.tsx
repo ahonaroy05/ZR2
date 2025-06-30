@@ -58,7 +58,8 @@ export function InteractiveMap() {
     isLoading: locationLoading, 
     error: locationError,
     getCurrentLocation: getDeviceLocation,
-    requestPermissions 
+    requestPermissions,
+    watchLocation
   } = useLocationPermissions();
   
   // Location states
