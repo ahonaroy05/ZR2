@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export interface ThemeColors {
@@ -108,15 +109,30 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   // Load theme preference from storage
   useEffect(() => {
     const loadThemePreference = async () => {
-      try {
-        const savedTheme = await AsyncStorage.getItem(THEME_STORAGE_KEY);
-        if (savedTheme !== null) {
-          setIsDarkMode(JSON.parse(savedTheme));
+      if (Platform.OS === 'web') {
+        // Use localStorage for web
+        try {
+          const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+          if (savedTheme !== null) {
+            setIsDarkMode(JSON.parse(savedTheme));
+          }
+        } catch (error) {
+          console.error('Error loading theme preference from localStorage:', error);
+        } finally {
+          setIsLoading(false);
         }
-      } catch (error) {
-        console.error('Error loading theme preference:', error);
-      } finally {
-        setIsLoading(false);
+      } else {
+        // Use AsyncStorage for mobile
+        try {
+          const savedTheme = await AsyncStorage.getItem(THEME_STORAGE_KEY);
+          if (savedTheme !== null) {
+            setIsDarkMode(JSON.parse(savedTheme));
+          }
+        } catch (error) {
+          console.error('Error loading theme preference from AsyncStorage:', error);
+        } finally {
+          setIsLoading(false);
+        }
       }
     };
 
@@ -125,10 +141,20 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   // Save theme preference to storage
   const saveThemePreference = async (isDark: boolean) => {
-    try {
-      await AsyncStorage.setItem(THEME_STORAGE_KEY, JSON.stringify(isDark));
-    } catch (error) {
-      console.error('Error saving theme preference:', error);
+    if (Platform.OS === 'web') {
+      // Use localStorage for web
+      try {
+        localStorage.setItem(THEME_STORAGE_KEY, JSON.stringify(isDark));
+      } catch (error) {
+        console.error('Error saving theme preference to localStorage:', error);
+      }
+    } else {
+      // Use AsyncStorage for mobile
+      try {
+        await AsyncStorage.setItem(THEME_STORAGE_KEY, JSON.stringify(isDark));
+      } catch (error) {
+        console.error('Error saving theme preference to AsyncStorage:', error);
+      }
     }
   };
 
