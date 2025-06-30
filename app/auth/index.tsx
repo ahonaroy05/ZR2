@@ -72,12 +72,27 @@ export default function AuthScreen() {
       }
 
       if (result.error) {
-        Alert.alert('Error', result.error.message);
+        // Handle specific authentication errors with clear messaging
+        let errorMessage = result.error.message;
+        
+        if (result.error.message.includes('Invalid login credentials') || 
+            result.error.message.includes('invalid_credentials') ||
+            result.error.message.includes('Invalid email or password')) {
+          errorMessage = 'Invalid email or password. Please check your credentials and try again.';
+        } else if (result.error.message.includes('Email not confirmed')) {
+          errorMessage = 'Please check your email and confirm your account before signing in.';
+        } else if (result.error.message.includes('User not found')) {
+          errorMessage = 'Invalid email or password. Please check your credentials and try again.';
+        } else if (result.error.message.includes('Too many requests')) {
+          errorMessage = 'Too many login attempts. Please wait a moment before trying again.';
+        }
+        
+        Alert.alert('Authentication Error', errorMessage);
       } else {
         router.replace('/(tabs)');
       }
     } catch (error) {
-      Alert.alert('Error', 'An unexpected error occurred');
+      Alert.alert('Error', 'An unexpected error occurred. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -110,7 +125,17 @@ export default function AuthScreen() {
       });
 
       if (error) {
-        Alert.alert('Error', error.message);
+        // Handle forgot password errors with clear messaging
+        let errorMessage = error.message;
+        
+        if (error.message.includes('User not found') || 
+            error.message.includes('Invalid email')) {
+          errorMessage = 'No account found with this email address. Please check your email and try again.';
+        } else if (error.message.includes('Too many requests')) {
+          errorMessage = 'Too many password reset requests. Please wait before trying again.';
+        }
+        
+        Alert.alert('Password Reset Error', errorMessage);
       } else {
         Alert.alert(
           'Password Reset Email Sent',
@@ -119,7 +144,7 @@ export default function AuthScreen() {
         );
       }
     } catch (error) {
-      Alert.alert('Error', 'An unexpected error occurred. Please try again.');
+      Alert.alert('Password Reset Error', 'An unexpected error occurred. Please try again.');
     } finally {
       setForgotPasswordLoading(false);
     }
