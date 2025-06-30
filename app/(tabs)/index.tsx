@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, SafeAreaView, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated, {
   useSharedValue,
@@ -16,6 +16,7 @@ import { BreathingBubble } from '@/components/BreathingBubble';
 import { EmergencyCalm } from '@/components/EmergencyCalm';
 import { SettingsDrawer } from '@/components/SettingsDrawer';
 import { BoltLogo } from '@/components/BoltLogo';
+import { router } from 'expo-router';
 import { Calendar, Clock, TrendingUp, Shield, MapPin, Menu } from 'lucide-react-native';
 
 export default function HomeScreen() {
@@ -75,6 +76,22 @@ export default function HomeScreen() {
       damping: 15,
       stiffness: 300,
     });
+  };
+
+  const handleStartJourney = () => {
+    router.push('/(tabs)/map');
+  };
+
+  const handleViewJournal = () => {
+    router.push('/(tabs)/journal');
+  };
+
+  const handleViewSounds = () => {
+    router.push('/(tabs)/sound');
+  };
+
+  const handleViewAchievements = () => {
+    router.push('/(tabs)/achievements');
   };
 
   // Calculate today's stats from actual data
@@ -163,7 +180,11 @@ export default function HomeScreen() {
         <View style={styles.quickActions}>
           <Text style={[styles.sectionTitle, { color: colors.text }]}>Quick Actions</Text>
           <View style={styles.actionGrid}>
-            <TouchableOpacity style={[styles.actionCard, { shadowColor: colors.shadow }]}>
+            <TouchableOpacity 
+              style={[styles.actionCard, { shadowColor: colors.shadow }]}
+              onPress={handleStartJourney}
+              activeOpacity={0.8}
+            >
               <LinearGradient
                 colors={theme.gradient.primary}
                 style={styles.actionGradient}
@@ -178,6 +199,7 @@ export default function HomeScreen() {
             <TouchableOpacity 
               style={[styles.actionCard, { shadowColor: colors.shadow }]}
               onPress={() => setShowEmergencyCalm(true)}
+              activeOpacity={0.8}
             >
               <LinearGradient
                 colors={theme.gradient.accent}
@@ -195,30 +217,63 @@ export default function HomeScreen() {
         <View style={styles.todayStats}>
           <Text style={[styles.sectionTitle, { color: colors.text }]}>Today's Progress</Text>
           <View style={styles.statsGrid}>
-            <View style={[styles.statCard, { backgroundColor: colors.card, shadowColor: colors.shadow }]}>
+            <TouchableOpacity 
+              style={[styles.statCard, { backgroundColor: colors.card, shadowColor: colors.shadow }]}
+              onPress={handleStartJourney}
+              activeOpacity={0.8}
+            >
               <Calendar size={20} color={colors.primary} />
               <Text style={[styles.statNumber, { color: colors.text }]}>{todayStats.commutes}</Text>
               <Text style={[styles.statLabel, { color: colors.text }]}>Journeys</Text>
-            </View>
-            <View style={[styles.statCard, { backgroundColor: colors.card, shadowColor: colors.shadow }]}>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              style={[styles.statCard, { backgroundColor: colors.card, shadowColor: colors.shadow }]}
+              onPress={handleViewSounds}
+              activeOpacity={0.8}
+            >
               <Clock size={20} color={colors.accent} />
               <Text style={[styles.statNumber, { color: colors.text }]}>{todayStats.mindfulMinutes}</Text>
               <Text style={[styles.statLabel, { color: colors.text }]}>Mindful Minutes</Text>
-            </View>
-            <View style={[styles.statCard, { backgroundColor: colors.card, shadowColor: colors.shadow }]}>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              style={[styles.statCard, { backgroundColor: colors.card, shadowColor: colors.shadow }]}
+              onPress={handleViewAchievements}
+              activeOpacity={0.8}
+            >
               <TrendingUp size={20} color={colors.success} />
               <Text style={[styles.statNumber, { color: colors.text }]}>{todayStats.stressReduction}%</Text>
               <Text style={[styles.statLabel, { color: colors.text }]}>Stress Reduction</Text>
-            </View>
+            </TouchableOpacity>
           </View>
         </View>
 
         {/* Recent Sessions - Only show if there are actual sessions */}
         {sessions.length > 0 && (
           <View style={styles.recentSessions}>
-            <Text style={[styles.sectionTitle, { color: colors.text }]}>Recent Sessions</Text>
+            <View style={styles.recentSessionsHeader}>
+              <Text style={[styles.sectionTitle, { color: colors.text }]}>Recent Sessions</Text>
+              <TouchableOpacity onPress={handleViewSounds}>
+                <Text style={[styles.viewAllText, { color: colors.primary }]}>View All</Text>
+              </TouchableOpacity>
+            </View>
             {sessions.slice(0, 3).map((session, index) => (
-              <View key={session.id || index} style={[styles.sessionCard, { backgroundColor: colors.card, shadowColor: colors.shadow }]}>
+              <TouchableOpacity
+                key={session.id || index}
+                style={[styles.sessionCard, { backgroundColor: colors.card, shadowColor: colors.shadow }]}
+                onPress={() => {
+                  Alert.alert(
+                    'Session Details',
+                    `${session.session_type === 'breathing' ? 'Breathing Exercise' : 
+                       session.session_type === 'meditation' ? 'Meditation Session' : 
+                       'Mindfulness Session'}\n\nDuration: ${session.duration_minutes} minutes\nDate: ${new Date(session.created_at).toLocaleDateString()}${
+                       session.stress_before && session.stress_after ? 
+                       `\nStress Reduction: ${Math.round(((session.stress_before - session.stress_after) / session.stress_before) * 100)}%` : ''
+                     }`,
+                    [{ text: 'OK' }]
+                  );
+                }}
+                activeOpacity={0.7}
+              >
                 <View style={styles.sessionHeader}>
                   <Text style={[styles.sessionTitle, { color: colors.text }]}>
                     {session.session_type === 'breathing' ? 'Breathing Exercise' : 
@@ -242,7 +297,7 @@ export default function HomeScreen() {
                     {session.session_type}
                   </Text>
                 </View>
-              </View>
+              </TouchableOpacity>
             ))}
           </View>
         )}
@@ -254,6 +309,20 @@ export default function HomeScreen() {
             <Text style={[styles.emptyStateText, { color: colors.textSecondary }]}>
               Begin with a breathing exercise or meditation session to see your progress here.
             </Text>
+            <View style={styles.emptyStateActions}>
+              <TouchableOpacity 
+                style={[styles.emptyActionButton, { backgroundColor: colors.primaryLight }]}
+                onPress={handleViewSounds}
+              >
+                <Text style={[styles.emptyActionText, { color: colors.primary }]}>Explore Sounds</Text>
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={[styles.emptyActionButton, { backgroundColor: colors.primaryLight }]}
+                onPress={handleViewJournal}
+              >
+                <Text style={[styles.emptyActionText, { color: colors.primary }]}>Start Journaling</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         )}
       </ScrollView>
@@ -399,6 +468,16 @@ const styles = StyleSheet.create({
   recentSessions: {
     paddingBottom: 32,
   },
+  recentSessionsHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  viewAllText: {
+    fontFamily: 'Quicksand-SemiBold',
+    fontSize: 14,
+  },
   sessionCard: {
     borderRadius: 20,
     padding: 20,
@@ -461,5 +540,19 @@ const styles = StyleSheet.create({
     fontSize: 14,
     textAlign: 'center',
     lineHeight: 20,
+    marginBottom: 24,
+  },
+  emptyStateActions: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  emptyActionButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 16,
+  },
+  emptyActionText: {
+    fontFamily: 'Quicksand-SemiBold',
+    fontSize: 14,
   },
 });

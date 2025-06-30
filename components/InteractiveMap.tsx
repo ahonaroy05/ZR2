@@ -350,6 +350,24 @@ export function InteractiveMap() {
     Alert.alert('📍 Tracking Stopped', 'Location tracking has been disabled.');
   };
 
+  // Handle route selection
+  const handleRouteSelect = (routeId: string) => {
+    setSelectedRoute(routeId);
+    const route = routes.find(r => r.id === routeId);
+    if (route) {
+      Alert.alert(
+        'Route Selected',
+        `${route.name}\n\nDistance: ${route.distance.text}\nDuration: ${route.durationInTraffic?.text || route.duration.text}\nStress Level: ${route.stressLevel.toUpperCase()}\n\nTherapy: ${route.therapyType}`,
+        [
+          { text: 'Start Journey', onPress: () => {
+            Alert.alert('Journey Started', 'Navigation and mindfulness features will be available in a future update.');
+          }},
+          { text: 'OK', style: 'cancel' }
+        ]
+      );
+    }
+  };
+
   // Animated styles
   const searchBarAnimatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: searchBarScale.value }],
@@ -428,13 +446,22 @@ export function InteractiveMap() {
 
         {/* Map Controls */}
         <View style={styles.mapControls}>
-          <TouchableOpacity style={[styles.controlButton, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}>
+          <TouchableOpacity 
+            style={[styles.controlButton, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}
+            onPress={() => Alert.alert('Zoom In', 'Map zoom controls will be available in a future update.')}
+          >
             <ZoomIn size={20} color={colors.text} />
           </TouchableOpacity>
-          <TouchableOpacity style={[styles.controlButton, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}>
+          <TouchableOpacity 
+            style={[styles.controlButton, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}
+            onPress={() => Alert.alert('Zoom Out', 'Map zoom controls will be available in a future update.')}
+          >
             <ZoomOut size={20} color={colors.text} />
           </TouchableOpacity>
-          <TouchableOpacity style={[styles.controlButton, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}>
+          <TouchableOpacity 
+            style={[styles.controlButton, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}
+            onPress={() => Alert.alert('Rotate Map', 'Map rotation controls will be available in a future update.')}
+          >
             <RotateCw size={20} color={colors.text} />
           </TouchableOpacity>
         </View>
@@ -449,7 +476,7 @@ export function InteractiveMap() {
           origin={currentLocation || { lat: 37.7749, lng: -122.4194 }}
           destination={destination || { lat: 37.7849, lng: -122.4094 }}
           selectedRoute={selectedRoute}
-          onRouteSelect={setSelectedRoute}
+          onRouteSelect={handleRouteSelect}
           style={styles.map}
         />
 
@@ -543,7 +570,13 @@ export function InteractiveMap() {
             )}
             <TouchableOpacity
               style={[styles.savedLocationsButton, { backgroundColor: colors.primaryLight }]}
-              onPress={() => setShowSavedLocations(!showSavedLocations)}
+              onPress={() => {
+                if (savedLocations.length === 0) {
+                  Alert.alert('No Saved Locations', 'You haven\'t saved any locations yet. Saved location features will be available in a future update.');
+                } else {
+                  setShowSavedLocations(!showSavedLocations);
+                }
+              }}
             >
               <Star size={16} color={colors.primary} />
             </TouchableOpacity>
@@ -645,7 +678,7 @@ export function InteractiveMap() {
                   { backgroundColor: colors.card },
                   selectedRoute === route.id && { borderColor: colors.primary, borderWidth: 2 }
                 ]}
-                onPress={() => setSelectedRoute(route.id)}
+                onPress={() => handleRouteSelect(route.id)}
               >
                 <View style={styles.routeHeader}>
                   <Text style={[styles.routeName, { color: colors.text }]}>{route.name}</Text>

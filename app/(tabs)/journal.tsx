@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet, SafeAreaView, TextInput } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, SafeAreaView, TextInput, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useJournalEntries } from '@/hooks/useJournalEntries';
 import { useStressTracking } from '@/hooks/useStressTracking';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { BoltLogo } from '@/components/BoltLogo';
+import { router } from 'expo-router';
 import { 
   Mic, 
   MicOff, 
@@ -16,7 +17,8 @@ import {
   Meh, 
   Frown,
   Heart,
-  BookOpen
+  BookOpen,
+  Archive
 } from 'lucide-react-native';
 
 export default function JournalScreen() {
@@ -76,6 +78,7 @@ export default function JournalScreen() {
 
   const handleSaveEntry = async () => {
     if (!selectedMood || !journalText.trim()) {
+      Alert.alert('Incomplete Entry', 'Please select a mood and write your thoughts before saving.');
       return;
     }
 
@@ -92,6 +95,7 @@ export default function JournalScreen() {
 
       if (journalError) {
         console.error('Error saving journal entry:', journalError);
+        Alert.alert('Error', 'Failed to save your journal entry. Please try again.');
         return;
       }
 
@@ -102,11 +106,40 @@ export default function JournalScreen() {
       setJournalText('');
       setSelectedMood(null);
       setStressRating(5);
+      
+      Alert.alert('Success', 'Your journal entry has been saved successfully!');
     } catch (error) {
       console.error('Error saving entry:', error);
+      Alert.alert('Error', 'An unexpected error occurred. Please try again.');
     } finally {
       setSaving(false);
     }
+  };
+
+  const handleViewAllEntries = () => {
+    if (entries.length === 0) {
+      Alert.alert('No Entries', 'You haven\'t written any journal entries yet. Start by writing your first entry above!');
+      return;
+    }
+    
+    // In a real app, this would navigate to a dedicated entries list page
+    Alert.alert(
+      'All Journal Entries',
+      `You have ${entries.length} journal ${entries.length === 1 ? 'entry' : 'entries'}. This feature will show a detailed view of all your entries.`,
+      [
+        { text: 'OK', style: 'default' }
+      ]
+    );
+  };
+
+  const handleEntryPress = (entry: any) => {
+    Alert.alert(
+      'Journal Entry',
+      `${entry.content}\n\nMood: ${entry.mood}\nStress Level: ${entry.stress_level}/10\nDate: ${new Date(entry.created_at).toLocaleDateString()}`,
+      [
+        { text: 'Close', style: 'default' }
+      ]
+    );
   };
 
   const formatDate = (dateString: string) => {
@@ -183,7 +216,13 @@ export default function JournalScreen() {
                   { backgroundColor: theme.colors.primaryLight },
                   isRecording && styles.recordButtonActive
                 ]}
-                onPress={() => setIsRecording(!isRecording)}
+                onPress={() => {
+                  setIsRecording(!isRecording);
+                  if (!isRecording) {
+                    Alert.alert('Voice Recording', 'Voice recording feature will be available in a future update. For now, please type your thoughts.');
+                    setIsRecording(false);
+                  }
+                }}
               >
                 {isRecording ? (
                   <MicOff size={16} color="#FAFAFA" />
@@ -236,44 +275,65 @@ export default function JournalScreen() {
         <View style={styles.entriesSection}>
           <View style={styles.entriesHeader}>
             <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Recent Entries</Text>
-            <TouchableOpacity style={styles.viewAllButton}>
+            <TouchableOpacity 
+              style={styles.viewAllButton}
+              onPress={handleViewAllEntries}
+            >
+              <Archive size={16} color={theme.colors.primary} />
               <Text style={[styles.viewAllText, { color: theme.colors.primary }]}>View All</Text>
             </TouchableOpacity>
           </View>
 
-          {entries.map((entry) => (
-            <View key={entry.id} style={[styles.entryCard, { backgroundColor: theme.colors.card, shadowColor: theme.colors.shadow }]}>
-              <View style={styles.entryHeader}>
-                <View style={styles.entryMeta}>
-                  <Calendar size={14} color={theme.colors.textTertiary} />
-                  <Text style={[styles.entryDate, { color: theme.colors.textSecondary }]}>{formatDate(entry.created_at)}</Text>
-                </View>
-                <View style={styles.entryMood}>
-                  {getMoodIcon(entry.mood)}
-                  <View 
-                    style={[
-                      styles.stressIndicator, 
-                      { backgroundColor: getMoodColor(entry.mood) }
-                    ]}
-                  >
-                    <Text style={[styles.stressIndicatorText, { color: theme.colors.surface }]}>{entry.stress_level}</Text>
+          {entries.length === 0 ? (
+            <View style={[styles.emptyState, { backgroundColor: theme.colors.card, shadowColor: theme.colors.shadow }]}>
+              <BookOpen size={48} color={theme.colors.textSecondary} />
+              <Text style={[styles.emptyStateTitle, { color: theme.colors.text }]}>No entries yet</Text>
+              <Text style={[styles.emptyStateText, { color: theme.colors.textSecondary }]}>
+                Start your mindful journey by writing your first journal entry above.
+              </Text>
+            </View>
+          ) : (
+            entries.slice(0, 3).map((entry) => (
+              <TouchableOpacity
+                key={entry.id}
+                style={[styles.entryCard, { backgroundColor: theme.colors.card, shadowColor: theme.colors.shadow }]}
+                onPress={() => handleEntryPress(entry)}
+                activeOpacity={0.7}
+              >
+                <View style={styles.entryHeader}>
+                  <View style={styles.entryMeta}>
+                    <Calendar size={14} color={theme.colors.textTertiary} />
+                    <Text style={[styles.entryDate, { color: theme.colors.textSecondary }]}>{formatDate(entry.created_at)}</Text>
+                  </View>
+                  <View style={styles.entryMood}>
+                    {getMoodIcon(entry.mood)}
+                    <View 
+                      style={[
+                        styles.stressIndicator, 
+                        { backgroundColor: getMoodColor(entry.mood) }
+                      ]}
+                    >
+                      <Text style={[styles.stressIndicatorText, { color: theme.colors.surface }]}>{entry.stress_level}</Text>
+                    </View>
                   </View>
                 </View>
-              </View>
-              
-              <Text style={[styles.entryContent, { color: theme.colors.text }]}>{entry.content}</Text>
-              
-              {entry.tags && entry.tags.length > 0 && (
-                <View style={styles.entryTags}>
-                  {entry.tags.map((tag, index) => (
-                    <View key={index} style={[styles.tag, { backgroundColor: theme.colors.primaryLight }]}>
-                      <Text style={[styles.tagText, { color: theme.colors.primary }]}>#{tag}</Text>
-                    </View>
-                  ))}
-                </View>
-              )}
-            </View>
-          ))}
+                
+                <Text style={[styles.entryContent, { color: theme.colors.text }]} numberOfLines={3}>
+                  {entry.content}
+                </Text>
+                
+                {entry.tags && entry.tags.length > 0 && (
+                  <View style={styles.entryTags}>
+                    {entry.tags.map((tag, index) => (
+                      <View key={index} style={[styles.tag, { backgroundColor: theme.colors.primaryLight }]}>
+                        <Text style={[styles.tagText, { color: theme.colors.primary }]}>#{tag}</Text>
+                      </View>
+                    ))}
+                  </View>
+                )}
+              </TouchableOpacity>
+            ))
+          )}
         </View>
 
         <View style={styles.insightsSection}>
@@ -283,13 +343,25 @@ export default function JournalScreen() {
               <TrendingUp size={20} color={theme.colors.primary} />
               <Text style={[styles.insightTitle, { color: theme.colors.text }]}>Stress Trend</Text>
             </View>
-            <Text style={[styles.insightText, { color: theme.colors.text }]}>
-              Your average stress level decreased by 15% this week. Keep up the great work!
-            </Text>
-            <View style={styles.insightStats}>
-              <Text style={[styles.insightStat, { color: theme.colors.primary, backgroundColor: theme.colors.primaryLight }]}>Avg: 4.2/10</Text>
-              <Text style={[styles.insightStat, { color: theme.colors.primary, backgroundColor: theme.colors.primaryLight }]}>Best: 2/10</Text>
-            </View>
+            {entries.length > 0 ? (
+              <>
+                <Text style={[styles.insightText, { color: theme.colors.text }]}>
+                  Based on your {entries.length} journal {entries.length === 1 ? 'entry' : 'entries'}, you're making progress on your mindful journey.
+                </Text>
+                <View style={styles.insightStats}>
+                  <Text style={[styles.insightStat, { color: theme.colors.primary, backgroundColor: theme.colors.primaryLight }]}>
+                    {entries.length} {entries.length === 1 ? 'Entry' : 'Entries'}
+                  </Text>
+                  <Text style={[styles.insightStat, { color: theme.colors.primary, backgroundColor: theme.colors.primaryLight }]}>
+                    Avg: {Math.round(entries.reduce((sum, entry) => sum + entry.stress_level, 0) / entries.length)}/10
+                  </Text>
+                </View>
+              </>
+            ) : (
+              <Text style={[styles.insightText, { color: theme.colors.textSecondary }]}>
+                Start journaling to see insights about your stress patterns and mindfulness progress.
+              </Text>
+            )}
           </View>
         </View>
       </ScrollView>
@@ -360,8 +432,8 @@ const styles = StyleSheet.create({
     borderWidth: 2,
   },
   moodOptionSelected: {
-    borderColor: '#B6D0E2', // Keep original for now, will be themed
-    backgroundColor: '#F0F7FF', // Keep original for now, will be themed
+    borderColor: '#B6D0E2',
+    backgroundColor: '#F0F7FF',
   },
   moodLabel: {
     fontFamily: 'Quicksand-Medium',
@@ -415,7 +487,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   recordButtonActive: {
-    backgroundColor: '#B6D0E2', // Keep original for now
+    backgroundColor: '#B6D0E2',
   },
   textInput: {
     borderWidth: 1,
@@ -472,12 +544,36 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   viewAllButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: 12,
     paddingVertical: 6,
+    gap: 4,
   },
   viewAllText: {
     fontFamily: 'Quicksand-SemiBold',
     fontSize: 14,
+  },
+  emptyState: {
+    borderRadius: 20,
+    padding: 40,
+    alignItems: 'center',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  emptyStateTitle: {
+    fontFamily: 'Nunito-SemiBold',
+    fontSize: 18,
+    marginTop: 16,
+    marginBottom: 8,
+  },
+  emptyStateText: {
+    fontFamily: 'Quicksand-Regular',
+    fontSize: 14,
+    textAlign: 'center',
+    lineHeight: 20,
   },
   entryCard: {
     borderRadius: 20,

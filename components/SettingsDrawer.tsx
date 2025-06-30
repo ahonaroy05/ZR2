@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Modal, Switch, Dimensions } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Modal, Switch, Dimensions, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import Animated, {
@@ -10,6 +10,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
+import { router } from 'expo-router';
 import { 
   User, 
   Bell, 
@@ -24,7 +25,9 @@ import {
   LogOut, 
   ChevronRight, 
   X,
-  Settings as SettingsIcon 
+  Settings as SettingsIcon,
+  Mail,
+  ExternalLink
 } from 'lucide-react-native';
 
 interface SettingsDrawerProps {
@@ -77,10 +80,82 @@ export function SettingsDrawer({ visible, onClose }: SettingsDrawerProps) {
   }));
 
   const handleSignOut = () => {
+    Alert.alert(
+      'Sign Out',
+      'Are you sure you want to sign out of your account?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { 
+          text: 'Sign Out', 
+          style: 'destructive',
+          onPress: () => {
+            onClose();
+            setTimeout(() => {
+              signOut();
+            }, 300);
+          }
+        }
+      ]
+    );
+  };
+
+  const handleProfileSettings = () => {
     onClose();
-    setTimeout(() => {
-      signOut();
-    }, 300);
+    Alert.alert(
+      'Profile Settings',
+      'Profile management features will be available in a future update. You can currently manage your account through the authentication system.',
+      [{ text: 'OK' }]
+    );
+  };
+
+  const handlePrivacySettings = () => {
+    onClose();
+    Alert.alert(
+      'Privacy & Security',
+      'Privacy settings and data management features will be available in a future update. Your data is currently protected by our secure authentication system.',
+      [{ text: 'OK' }]
+    );
+  };
+
+  const handleLanguageSettings = () => {
+    onClose();
+    Alert.alert(
+      'Language Settings',
+      'Multi-language support will be available in a future update. Currently, the app is available in English.',
+      [{ text: 'OK' }]
+    );
+  };
+
+  const handleHelpSupport = () => {
+    onClose();
+    Alert.alert(
+      'Help & Support',
+      'Need help? You can:\n\n• Use the AI Assistant for instant help\n• Check the app features through guided tours\n• Contact support for technical issues',
+      [
+        { text: 'Contact Support', onPress: () => {
+          Alert.alert('Contact Support', 'Support contact features will be available in a future update.');
+        }},
+        { text: 'OK', style: 'cancel' }
+      ]
+    );
+  };
+
+  const handleSendFeedback = () => {
+    onClose();
+    Alert.alert(
+      'Send Feedback',
+      'We value your feedback! Feedback submission features will be available in a future update. For now, you can share your thoughts through the AI Assistant.',
+      [{ text: 'OK' }]
+    );
+  };
+
+  const handleRateApp = () => {
+    onClose();
+    Alert.alert(
+      'Rate ZenRoute',
+      'Thank you for considering rating our app! App store rating features will be available when the app is published.',
+      [{ text: 'OK' }]
+    );
   };
 
   const settingSections = [
@@ -93,7 +168,7 @@ export function SettingsDrawer({ visible, onClose }: SettingsDrawerProps) {
           subtitle: user?.user_metadata?.username || user?.email || 'Manage your profile',
           icon: <User size={20} color="#B6D0E2" />,
           type: 'navigation' as const,
-          onPress: () => console.log('Navigate to profile'),
+          onPress: handleProfileSettings,
         },
         {
           id: 'privacy',
@@ -101,7 +176,7 @@ export function SettingsDrawer({ visible, onClose }: SettingsDrawerProps) {
           subtitle: 'Manage your data and security settings',
           icon: <Shield size={20} color="#87CEEB" />,
           type: 'navigation' as const,
-          onPress: () => console.log('Navigate to privacy'),
+          onPress: handlePrivacySettings,
         },
       ],
     },
@@ -155,7 +230,7 @@ export function SettingsDrawer({ visible, onClose }: SettingsDrawerProps) {
           subtitle: 'English (US)',
           icon: <Globe size={20} color="#B6D0E2" />,
           type: 'navigation' as const,
-          onPress: () => console.log('Navigate to language'),
+          onPress: handleLanguageSettings,
         },
         {
           id: 'help',
@@ -163,7 +238,7 @@ export function SettingsDrawer({ visible, onClose }: SettingsDrawerProps) {
           subtitle: 'Get help and contact support',
           icon: <HelpCircle size={20} color="#87CEEB" />,
           type: 'navigation' as const,
-          onPress: () => console.log('Navigate to help'),
+          onPress: handleHelpSupport,
         },
         {
           id: 'feedback',
@@ -171,7 +246,7 @@ export function SettingsDrawer({ visible, onClose }: SettingsDrawerProps) {
           subtitle: 'Help us improve ZenRoute',
           icon: <MessageSquare size={20} color="#A8E6CF" />,
           type: 'navigation' as const,
-          onPress: () => console.log('Navigate to feedback'),
+          onPress: handleSendFeedback,
         },
         {
           id: 'rate',
@@ -179,7 +254,7 @@ export function SettingsDrawer({ visible, onClose }: SettingsDrawerProps) {
           subtitle: 'Share your experience',
           icon: <Star size={20} color="#DDA0DD" />,
           type: 'navigation' as const,
-          onPress: () => console.log('Navigate to rating'),
+          onPress: handleRateApp,
         },
       ],
     },
