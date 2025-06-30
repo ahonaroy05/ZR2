@@ -10,6 +10,7 @@ import Animated, {
 import { LinearGradient } from 'expo-linear-gradient';
 import { Bot, Sparkles } from 'lucide-react-native';
 import { useTheme } from '@/contexts/ThemeContext';
+import { ZenRouteLogo } from '@/components/ZenRouteLogo';
 
 interface AiAssistantFabProps {
   onPress: () => void;
@@ -92,7 +93,11 @@ export function AiAssistantFab({ onPress, isActive = false }: AiAssistantFabProp
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
         >
-          <Bot size={28} color={colors.textInverse} strokeWidth={2} />
+          {isActive ? (
+            <Bot size={28} color={colors.textInverse} strokeWidth={2} />
+          ) : (
+            <ZenRouteLogo size={32} animated={false} color={colors.textInverse} />
+          )}
         </LinearGradient>
       </TouchableOpacity>
     </Animated.View>

@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { useTheme } from '@/contexts/ThemeContext';
+import { ZenRouteLogo } from '@/components/ZenRouteLogo';
 import Animated, {
   useSharedValue,
   withRepeat,
@@ -10,7 +11,6 @@ import Animated, {
   useAnimatedStyle,
   Easing,
 } from 'react-native-reanimated';
-import { Heart } from 'lucide-react-native';
 
 export default function SplashScreen() {
   const rippleScale = useSharedValue(1);
@@ -75,13 +75,8 @@ export default function SplashScreen() {
         <View style={styles.content}>
           <View style={styles.logoContainer}>
             <Animated.View style={[styles.ripple, rippleStyle]} />
-            <Animated.View style={[styles.logoWrapper, logoStyle]}>
-              <LinearGradient
-                colors={theme.gradient.primary}
-                style={styles.logo}
-              >
-                <Heart size={48} color={colors.textInverse} />
-              </LinearGradient>
+            <Animated.View style={logoStyle}>
+              <ZenRouteLogo size={120} animated={true} />
             </Animated.View>
           </View>
           
@@ -112,6 +107,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 40,
+    marginTop: 40,
   },
   ripple: {
     position: 'absolute',
@@ -125,15 +121,9 @@ const styles = StyleSheet.create({
     shadowRadius: 16,
     elevation: 12,
   },
-  logo: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   textContainer: {
     alignItems: 'center',
+    marginTop: 40,
   },
   title: {
     fontFamily: 'Nunito-Bold',

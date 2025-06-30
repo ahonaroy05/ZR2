@@ -10,6 +10,7 @@ import Animated, {
 import { LinearGradient } from 'expo-linear-gradient';
 import { Shield } from 'lucide-react-native';
 import { useTheme } from '@/contexts/ThemeContext';
+import { ZenRouteLogo } from '@/components/ZenRouteLogo';
 
 export function DemoBanner() {
   const { colors, theme } = useTheme();
@@ -39,7 +40,9 @@ export function DemoBanner() {
         end={{ x: 1, y: 0 }}
       >
         <View style={styles.content}>
-          <Shield size={16} color={colors.textInverse} />
+          <View style={styles.logoContainer}>
+            <ZenRouteLogo size={20} animated={false} color={colors.textInverse} />
+          </View>
           <Text style={[styles.text, { color: colors.textInverse }]}>Demo Mode Active</Text>
           <Animated.View style={[styles.shimmer, animatedStyle]} />
         </View>
@@ -66,9 +69,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     position: 'relative',
   },
+  logoContainer: {
+    marginRight: 6,
+  },
   text: {
     fontFamily: 'Quicksand-SemiBold',
-    marginLeft: 6,
   },
   shimmer: {
     position: 'absolute',

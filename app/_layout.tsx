@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { Platform } from 'react-native';
+import { Platform, View, StyleSheet } from 'react-native';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { ThemeProvider, useTheme } from '@/contexts/ThemeContext';
 import { useFrameworkReady } from '@/hooks/useFrameworkReady';
@@ -16,6 +16,7 @@ import {
   Quicksand_500Medium,
   Quicksand_600SemiBold,
 } from '@expo-google-fonts/quicksand';
+import { ZenRouteLogo } from '@/components/ZenRouteLogo';
 import * as SplashScreen from 'expo-splash-screen';
 
 // Prevent splash screen from auto-hiding
@@ -57,8 +58,13 @@ export default function RootLayout() {
     }
   }, [fontsLoaded, fontError]);
 
-  if (!fontsLoaded && !fontError && Platform.OS !== 'web') {
-    return null;
+  // Show a custom loading screen while fonts are loading
+  if (!fontsLoaded && !fontError) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ZenRouteLogo size={120} animated={false} />
+      </View>
+    );
   }
 
   return (
@@ -69,3 +75,12 @@ export default function RootLayout() {
     </ThemeProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    backgroundColor: '#FDF7FD',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});

@@ -14,8 +14,9 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
+import { ZenRouteLogo } from '@/components/ZenRouteLogo';
 import { router } from 'expo-router';
-import { Heart, Mail, Lock, User, Play, Info } from 'lucide-react-native';
+import { Mail, Lock, User, Play, Info } from 'lucide-react-native';
 
 export default function AuthScreen() {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -116,12 +117,7 @@ export default function AuthScreen() {
           <View style={styles.content}>
             <View style={styles.header}>
               <View style={styles.logoContainer}>
-                <LinearGradient
-                  colors={theme.gradient.primary}
-                  style={styles.logoGradient}
-                >
-                  <Heart size={32} color={colors.textInverse} />
-                </LinearGradient>
+                <ZenRouteLogo size={80} animated={true} />
                 <View style={styles.rippleContainer}>
                   <Animated.View style={[styles.ripple, styles.ripple1]} />
                   <Animated.View style={[styles.ripple, styles.ripple2]} />
@@ -290,18 +286,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  logoGradient: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
-    zIndex: 2,
+    height: 120,
   },
   rippleContainer: {
     position: 'absolute',
