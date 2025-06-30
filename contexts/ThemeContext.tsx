@@ -202,5 +202,8 @@ export function useTheme() {
   if (context === undefined) {
     throw new Error('useTheme must be used within a ThemeProvider');
   }
-  return context;
+  return {
+    ...context,
+    colors: context.colors || lightTheme.colors, // Defensive fallback for colors
+  };
 }
