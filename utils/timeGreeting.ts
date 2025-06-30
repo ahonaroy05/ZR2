@@ -1,3 +1,5 @@
+import React from 'react';
+
 /**
  * Get a time-based greeting message that updates automatically
  * @param date Optional date to use for greeting (defaults to current time)
