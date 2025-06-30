@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Platform, Alert } from 'react-native';
 import * as Location from 'expo-location';
 
@@ -28,15 +28,15 @@ export function useLocationPermissions() {
   const [error, setError] = useState<string | null>(null);
 
   // Check if geolocation is supported
-  const isGeolocationSupported = () => {
+  const isGeolocationSupported = useCallback(() => {
     if (Platform.OS === 'web') {
       return 'geolocation' in navigator;
     }
     return true; // Assume mobile platforms support geolocation
-  };
+  }, []);
 
   // Request location permissions
-  const requestPermissions = async (): Promise<LocationPermissionStatus> => {
+  const requestPermissions = useCallback(async (): Promise<LocationPermissionStatus> => {
     if (!isGeolocationSupported()) {
       const status: LocationPermissionStatus = {
         granted: false,
@@ -50,14 +50,17 @@ export function useLocationPermissions() {
 
     if (Platform.OS === 'web') {
       try {
-        // For web, we can't really check permissions beforehand,
-        // so we'll try to get the location and handle the result
+        // For web, we need to actually request location to check permissions
         const position = await new Promise<GeolocationPosition>((resolve, reject) => {
-          navigator.geolocation.getCurrentPosition(resolve, reject, {
-            enableHighAccuracy: false,
-            timeout: 10000,
-            maximumAge: 300000, // 5 minutes
-          });
+          navigator.geolocation.getCurrentPosition(
+            resolve, 
+            reject, 
+            {
+              enableHighAccuracy: false,
+              timeout: 10000,
+              maximumAge: 300000, // 5 minutes
+            }
+          );
         });
 
         const status: LocationPermissionStatus = {
@@ -67,9 +70,22 @@ export function useLocationPermissions() {
         };
         setPermissionStatus(status);
         setError(null);
+        
+        // Also set the current location
+        const coordinates: LocationCoordinates = {
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+          accuracy: position.coords.accuracy,
+          altitude: position.coords.altitude || undefined,
+          heading: position.coords.heading || undefined,
+          speed: position.coords.speed || undefined,
+        };
+        setCurrentLocation(coordinates);
+        
         return status;
       } catch (error: any) {
         let status: LocationPermissionStatus;
+        let errorMessage: string;
         
         if (error.code === 1) { // PERMISSION_DENIED
           status = {
@@ -77,31 +93,32 @@ export function useLocationPermissions() {
             canAskAgain: false,
             status: 'denied',
           };
-          setError('Location access denied by user');
+          errorMessage = 'Location access denied by user. Please enable location access in your browser settings.';
         } else if (error.code === 2) { // POSITION_UNAVAILABLE
           status = {
             granted: false,
             canAskAgain: true,
             status: 'undetermined',
           };
-          setError('Location information is unavailable');
+          errorMessage = 'Location information is unavailable. Please check your GPS settings.';
         } else if (error.code === 3) { // TIMEOUT
           status = {
             granted: false,
             canAskAgain: true,
             status: 'undetermined',
           };
-          setError('Location request timed out');
+          errorMessage = 'Location request timed out. Please try again.';
         } else {
           status = {
             granted: false,
             canAskAgain: true,
             status: 'denied',
           };
-          setError('An unknown error occurred while requesting location');
+          errorMessage = 'An unknown error occurred while requesting location';
         }
         
         setPermissionStatus(status);
+        setError(errorMessage);
         return status;
       }
     } else {
@@ -118,7 +135,7 @@ export function useLocationPermissions() {
         setPermissionStatus(permissionStatus);
         
         if (status !== 'granted') {
-          setError('Location permission was denied');
+          setError('Location permission was denied. Please enable location access in your device settings.');
         } else {
           setError(null);
         }
@@ -135,10 +152,10 @@ export function useLocationPermissions() {
         return status;
       }
     }
-  };
+  }, [isGeolocationSupported]);
 
   // Get current location
-  const getCurrentLocation = async (options?: {
+  const getCurrentLocation = useCallback(async (options?: {
     enableHighAccuracy?: boolean;
     timeout?: number;
     maximumAge?: number;
@@ -208,11 +225,11 @@ export function useLocationPermissions() {
       let errorMessage = 'Failed to get current location';
       if (Platform.OS === 'web') {
         if (error.code === 1) {
-          errorMessage = 'Location access denied';
+          errorMessage = 'Location access denied. Please allow location access in your browser.';
         } else if (error.code === 2) {
-          errorMessage = 'Location information unavailable';
+          errorMessage = 'Location information unavailable. Please check your GPS settings.';
         } else if (error.code === 3) {
-          errorMessage = 'Location request timed out';
+          errorMessage = 'Location request timed out. Please try again.';
         }
       } else {
         if (error.code === 'E_LOCATION_SERVICES_DISABLED') {
@@ -228,10 +245,10 @@ export function useLocationPermissions() {
       setIsLoading(false);
       return null;
     }
-  };
+  }, [permissionStatus.granted, requestPermissions]);
 
   // Watch location changes
-  const watchLocation = (
+  const watchLocation = useCallback((
     callback: (location: LocationCoordinates) => void,
     options?: {
       enableHighAccuracy?: boolean;
@@ -314,14 +331,13 @@ export function useLocationPermissions() {
         }
       };
     }
-  };
+  }, [permissionStatus.granted]);
 
-  // Check permissions on mount
+  // Auto-request location on mount if supported
   useEffect(() => {
-    const checkInitialPermissions = async () => {
+    const initializeLocation = async () => {
       if (Platform.OS === 'web') {
         // For web, we can't check permissions without triggering a request
-        // So we'll just mark as undetermined
         setPermissionStatus({
           granted: false,
           canAskAgain: true,
@@ -331,19 +347,25 @@ export function useLocationPermissions() {
         // For mobile, check current permission status
         try {
           const { status } = await Location.getForegroundPermissionsAsync();
-          setPermissionStatus({
+          const permStatus: LocationPermissionStatus = {
             granted: status === 'granted',
             canAskAgain: status !== 'denied',
             status: status as 'granted' | 'denied' | 'undetermined',
-          });
+          };
+          setPermissionStatus(permStatus);
+          
+          // If we have permissions, get current location
+          if (status === 'granted') {
+            getCurrentLocation();
+          }
         } catch (error) {
           console.warn('Failed to check location permissions:', error);
         }
       }
     };
 
-    checkInitialPermissions();
-  }, []);
+    initializeLocation();
+  }, [getCurrentLocation]);
 
   return {
     permissionStatus,

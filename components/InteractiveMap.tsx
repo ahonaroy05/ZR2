@@ -9,7 +9,6 @@ import {
   Alert,
   Platform,
   Dimensions,
-  Image,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated, {
@@ -21,7 +20,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { GoogleMapView } from '@/components/GoogleMapView';
 import { useGoogleMapsRoutes } from '@/hooks/useGoogleMapsRoutes';
 import { useLocationPermissions } from '@/hooks/useLocationPermissions';
-import { MapPin, Navigation, Search, Clock, Car, Brain as Train, Bike, User, Star, Chrome as Home, Briefcase, Coffee, Heart, X, RotateCcw, Zap, TriangleAlert as AlertTriangle, TrendingUp, ZoomIn, ZoomOut, RotateCw, CircleHelp as HelpCircle, Route, Crosshair, Loader } from 'lucide-react-native';
+import { MapPin, Navigation, Search, Clock, Car, Brain as Train, Bike, User, Star, Chrome as Home, Briefcase, Coffee, Heart, X, RotateCcw, Zap, TriangleAlert as AlertTriangle, TrendingUp, ZoomIn, ZoomOut, RotateCw, CircleHelp as HelpCircle, Route, Crosshair, Loader, MapPinned, Locate } from 'lucide-react-native';
 
 const { width, height } = Dimensions.get('window');
 
@@ -64,7 +63,7 @@ export function InteractiveMap() {
   
   // Location states
   const [currentLocation, setCurrentLocation] = useState<Location | null>(null);
-  const [destination, setDestination] = useState<Location | null>({ lat: 20.2700, lng: 85.8400 });
+  const [destination, setDestination] = useState<Location | null>(null);
   const [selectedRoute, setSelectedRoute] = useState<string | null>(null);
   const [isTrackingLocation, setIsTrackingLocation] = useState(false);
   const [locationAccuracy, setLocationAccuracy] = useState<number | null>(null);
@@ -84,38 +83,38 @@ export function InteractiveMap() {
   // Location tracking ref
   const unsubscribeLocationWatchRef = useRef<(() => void) | null>(null);
 
-  // Mock saved locations
+  // Mock saved locations for Bhubaneswar
   const savedLocations: SavedLocation[] = [
     {
       id: 'home',
       name: 'Home',
-      address: '123 Main St, Bhubaneswar, Odisha',
+      address: 'Patia, Bhubaneswar, Odisha',
       location: { lat: 20.2960, lng: 85.8246 },
       icon: 'home',
       color: colors.primary,
     },
     {
       id: 'work',
-      name: 'Downtown Office',
-      address: '456 Business District, Bhubaneswar, Odisha',
+      name: 'Infocity',
+      address: 'Infocity, Bhubaneswar, Odisha',
       location: { lat: 20.2700, lng: 85.8400 },
       icon: 'briefcase',
       color: colors.accent,
     },
     {
-      id: 'gym',
-      name: 'Fitness Center',
-      address: '789 Health Ave, Bhubaneswar, Odisha',
-      location: { lat: 20.2800, lng: 85.8300 },
+      id: 'mall',
+      name: 'Esplanade One',
+      address: 'Rasulgarh, Bhubaneswar, Odisha',
+      location: { lat: 20.3019, lng: 85.8449 },
       icon: 'zap',
       color: colors.success,
     },
     {
-      id: 'cafe',
-      name: 'Favorite Café',
-      address: '321 Coffee St, Bhubaneswar, Odisha',
-      location: { lat: 20.2900, lng: 85.8500 },
-      icon: 'coffee',
+      id: 'temple',
+      name: 'Lingaraj Temple',
+      address: 'Old Town, Bhubaneswar, Odisha',
+      location: { lat: 20.2370, lng: 85.8350 },
+      icon: 'heart',
       color: colors.warning,
     },
   ];
@@ -161,17 +160,25 @@ export function InteractiveMap() {
       if (!permStatus.granted) {
         Alert.alert(
           'Location Permission Required',
-          'Please enable location services to see your current location on the map.',
+          'ZenRoute needs location access to show your current position and provide personalized route recommendations.',
           [
             { text: 'Cancel', style: 'cancel' },
-            { text: 'Settings', onPress: () => {
-              if (Platform.OS === 'web') {
-                Alert.alert(
-                  'Enable Location',
-                  'Please allow location access in your browser and refresh the page.'
-                );
+            { 
+              text: 'Enable Location', 
+              onPress: () => {
+                if (Platform.OS === 'web') {
+                  Alert.alert(
+                    'Enable Location in Browser',
+                    'Please click the location icon in your browser\'s address bar and allow location access, then try again.'
+                  );
+                } else {
+                  Alert.alert(
+                    'Open Settings',
+                    'Please go to your device settings and enable location permissions for ZenRoute.'
+                  );
+                }
               }
-            }}
+            }
           ]
         );
         setIsTrackingLocation(false);
@@ -188,14 +195,16 @@ export function InteractiveMap() {
         const newLocation = {
           lat: location.latitude,
           lng: location.longitude,
+          name: 'My Location',
+          address: 'Current Location'
         };
         setCurrentLocation(newLocation);
         setLocationAccuracy(location.accuracy || null);
         
         Alert.alert(
-          'Location Found',
-          `Your current location has been set.\nAccuracy: ${location.accuracy ? Math.round(location.accuracy) + 'm' : 'Unknown'}`,
-          [{ text: 'OK' }]
+          '📍 Location Found!',
+          `Your current location has been set on the map.\n\nAccuracy: ${location.accuracy ? Math.round(location.accuracy) + ' meters' : 'Unknown'}`,
+          [{ text: 'Great!', style: 'default' }]
         );
       } else {
         throw new Error('Unable to get location');
@@ -203,20 +212,23 @@ export function InteractiveMap() {
     } catch (error) {
       console.error('Error getting location:', error);
       
-      // Fallback to default location
-      setCurrentLocation({ lat: 20.2960, lng: 85.8246 });
-      
+      // Show helpful error message
       Alert.alert(
         'Location Error', 
-        locationError || 'Unable to get your current location. Using default location in Bhubaneswar.',
-        [{ text: 'OK' }]
+        locationError || 'Unable to get your current location. This could be due to:\n\n• Location services being disabled\n• Poor GPS signal\n• Browser blocking location access\n\nUsing default location in Bhubaneswar for now.',
+        [
+          { text: 'Try Again', onPress: getCurrentLocation },
+          { text: 'Use Default', style: 'cancel', onPress: () => {
+            setCurrentLocation({ lat: 20.2960, lng: 85.8246, name: 'Default Location', address: 'Bhubaneswar, Odisha' });
+          }}
+        ]
       );
     } finally {
       setIsTrackingLocation(false);
     }
   };
 
-  // Search for locations
+  // Search for locations in Bhubaneswar area
   const searchLocations = async (query: string) => {
     if (!query.trim()) {
       setSearchResults([]);
@@ -240,13 +252,13 @@ export function InteractiveMap() {
       },
       {
         id: '3',
-        name: 'Shri Ram Temple',
-        address: 'Shri Ram Temple, Bhubaneswar, Odisha',
-        location: { lat: 20.2650, lng: 85.8450 },
+        name: 'Lingaraj Temple',
+        address: 'Lingaraj Temple, Old Town, Bhubaneswar, Odisha',
+        location: { lat: 20.2370, lng: 85.8350 },
       },
       {
         id: '4',
-        name: 'Biju Patnaik International Airport',
+        name: 'Biju Patnaik Airport',
         address: 'Biju Patnaik International Airport, Bhubaneswar, Odisha',
         location: { lat: 20.2444, lng: 85.8178 },
       },
@@ -255,6 +267,24 @@ export function InteractiveMap() {
         name: 'Esplanade One Mall',
         address: 'Esplanade One Mall, Rasulgarh, Bhubaneswar, Odisha',
         location: { lat: 20.3019, lng: 85.8449 },
+      },
+      {
+        id: '6',
+        name: 'Utkal University',
+        address: 'Utkal University, Bhubaneswar, Odisha',
+        location: { lat: 20.2700, lng: 85.7700 },
+      },
+      {
+        id: '7',
+        name: 'Patia Square',
+        address: 'Patia, Bhubaneswar, Odisha',
+        location: { lat: 20.2960, lng: 85.8246 },
+      },
+      {
+        id: '8',
+        name: 'Khandagiri Caves',
+        address: 'Khandagiri, Bhubaneswar, Odisha',
+        location: { lat: 20.1833, lng: 85.7833 },
       },
     ].filter(result => 
       result.name.toLowerCase().includes(query.toLowerCase()) ||
@@ -268,7 +298,7 @@ export function InteractiveMap() {
   // Handle route planning
   const planRoute = async () => {
     if (!currentLocation || !destination) {
-      Alert.alert('Error', 'Please select both origin and destination');
+      Alert.alert('Missing Information', 'Please set both your current location and destination to plan a route.');
       return;
     }
 
@@ -277,12 +307,17 @@ export function InteractiveMap() {
       await getStressOptimizedRoutes(currentLocation, destination);
     } catch (error) {
       console.error('Route planning failed:', error);
+      Alert.alert(
+        'Route Planning Failed',
+        'Unable to find routes. This might be due to:\n\n• No internet connection\n• Google Maps API not configured\n• Invalid locations\n\nPlease try again or check your connection.',
+        [{ text: 'OK' }]
+      );
     }
   };
 
   // Handle destination selection
   const selectDestination = (location: Location, name?: string) => {
-    setDestination({ ...location, name });
+    setDestination({ ...location, name: name || location.name });
     setSearchQuery(name || location.address || 'Selected Location');
     setShowSearchResults(false);
     setShowSavedLocations(false);
@@ -302,6 +337,7 @@ export function InteractiveMap() {
       case 'briefcase': return <Briefcase {...iconProps} />;
       case 'coffee': return <Coffee {...iconProps} />;
       case 'zap': return <Zap {...iconProps} />;
+      case 'heart': return <Heart {...iconProps} />;
       default: return <MapPin {...iconProps} />;
     }
   };
@@ -333,14 +369,7 @@ export function InteractiveMap() {
           'Please enable location services to track your location in real-time.',
           [
             { text: 'Cancel', style: 'cancel' },
-            { text: 'Settings', onPress: () => {
-              if (Platform.OS === 'web') {
-                Alert.alert(
-                  'Enable Location',
-                  'Please allow location access in your browser settings.'
-                );
-              }
-            }}
+            { text: 'Enable', onPress: () => getCurrentLocation() }
           ]
         );
         return;
@@ -359,6 +388,8 @@ export function InteractiveMap() {
         setCurrentLocation({
           lat: initialLocation.latitude,
           lng: initialLocation.longitude,
+          name: 'My Location',
+          address: 'Current Location'
         });
         setLocationAccuracy(initialLocation.accuracy || null);
       }
@@ -367,7 +398,9 @@ export function InteractiveMap() {
       const unsubscribe = watchLocation((location) => {
         setCurrentLocation({ 
           lat: location.latitude, 
-          lng: location.longitude 
+          lng: location.longitude,
+          name: 'My Location',
+          address: 'Current Location'
         });
         setLocationAccuracy(location.accuracy || null);
         
@@ -383,7 +416,7 @@ export function InteractiveMap() {
       
       if (unsubscribe) {
         unsubscribeLocationWatchRef.current = unsubscribe;
-        Alert.alert('Location Tracking', 'Real-time location tracking started.');
+        Alert.alert('🎯 Live Tracking Started', 'Your location will be updated in real-time as you move.');
       } else {
         setIsTrackingLocation(false);
         Alert.alert('Error', 'Failed to start location tracking.');
@@ -402,7 +435,7 @@ export function InteractiveMap() {
       unsubscribeLocationWatchRef.current = null;
     }
     setIsTrackingLocation(false);
-    Alert.alert('Location Tracking', 'Location tracking stopped.');
+    Alert.alert('📍 Tracking Stopped', 'Location tracking has been disabled.');
   };
 
   // Animated styles
@@ -418,10 +451,20 @@ export function InteractiveMap() {
     transform: [{ scale: locationPulse.value }],
   }));
 
-  // Initialize with default location
+  // Initialize with default location and try to get user location
   useEffect(() => {
     // Set default location for Bhubaneswar
-    setCurrentLocation({ lat: 20.2960, lng: 85.8246 });
+    setCurrentLocation({ 
+      lat: 20.2960, 
+      lng: 85.8246, 
+      name: 'Default Location', 
+      address: 'Patia, Bhubaneswar, Odisha' 
+    });
+    
+    // Try to get user's actual location
+    if (permissionStatus.granted) {
+      getCurrentLocation();
+    }
     
     // Cleanup function
     return () => {
@@ -445,6 +488,8 @@ export function InteractiveMap() {
       setCurrentLocation({
         lat: deviceLocation.latitude,
         lng: deviceLocation.longitude,
+        name: 'My Location',
+        address: 'Current Location'
       });
       setLocationAccuracy(deviceLocation.accuracy || null);
     }
@@ -464,8 +509,8 @@ export function InteractiveMap() {
             )}
           </Animated.View>
           <Text style={[styles.locationStatusText, { color: colors.text }]}>
-            {isTrackingLocation ? 'Tracking...' : 
-             currentLocation ? `Located ${locationAccuracy ? `(±${Math.round(locationAccuracy)}m)` : ''}` : 'No location'}
+            {isTrackingLocation ? 'Live Tracking' : 
+             currentLocation ? `${currentLocation.name || 'Located'} ${locationAccuracy ? `(±${Math.round(locationAccuracy)}m)` : ''}` : 'No location'}
           </Text>
         </View>
 
@@ -506,25 +551,25 @@ export function InteractiveMap() {
       <View style={[styles.journeyCard, { backgroundColor: colors.card, shadowColor: colors.shadow }]}>
         <View style={styles.journeyHeader}>
           <Route size={24} color={colors.primary} />
-          <Text style={[styles.journeyTitle, { color: colors.textInverse }]}>Current Journey</Text>
+          <Text style={[styles.journeyTitle, { color: colors.text }]}>Current Journey</Text>
         </View>
         
-        <Text style={[styles.journeyRoute, { color: colors.textInverse }]}>
+        <Text style={[styles.journeyRoute, { color: colors.text }]}>
           {currentLocation && destination ? 
-            `Current Location → ${destination.name || 'Destination'}` :
-            'Set your origin and destination'
+            `${currentLocation.name || 'Current Location'} → ${destination.name || 'Destination'}` :
+            'Set your origin and destination to plan your mindful journey'
           }
         </Text>
         
         {currentLocation && (
           <Text style={[styles.journeyCoordinates, { color: colors.textSecondary }]}>
-            Current: {currentLocation.lat.toFixed(4)}, {currentLocation.lng.toFixed(4)}
+            From: {currentLocation.lat.toFixed(4)}, {currentLocation.lng.toFixed(4)}
             {locationAccuracy && ` (±${Math.round(locationAccuracy)}m)`}
           </Text>
         )}
 
         <View style={styles.locationButtons}>
-          <Animated.View style={fabAnimatedStyle}>
+          <Animated.View style={[fabAnimatedStyle, { flex: 1 }]}>
             <TouchableOpacity 
               style={[styles.locationButton, { backgroundColor: colors.primary }]}
               onPress={handleFabPress}
@@ -533,10 +578,10 @@ export function InteractiveMap() {
               {locationLoading ? (
                 <Loader size={16} color={colors.textInverse} />
               ) : (
-                <Crosshair size={16} color={colors.textInverse} />
+                <Locate size={16} color={colors.textInverse} />
               )}
               <Text style={[styles.locationButtonText, { color: colors.textInverse }]}>
-                {locationLoading ? 'Getting Location...' : 'Get My Location'}
+                {locationLoading ? 'Finding...' : 'Find My Location'}
               </Text>
             </TouchableOpacity>
           </Animated.View>
@@ -544,13 +589,13 @@ export function InteractiveMap() {
           <TouchableOpacity 
             style={[
               styles.trackingButton, 
-              { backgroundColor: isTrackingLocation ? colors.error : colors.success }
+              { backgroundColor: isTrackingLocation ? colors.error : colors.success, flex: 1 }
             ]}
             onPress={isTrackingLocation ? stopLocationTracking : startLocationTracking}
           >
             <Navigation size={16} color={colors.textInverse} />
             <Text style={[styles.trackingButtonText, { color: colors.textInverse }]}>
-              {isTrackingLocation ? 'Stop Tracking' : 'Track Live'}
+              {isTrackingLocation ? 'Stop Live' : 'Track Live'}
             </Text>
           </TouchableOpacity>
         </View>
@@ -563,7 +608,7 @@ export function InteractiveMap() {
             <Search size={20} color={colors.textSecondary} />
             <TextInput
               style={[styles.searchInput, { color: colors.text }]}
-              placeholder="Where to?"
+              placeholder="Where do you want to go?"
               placeholderTextColor={colors.textSecondary}
               value={searchQuery}
               onChangeText={(text) => {
@@ -731,8 +776,29 @@ export function InteractiveMap() {
         <View style={[styles.loadingContainer, { backgroundColor: colors.surface }]}>
           <RotateCcw size={32} color={colors.primary} />
           <Text style={[styles.loadingText, { color: colors.text }]}>
-            Finding optimal routes...
+            Finding optimal routes for your mindful journey...
           </Text>
+        </View>
+      )}
+
+      {/* Error Message */}
+      {error && (
+        <View style={[styles.errorContainer, { backgroundColor: colors.error }]}>
+          <AlertTriangle size={20} color={colors.textInverse} />
+          <Text style={[styles.errorText, { color: colors.textInverse }]}>
+            {error}
+          </Text>
+          <TouchableOpacity 
+            style={[styles.retryButton, { backgroundColor: colors.textInverse }]}
+            onPress={() => {
+              clearError();
+              if (currentLocation && destination) {
+                planRoute();
+              }
+            }}
+          >
+            <Text style={[styles.retryButtonText, { color: colors.error }]}>Retry</Text>
+          </TouchableOpacity>
         </View>
       )}
 
@@ -815,7 +881,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.15,
     shadowRadius: 8,
     elevation: 4,
-    backgroundColor: '#4A3B4A',
   },
   journeyHeader: {
     flexDirection: 'row',
@@ -826,26 +891,23 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontFamily: 'Nunito-SemiBold',
     marginLeft: 8,
-    color: '#FFFFFF',
   },
   journeyRoute: {
-    fontSize: 20,
-    fontFamily: 'Nunito-Bold',
+    fontSize: 16,
+    fontFamily: 'Quicksand-SemiBold',
     marginBottom: 8,
-    color: '#FFFFFF',
+    lineHeight: 22,
   },
   journeyCoordinates: {
-    fontSize: 14,
+    fontSize: 12,
     fontFamily: 'Quicksand-Regular',
     marginBottom: 16,
-    color: '#B8A8B8',
   },
   locationButtons: {
     flexDirection: 'row',
     gap: 12,
   },
   locationButton: {
-    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -859,7 +921,6 @@ const styles = StyleSheet.create({
     fontFamily: 'Quicksand-SemiBold',
   },
   trackingButton: {
-    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -1073,6 +1134,31 @@ const styles = StyleSheet.create({
     marginTop: 12,
     fontSize: 16,
     fontFamily: 'Quicksand-Medium',
+    textAlign: 'center',
+  },
+  errorContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    marginHorizontal: 20,
+    borderRadius: 16,
+    marginBottom: 20,
+  },
+  errorText: {
+    flex: 1,
+    marginLeft: 12,
+    fontSize: 14,
+    fontFamily: 'Quicksand-Medium',
+  },
+  retryButton: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 12,
+    marginLeft: 12,
+  },
+  retryButtonText: {
+    fontSize: 12,
+    fontFamily: 'Quicksand-SemiBold',
   },
   bottomPadding: {
     height: 100,
