@@ -138,7 +138,7 @@ export default function OnboardingStep1() {
           <Animated.View style={[styles.imageContainer, imageStyle]}>
             <View style={styles.imageWrapper}>
               <Image
-                source={require('@/assets/images/image-onboarding-step1.png')}
+                source={{ uri: 'https://stackblitz.com/storage/blobs/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBCQU5SU1FFPSIsImV4cHAiOm51bGwsInB1ciI6ImJsb2JfaWQifX0=--3dcd24be362eb4f29b8620975e2437aa1b4a1c26//image copy copy.png' }}
                 style={styles.image}
                 resizeMode="cover"
               />
