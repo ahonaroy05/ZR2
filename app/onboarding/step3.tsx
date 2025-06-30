@@ -200,7 +200,7 @@ export default function OnboardingStep3() {
           {/* Text Container */}
           <Animated.View style={[styles.textContainer, textStyle]}>
             <Text style={styles.title}>Begin your journey to mindful commuting</Text>
-            <Text style={[styles.description, { color: colors.textInverse }]}>
+            <Text style={[styles.description, { color: colors.text }]}>
               You're all set! Start transforming your daily commute into moments of peace and mindfulness
             </Text>
           </Animated.View>
@@ -405,7 +405,7 @@ const styles = StyleSheet.create({
     fontSize: 32,
     textAlign: 'center',
     lineHeight: 40,
-    color: '#FFFFFF',
+    color: colors.text,
     textShadowColor: 'rgba(0, 0, 0, 0.3)',
     textShadowOffset: { width: 0, height: 2 },
     textShadowRadius: 4,

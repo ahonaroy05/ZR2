@@ -175,7 +175,7 @@ export default function OnboardingStep2() {
           {/* Text Container */}
           <Animated.View style={[styles.textContainer, textStyle]}>
             <Text style={styles.title}>Track your wellness with mindful insights</Text>
-            <Text style={[styles.description, { color: colors.textInverse }]}>
+            <Text style={[styles.description, { color: colors.text }]}>
               Monitor your stress levels, meditation progress, and emotional well-being with beautiful analytics
             </Text>
           </Animated.View>
@@ -352,7 +352,7 @@ const styles = StyleSheet.create({
     fontSize: 32,
     textAlign: 'center',
     lineHeight: 40,
-    color: '#FFFFFF',
+    color: colors.text,
     textShadowColor: 'rgba(0, 0, 0, 0.3)',
     textShadowOffset: { width: 0, height: 2 },
     textShadowRadius: 4,
