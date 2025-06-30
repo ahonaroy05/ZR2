@@ -189,7 +189,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         theme: currentTheme,
         isDarkMode,
         toggleTheme,
-        colors: currentTheme.colors,
+        colors: currentTheme.colors || lightTheme.colors,
       }}
     >
       {children}
