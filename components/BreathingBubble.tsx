@@ -51,7 +51,7 @@ export function BreathingBubble({ isActive = false, size = 150 }: BreathingBubbl
 
   return (
     <View style={[styles.container, { width: size, height: size }]}>
-      <Animated.View style={[styles.bubble, animatedStyle, { width: size, height: size }]}>
+      <Animated.View style={[styles.bubble, animatedStyle, { width: size, height: size, borderRadius: size / 2 }]}>
         <LinearGradient
           colors={theme.gradient.primary}
           style={[styles.gradient, { borderRadius: size / 2 }]}
