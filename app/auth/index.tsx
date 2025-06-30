@@ -84,15 +84,16 @@ export default function AuthScreen() {
   };
 
   const handleDemoLogin = () => {
-    setEmail('demo@example.com');
-    setPassword('demo123');
-    setUsername('Demo User');
-    setIsSignUp(false); // Ensure demo always uses sign-in flow
-    
-    // Auto-login after a brief delay
-    setTimeout(() => {
-      handleAuth();
-    }, 500);
+    // Directly call signIn with demo credentials to activate client-side demo mode
+    signIn('demo@example.com', 'demo123').then((result) => {
+      if (result.error) {
+        Alert.alert('Error', result.error.message);
+      } else {
+        router.replace('/(tabs)');
+      }
+    }).catch((error) => {
+      Alert.alert('Error', 'An unexpected error occurred');
+    });
   };
 
   const handleForgotPassword = async () => {
