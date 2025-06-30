@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, SafeAreaView, Alert } from 'react-native';
 import Slider from '@react-native-community/slider';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -13,7 +13,10 @@ import {
   Cloud, 
   Coffee,
   Headphones,
-  Settings
+  Settings,
+  Zap,
+  Moon,
+  Target
 } from 'lucide-react-native';
 
 interface SoundOption {
@@ -26,10 +29,24 @@ interface SoundOption {
   volume: number;
 }
 
+interface SoundPreset {
+  id: string;
+  name: string;
+  description: string;
+  icon: React.ReactNode;
+  color: string;
+  sounds: Array<{
+    soundId: string;
+    volume: number;
+  }>;
+  masterVolume: number;
+}
+
 export default function SoundScreen() {
   const { theme } = useTheme();
   const [masterVolume, setMasterVolume] = useState(70);
   const [noiseCancellation, setNoiseCancellation] = useState(true);
+  const [activePreset, setActivePreset] = useState<string | null>(null);
   const [sounds, setSounds] = useState<SoundOption[]>([
     {
       id: 'rain',
@@ -69,12 +86,57 @@ export default function SoundScreen() {
     },
   ]);
 
+  // Define sound presets
+  const soundPresets: SoundPreset[] = [
+    {
+      id: 'focus',
+      name: 'Focus',
+      description: 'Enhance concentration and productivity',
+      icon: <Target size={20} color="#FAFAFA" />,
+      color: theme.colors.primary,
+      sounds: [
+        { soundId: 'cafe', volume: 65 },
+        { soundId: 'rain', volume: 35 },
+      ],
+      masterVolume: 75,
+    },
+    {
+      id: 'relax',
+      name: 'Relax',
+      description: 'Unwind and reduce stress',
+      icon: <Waves size={20} color="#FAFAFA" />,
+      color: theme.colors.success,
+      sounds: [
+        { soundId: 'ocean', volume: 80 },
+        { soundId: 'forest', volume: 45 },
+      ],
+      masterVolume: 65,
+    },
+    {
+      id: 'sleep',
+      name: 'Sleep',
+      description: 'Drift into peaceful slumber',
+      icon: <Moon size={20} color="#FAFAFA" />,
+      color: theme.colors.accent,
+      sounds: [
+        { soundId: 'rain', volume: 70 },
+        { soundId: 'forest', volume: 30 },
+      ],
+      masterVolume: 50,
+    },
+  ];
+
   const toggleSound = (id: string) => {
     setSounds(sounds.map(sound => 
       sound.id === id 
         ? { ...sound, isPlaying: !sound.isPlaying }
         : sound
     ));
+    
+    // Clear active preset when manually toggling sounds
+    if (activePreset) {
+      setActivePreset(null);
+    }
   };
 
   const updateSoundVolume = (id: string, volume: number) => {
@@ -83,6 +145,60 @@ export default function SoundScreen() {
         ? { ...sound, volume }
         : sound
     ));
+    
+    // Clear active preset when manually adjusting volumes
+    if (activePreset) {
+      setActivePreset(null);
+    }
+  };
+
+  const applyPreset = (preset: SoundPreset) => {
+    // Stop all sounds first
+    const updatedSounds = sounds.map(sound => ({
+      ...sound,
+      isPlaying: false,
+      volume: sound.volume, // Keep current volume initially
+    }));
+
+    // Apply preset settings
+    preset.sounds.forEach(presetSound => {
+      const soundIndex = updatedSounds.findIndex(s => s.id === presetSound.soundId);
+      if (soundIndex !== -1) {
+        updatedSounds[soundIndex] = {
+          ...updatedSounds[soundIndex],
+          isPlaying: true,
+          volume: presetSound.volume,
+        };
+      }
+    });
+
+    setSounds(updatedSounds);
+    setMasterVolume(preset.masterVolume);
+    setActivePreset(preset.id);
+
+    // Show feedback to user
+    Alert.alert(
+      `🎵 ${preset.name} Preset Applied`,
+      `${preset.description}\n\nSounds activated: ${preset.sounds.map(s => {
+        const sound = sounds.find(sound => sound.id === s.soundId);
+        return sound?.name;
+      }).join(', ')}`,
+      [{ text: 'Perfect!', style: 'default' }]
+    );
+  };
+
+  const clearAllSounds = () => {
+    setSounds(sounds.map(sound => ({
+      ...sound,
+      isPlaying: false,
+    })));
+    setActivePreset(null);
+    
+    Alert.alert(
+      '🔇 All Sounds Stopped',
+      'Your soundscape has been cleared. Select a preset or individual sounds to continue.',
+      [{ text: 'OK', style: 'default' }]
+    );
   };
 
   const activeSounds = sounds.filter(sound => sound.isPlaying);
@@ -105,7 +221,13 @@ export default function SoundScreen() {
             <Slider
               style={styles.slider}
               value={masterVolume}
-              onValueChange={setMasterVolume}
+              onValueChange={(value) => {
+                setMasterVolume(value);
+                // Clear active preset when manually adjusting master volume
+                if (activePreset) {
+                  setActivePreset(null);
+                }
+              }}
               minimumValue={0}
               maximumValue={100}
               thumbStyle={styles.sliderThumb}
@@ -141,7 +263,26 @@ export default function SoundScreen() {
         </View>
 
         <View style={styles.currentMix}>
-          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Current Mix</Text>
+          <View style={styles.currentMixHeader}>
+            <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Current Mix</Text>
+            {activeSounds.length > 0 && (
+              <TouchableOpacity
+                style={[styles.clearButton, { backgroundColor: theme.colors.error }]}
+                onPress={clearAllSounds}
+              >
+                <Text style={[styles.clearButtonText, { color: theme.colors.textInverse }]}>Clear All</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+          
+          {activePreset && (
+            <View style={[styles.activePresetIndicator, { backgroundColor: theme.colors.primaryLight }]}>
+              <Text style={[styles.activePresetText, { color: theme.colors.primary }]}>
+                🎵 {soundPresets.find(p => p.id === activePreset)?.name} preset active
+              </Text>
+            </View>
+          )}
+          
           {activeSounds.length > 0 ? (
             <View style={[styles.activeSounds, { backgroundColor: theme.colors.card, shadowColor: theme.colors.shadow }]}>
               {activeSounds.map((sound) => (
@@ -160,13 +301,74 @@ export default function SoundScreen() {
             <View style={[styles.emptyMix, { backgroundColor: theme.colors.card, shadowColor: theme.colors.shadow }]}>
               <Headphones size={32} color={theme.colors.textTertiary} />
               <Text style={[styles.emptyMixText, { color: theme.colors.text }]}>No sounds playing</Text>
-              <Text style={[styles.emptyMixSubtext, { color: theme.colors.textSecondary }]}>Tap a sound below to start</Text>
+              <Text style={[styles.emptyMixSubtext, { color: theme.colors.textSecondary }]}>Choose a preset or tap individual sounds below</Text>
             </View>
           )}
         </View>
 
+        <View style={styles.presetsSection}>
+          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Quick Presets</Text>
+          <Text style={[styles.sectionSubtitle, { color: theme.colors.textSecondary }]}>
+            Curated soundscapes for different activities
+          </Text>
+          <View style={styles.presetButtons}>
+            {soundPresets.map((preset) => (
+              <TouchableOpacity
+                key={preset.id}
+                style={[
+                  styles.presetButton,
+                  { shadowColor: theme.colors.shadow },
+                  activePreset === preset.id && styles.activePresetButton
+                ]}
+                onPress={() => applyPreset(preset)}
+                activeOpacity={0.8}
+              >
+                <LinearGradient
+                  colors={activePreset === preset.id ? [preset.color, theme.colors.primary] : [theme.colors.card, theme.colors.surface]}
+                  style={styles.presetGradient}
+                >
+                  <View style={[
+                    styles.presetIconContainer,
+                    { backgroundColor: activePreset === preset.id ? 'rgba(255,255,255,0.2)' : preset.color }
+                  ]}>
+                    {preset.icon}
+                  </View>
+                  <Text style={[
+                    styles.presetButtonText,
+                    { color: activePreset === preset.id ? theme.colors.textInverse : theme.colors.text }
+                  ]}>
+                    {preset.name}
+                  </Text>
+                  <Text style={[
+                    styles.presetDescription,
+                    { color: activePreset === preset.id ? theme.colors.textInverse : theme.colors.textSecondary }
+                  ]}>
+                    {preset.description}
+                  </Text>
+                  
+                  {/* Show sound count */}
+                  <View style={[
+                    styles.soundCount,
+                    { backgroundColor: activePreset === preset.id ? 'rgba(255,255,255,0.2)' : theme.colors.primaryLight }
+                  ]}>
+                    <Text style={[
+                      styles.soundCountText,
+                      { color: activePreset === preset.id ? theme.colors.textInverse : theme.colors.primary }
+                    ]}>
+                      {preset.sounds.length} sounds
+                    </Text>
+                  </View>
+                </LinearGradient>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+
         <View style={styles.soundsSection}>
-          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Available Sounds</Text>
+          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Individual Sounds</Text>
+          <Text style={[styles.sectionSubtitle, { color: theme.colors.textSecondary }]}>
+            Mix and match sounds to create your perfect environment
+          </Text>
           <View style={styles.soundsGrid}>
             {sounds.map((sound) => (
               <View key={sound.id} style={[styles.soundCard, { backgroundColor: theme.colors.card, shadowColor: theme.colors.shadow }]}>
@@ -214,20 +416,7 @@ export default function SoundScreen() {
           </View>
         </View>
 
-        <View style={styles.presetsSection}>
-          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Presets</Text>
-          <View style={styles.presetButtons}>
-            <TouchableOpacity style={[styles.presetButton, { backgroundColor: theme.colors.card, borderColor: theme.colors.border, shadowColor: theme.colors.shadow }]}>
-              <Text style={[styles.presetButtonText, { color: theme.colors.text }]}>Focus</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={[styles.presetButton, { backgroundColor: theme.colors.card, borderColor: theme.colors.border, shadowColor: theme.colors.shadow }]}>
-              <Text style={[styles.presetButtonText, { color: theme.colors.text }]}>Relax</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={[styles.presetButton, { backgroundColor: theme.colors.card, borderColor: theme.colors.border, shadowColor: theme.colors.shadow }]}>
-              <Text style={[styles.presetButtonText, { color: theme.colors.text }]}>Sleep</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
+        <View style={styles.bottomPadding} />
       </ScrollView>
     </SafeAreaView>
   );
@@ -319,16 +508,48 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   noiseCancelTextActive: {
-    color: '#FFFFFF', // Keep white for active state
+    color: '#FFFFFF',
   },
   currentMix: {
     marginBottom: 32,
+  },
+  currentMixHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  clearButton: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 12,
+  },
+  clearButtonText: {
+    fontFamily: 'Quicksand-SemiBold',
+    fontSize: 12,
+  },
+  activePresetIndicator: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    marginBottom: 12,
+    alignItems: 'center',
+  },
+  activePresetText: {
+    fontFamily: 'Quicksand-SemiBold',
+    fontSize: 14,
   },
   sectionTitle: {
     fontFamily: 'Nunito-SemiBold',
     fontSize: 20,
     color: '#333',
+    marginBottom: 8,
+  },
+  sectionSubtitle: {
+    fontFamily: 'Quicksand-Medium',
+    fontSize: 14,
     marginBottom: 16,
+    lineHeight: 20,
   },
   activeSounds: {
     borderRadius: 20,
@@ -384,6 +605,62 @@ const styles = StyleSheet.create({
     fontFamily: 'Quicksand-Medium',
     fontSize: 14,
     marginTop: 4,
+    textAlign: 'center',
+  },
+  presetsSection: {
+    marginBottom: 32,
+  },
+  presetButtons: {
+    gap: 16,
+  },
+  presetButton: {
+    borderRadius: 20,
+    overflow: 'hidden',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  activePresetButton: {
+    shadowOpacity: 0.25,
+    shadowRadius: 12,
+    elevation: 8,
+  },
+  presetGradient: {
+    padding: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  presetIconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 16,
+  },
+  presetButtonText: {
+    fontFamily: 'Nunito-SemiBold',
+    fontSize: 18,
+    flex: 1,
+  },
+  presetDescription: {
+    fontFamily: 'Quicksand-Regular',
+    fontSize: 12,
+    position: 'absolute',
+    left: 84,
+    top: 40,
+    right: 80,
+  },
+  soundCount: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+    marginLeft: 8,
+  },
+  soundCountText: {
+    fontFamily: 'Quicksand-SemiBold',
+    fontSize: 11,
   },
   soundsSection: {
     marginBottom: 32,
@@ -448,27 +725,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     textAlign: 'right',
   },
-  presetsSection: {
-    paddingBottom: 32,
-  },
-  presetButtons: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  presetButton: {
-    flex: 1,
-    borderRadius: 16,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderWidth: 2,
-    alignItems: 'center',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 1,
-  },
-  presetButtonText: {
-    fontFamily: 'Quicksand-SemiBold',
-    fontSize: 14,
+  bottomPadding: {
+    height: 100,
   },
 });
