@@ -5,9 +5,13 @@ import Animated, {
   withTiming,
   useAnimatedStyle,
   interpolateColor,
+  useAnimatedProps,
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '@/contexts/ThemeContext';
+import Svg, { Circle } from 'react-native-svg';
+
+const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
 interface StressMeterProps {
   stressLevel: number; // 0-100
@@ -22,8 +26,12 @@ export function StressMeter({ stressLevel, size = 120 }: StressMeterProps) {
     progress.value = withTiming(stressLevel / 100, { duration: 1000 });
   }, [stressLevel]);
 
-  const animatedStyle = useAnimatedStyle(() => {
-    const strokeDashoffset = 251.2 * (1 - progress.value);
+  const radius = (size - 16) / 2; // Account for stroke width
+  const circumference = 2 * Math.PI * radius;
+  const strokeWidth = 8;
+
+  const animatedProps = useAnimatedProps(() => {
+    const strokeDashoffset = circumference * (1 - progress.value);
     
     return {
       strokeDashoffset,
@@ -35,25 +43,33 @@ export function StressMeter({ stressLevel, size = 120 }: StressMeterProps) {
     };
   });
 
-  const radius = size / 2 - 10;
-  const circumference = 2 * Math.PI * radius;
-
   return (
     <View style={[styles.container, { width: size, height: size }]}>
       <View style={styles.meterContainer}>
-        <Animated.View style={[StyleSheet.absoluteFill, styles.circle]}>
-          <Animated.View
-            style={[
-              styles.progressRing,
-              { borderColor: colors.border },
-              {
-                width: size,
-                height: size,
-                borderRadius: size / 2,
-              },
-            ]}
+        <Svg width={size} height={size} style={StyleSheet.absoluteFill}>
+          {/* Background circle */}
+          <Circle
+            cx={size / 2}
+            cy={size / 2}
+            r={radius}
+            stroke={colors.border}
+            strokeWidth={strokeWidth}
+            fill="transparent"
           />
-        </Animated.View>
+          
+          {/* Progress circle */}
+          <AnimatedCircle
+            cx={size / 2}
+            cy={size / 2}
+            r={radius}
+            strokeWidth={strokeWidth}
+            fill="transparent"
+            strokeDasharray={circumference}
+            strokeLinecap="round"
+            transform={`rotate(-90 ${size / 2} ${size / 2})`}
+            animatedProps={animatedProps}
+          />
+        </Svg>
         
         <View style={styles.textContainer}>
           <Text style={[styles.levelText, { color: colors.text }]}>{Math.round(stressLevel)}</Text>
@@ -73,18 +89,13 @@ const styles = StyleSheet.create({
     position: 'relative',
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  circle: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  progressRing: {
-    borderWidth: 8,
-    position: 'absolute',
+    width: '100%',
+    height: '100%',
   },
   textContainer: {
     alignItems: 'center',
     justifyContent: 'center',
+    position: 'absolute',
   },
   levelText: {
     fontFamily: 'Nunito-Bold',
@@ -92,6 +103,7 @@ const styles = StyleSheet.create({
   },
   labelText: {
     fontFamily: 'Quicksand-Medium',
+    fontSize: 12,
     marginTop: 4,
   },
 });
