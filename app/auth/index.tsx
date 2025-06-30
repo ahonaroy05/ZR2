@@ -57,7 +57,7 @@ export default function AuthScreen() {
 
   const handleAuth = async () => {
     if (!email || !password || (isSignUp && !username)) {
-      Alert.alert('Error', 'Please fill in all fields');
+      Alert.alert('Missing Information', 'Please fill in all fields');
       return;
     }
 
@@ -72,27 +72,26 @@ export default function AuthScreen() {
       }
 
       if (result.error) {
-        // Handle specific authentication errors with clear messaging
+        // Provide clearer error messages for authentication failures
         let errorMessage = result.error.message;
         
         if (result.error.message.includes('Invalid login credentials') || 
-            result.error.message.includes('invalid_credentials') ||
-            result.error.message.includes('Invalid email or password')) {
+            result.error.message.includes('invalid_credentials')) {
           errorMessage = 'Invalid email or password. Please check your credentials and try again.';
         } else if (result.error.message.includes('Email not confirmed')) {
           errorMessage = 'Please check your email and confirm your account before signing in.';
         } else if (result.error.message.includes('User not found')) {
-          errorMessage = 'Invalid email or password. Please check your credentials and try again.';
+          errorMessage = 'No account found with this email address.';
         } else if (result.error.message.includes('Too many requests')) {
-          errorMessage = 'Too many login attempts. Please wait a moment before trying again.';
+          errorMessage = 'Too many login attempts. Please wait a moment and try again.';
         }
         
-        Alert.alert('Authentication Error', errorMessage);
+        Alert.alert('Authentication Failed', errorMessage);
       } else {
         router.replace('/(tabs)');
       }
     } catch (error) {
-      Alert.alert('Error', 'An unexpected error occurred. Please try again.');
+      Alert.alert('Connection Error', 'Unable to connect to the server. Please check your internet connection and try again.');
     } finally {
       setLoading(false);
     }
@@ -102,18 +101,18 @@ export default function AuthScreen() {
     // Directly call signIn with demo credentials to activate client-side demo mode
     signIn('demo@example.com', 'demo123').then((result) => {
       if (result.error) {
-        Alert.alert('Error', result.error.message);
+        Alert.alert('Demo Error', 'Unable to start demo mode. Please try again.');
       } else {
         router.replace('/(tabs)');
       }
     }).catch((error) => {
-      Alert.alert('Error', 'An unexpected error occurred');
+      Alert.alert('Demo Error', 'An unexpected error occurred while starting demo mode.');
     });
   };
 
   const handleForgotPassword = async () => {
     if (!email.trim()) {
-      Alert.alert('Email Required', 'Please enter your email address to reset your password.');
+      Alert.alert('Email Required', 'Please enter your email address first, then tap "Forgot Password?" to reset your password.');
       return;
     }
 
@@ -125,17 +124,15 @@ export default function AuthScreen() {
       });
 
       if (error) {
-        // Handle forgot password errors with clear messaging
         let errorMessage = error.message;
         
-        if (error.message.includes('User not found') || 
-            error.message.includes('Invalid email')) {
-          errorMessage = 'No account found with this email address. Please check your email and try again.';
+        if (error.message.includes('User not found') || error.message.includes('invalid_credentials')) {
+          errorMessage = 'No account found with this email address. Please check the email and try again.';
         } else if (error.message.includes('Too many requests')) {
-          errorMessage = 'Too many password reset requests. Please wait before trying again.';
+          errorMessage = 'Too many password reset requests. Please wait a moment before trying again.';
         }
         
-        Alert.alert('Password Reset Error', errorMessage);
+        Alert.alert('Password Reset Failed', errorMessage);
       } else {
         Alert.alert(
           'Password Reset Email Sent',
@@ -144,7 +141,7 @@ export default function AuthScreen() {
         );
       }
     } catch (error) {
-      Alert.alert('Password Reset Error', 'An unexpected error occurred. Please try again.');
+      Alert.alert('Connection Error', 'Unable to send password reset email. Please check your internet connection and try again.');
     } finally {
       setForgotPasswordLoading(false);
     }
