@@ -20,31 +20,7 @@ import Animated, {
 import { useTheme } from '@/contexts/ThemeContext';
 import { GoogleMapView } from '@/components/GoogleMapView';
 import { useGoogleMapsRoutes } from '@/hooks/useGoogleMapsRoutes';
-import { 
-  MapPin, 
-  Navigation, 
-  Search, 
-  Clock, 
-  Car, 
-  Brain as Train, 
-  Bike, 
-  User, 
-  Star, 
-  Chrome as Home, 
-  Briefcase, 
-  Coffee, 
-  Heart, 
-  X, 
-  RotateCcw, 
-  Zap, 
-  TriangleAlert as AlertTriangle, 
-  TrendingUp,
-  ZoomIn,
-  ZoomOut,
-  RotateCw,
-  HelpCircle,
-  Route
-} from 'lucide-react-native';
+import { MapPin, Navigation, Search, Clock, Car, Brain as Train, Bike, User, Star, Chrome as Home, Briefcase, Coffee, Heart, X, RotateCcw, Zap, TriangleAlert as AlertTriangle, TrendingUp, ZoomIn, ZoomOut, RotateCw, CircleHelp as HelpCircle, Route } from 'lucide-react-native';
 
 const { width, height } = Dimensions.get('window');
 
