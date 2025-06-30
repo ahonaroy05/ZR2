@@ -19,7 +19,7 @@ export default function OnboardingStep2() {
         <View style={styles.content}>
           <View style={styles.imageContainer}>
             <Image
-              source={{ uri: 'https://images.pexels.com/photos/3822622/pexels-photo-3822622.jpeg' }}
+              source={require('@/assets/images/image copy.png')}
               style={styles.image}
               resizeMode="cover"
             />
