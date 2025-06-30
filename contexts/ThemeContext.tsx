@@ -124,12 +124,12 @@ const getInitialThemePreference = (): boolean => {
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [isDarkMode, setIsDarkMode] = useState(getInitialThemePreference);
-  const [isLoading, setIsLoading] = useState(Platform.OS !== 'web');
+  const [isLoading, setIsLoading] = useState(true);
 
   // Load theme preference from storage
   useEffect(() => {
     if (Platform.OS === 'web') {
-      // For web, we already loaded synchronously, so just mark as loaded
+      // For web, we loaded synchronously but still need to mark as loaded
       setIsLoading(false);
       return;
     }
@@ -189,7 +189,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         theme: currentTheme,
         isDarkMode,
         toggleTheme,
-        colors: currentTheme.colors || lightTheme.colors,
+        colors: currentTheme.colors,
       }}
     >
       {children}
@@ -202,8 +202,5 @@ export function useTheme() {
   if (context === undefined) {
     throw new Error('useTheme must be used within a ThemeProvider');
   }
-  return {
-    ...context,
-    colors: context.colors || lightTheme.colors, // Defensive fallback for colors
-  };
+  return context;
 }
