@@ -88,7 +88,7 @@ export default function HomeScreen() {
       <TouchableOpacity 
         style={[
           styles.settingsButton,
-          { top: isDemoMode ? 60 : 20 } // Adjust for demo banner
+          { top: isDemoMode ? 100 : 60 } // Moved down from 60/20 to 100/60
         ]}
         onPress={() => setShowSettingsDrawer(true)}
         activeOpacity={0.7}
