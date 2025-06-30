@@ -83,41 +83,8 @@ export function InteractiveMap() {
   // Location tracking ref
   const unsubscribeLocationWatchRef = useRef<(() => void) | null>(null);
 
-  // Mock saved locations for Bhubaneswar
-  const savedLocations: SavedLocation[] = [
-    {
-      id: 'home',
-      name: 'Home',
-      address: 'Patia, Bhubaneswar, Odisha',
-      location: { lat: 20.2960, lng: 85.8246 },
-      icon: 'home',
-      color: colors.primary,
-    },
-    {
-      id: 'work',
-      name: 'Infocity',
-      address: 'Infocity, Bhubaneswar, Odisha',
-      location: { lat: 20.2700, lng: 85.8400 },
-      icon: 'briefcase',
-      color: colors.accent,
-    },
-    {
-      id: 'mall',
-      name: 'Esplanade One',
-      address: 'Rasulgarh, Bhubaneswar, Odisha',
-      location: { lat: 20.3019, lng: 85.8449 },
-      icon: 'zap',
-      color: colors.success,
-    },
-    {
-      id: 'temple',
-      name: 'Lingaraj Temple',
-      address: 'Old Town, Bhubaneswar, Odisha',
-      location: { lat: 20.2370, lng: 85.8350 },
-      icon: 'heart',
-      color: colors.warning,
-    },
-  ];
+  // Empty saved locations - users will add their own
+  const savedLocations: SavedLocation[] = [];
 
   const transportModes: TransportMode[] = [
     {
@@ -215,12 +182,10 @@ export function InteractiveMap() {
       // Show helpful error message
       Alert.alert(
         'Location Error', 
-        locationError || 'Unable to get your current location. This could be due to:\n\n• Location services being disabled\n• Poor GPS signal\n• Browser blocking location access\n\nUsing default location in Bhubaneswar for now.',
+        locationError || 'Unable to get your current location. This could be due to:\n\n• Location services being disabled\n• Poor GPS signal\n• Browser blocking location access\n\nPlease try again or set your location manually.',
         [
           { text: 'Try Again', onPress: getCurrentLocation },
-          { text: 'Use Default', style: 'cancel', onPress: () => {
-            setCurrentLocation({ lat: 20.2960, lng: 85.8246, name: 'Default Location', address: 'Bhubaneswar, Odisha' });
-          }}
+          { text: 'OK', style: 'cancel' }
         ]
       );
     } finally {
@@ -228,7 +193,7 @@ export function InteractiveMap() {
     }
   };
 
-  // Search for locations in Bhubaneswar area
+  // Search for locations - placeholder implementation
   const searchLocations = async (query: string) => {
     if (!query.trim()) {
       setSearchResults([]);
@@ -236,63 +201,10 @@ export function InteractiveMap() {
       return;
     }
 
-    // Mock search results for Bhubaneswar area
-    const mockResults = [
-      {
-        id: '1',
-        name: 'Kalinga Stadium',
-        address: 'Kalinga Stadium, Bhubaneswar, Odisha',
-        location: { lat: 20.2850, lng: 85.8200 },
-      },
-      {
-        id: '2',
-        name: 'Ekamra Kanan',
-        address: 'Ekamra Kanan Botanical Gardens, Bhubaneswar, Odisha',
-        location: { lat: 20.2750, lng: 85.8350 },
-      },
-      {
-        id: '3',
-        name: 'Lingaraj Temple',
-        address: 'Lingaraj Temple, Old Town, Bhubaneswar, Odisha',
-        location: { lat: 20.2370, lng: 85.8350 },
-      },
-      {
-        id: '4',
-        name: 'Biju Patnaik Airport',
-        address: 'Biju Patnaik International Airport, Bhubaneswar, Odisha',
-        location: { lat: 20.2444, lng: 85.8178 },
-      },
-      {
-        id: '5',
-        name: 'Esplanade One Mall',
-        address: 'Esplanade One Mall, Rasulgarh, Bhubaneswar, Odisha',
-        location: { lat: 20.3019, lng: 85.8449 },
-      },
-      {
-        id: '6',
-        name: 'Utkal University',
-        address: 'Utkal University, Bhubaneswar, Odisha',
-        location: { lat: 20.2700, lng: 85.7700 },
-      },
-      {
-        id: '7',
-        name: 'Patia Square',
-        address: 'Patia, Bhubaneswar, Odisha',
-        location: { lat: 20.2960, lng: 85.8246 },
-      },
-      {
-        id: '8',
-        name: 'Khandagiri Caves',
-        address: 'Khandagiri, Bhubaneswar, Odisha',
-        location: { lat: 20.1833, lng: 85.7833 },
-      },
-    ].filter(result => 
-      result.name.toLowerCase().includes(query.toLowerCase()) ||
-      result.address.toLowerCase().includes(query.toLowerCase())
-    );
-
-    setSearchResults(mockResults);
-    setShowSearchResults(true);
+    // This would integrate with a real geocoding service
+    // For now, show empty results
+    setSearchResults([]);
+    setShowSearchResults(false);
   };
 
   // Handle route planning
@@ -451,14 +363,14 @@ export function InteractiveMap() {
     transform: [{ scale: locationPulse.value }],
   }));
 
-  // Initialize with default location and try to get user location
+  // Initialize with default location
   useEffect(() => {
-    // Set default location for Bhubaneswar
+    // Set default location (can be changed by user)
     setCurrentLocation({ 
-      lat: 20.2960, 
-      lng: 85.8246, 
+      lat: 37.7749, 
+      lng: -122.4194, 
       name: 'Default Location', 
-      address: 'Patia, Bhubaneswar, Odisha' 
+      address: 'San Francisco, CA' 
     });
     
     // Try to get user's actual location
@@ -534,8 +446,8 @@ export function InteractiveMap() {
             overviewPolyline: route.overviewPolyline,
             color: route.color,
           }))}
-          origin={currentLocation || { lat: 20.2960, lng: 85.8246 }}
-          destination={destination || { lat: 20.2700, lng: 85.8400 }}
+          origin={currentLocation || { lat: 37.7749, lng: -122.4194 }}
+          destination={destination || { lat: 37.7849, lng: -122.4094 }}
           selectedRoute={selectedRoute}
           onRouteSelect={setSelectedRoute}
           style={styles.map}
@@ -664,25 +576,31 @@ export function InteractiveMap() {
           {showSavedLocations && (
             <View style={[styles.savedLocations, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}>
               <Text style={[styles.savedLocationsTitle, { color: colors.text }]}>Saved Places</Text>
-              {savedLocations.map((location) => (
-                <TouchableOpacity
-                  key={location.id}
-                  style={styles.savedLocationItem}
-                  onPress={() => selectSavedLocation(location)}
-                >
-                  <View style={[styles.savedLocationIcon, { backgroundColor: `${location.color}20` }]}>
-                    {getSavedLocationIcon(location.icon, location.color)}
-                  </View>
-                  <View style={styles.savedLocationText}>
-                    <Text style={[styles.savedLocationName, { color: colors.text }]}>
-                      {location.name}
-                    </Text>
-                    <Text style={[styles.savedLocationAddress, { color: colors.textSecondary }]}>
-                      {location.address}
-                    </Text>
-                  </View>
-                </TouchableOpacity>
-              ))}
+              {savedLocations.length === 0 ? (
+                <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
+                  No saved locations yet. Add your favorite places to see them here.
+                </Text>
+              ) : (
+                savedLocations.map((location) => (
+                  <TouchableOpacity
+                    key={location.id}
+                    style={styles.savedLocationItem}
+                    onPress={() => selectSavedLocation(location)}
+                  >
+                    <View style={[styles.savedLocationIcon, { backgroundColor: `${location.color}20` }]}>
+                      {getSavedLocationIcon(location.icon, location.color)}
+                    </View>
+                    <View style={styles.savedLocationText}>
+                      <Text style={[styles.savedLocationName, { color: colors.text }]}>
+                        {location.name}
+                      </Text>
+                      <Text style={[styles.savedLocationAddress, { color: colors.textSecondary }]}>
+                        {location.address}
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                ))
+              )}
             </View>
           )}
         </Animated.View>
@@ -1007,6 +925,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'Nunito-SemiBold',
     marginBottom: 12,
+  },
+  emptyText: {
+    fontSize: 14,
+    fontFamily: 'Quicksand-Regular',
+    textAlign: 'center',
+    lineHeight: 20,
   },
   savedLocationItem: {
     flexDirection: 'row',

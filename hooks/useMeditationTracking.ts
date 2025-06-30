@@ -11,29 +11,9 @@ export function useMeditationTracking() {
   const loadSessions = async () => {
     if (!user) return;
     
-    // In demo mode, load mock data
+    // In demo mode, start with empty sessions
     if (isDemoMode) {
-      const mockSessions: MeditationSession[] = [
-        {
-          id: 'demo-session-1',
-          user_id: user.id,
-          duration_minutes: 15,
-          session_type: 'breathing',
-          stress_before: 75,
-          stress_after: 45,
-          created_at: new Date().toISOString(),
-        },
-        {
-          id: 'demo-session-2',
-          user_id: user.id,
-          duration_minutes: 10,
-          session_type: 'nature_sounds',
-          stress_before: 60,
-          stress_after: 35,
-          created_at: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-        },
-      ];
-      setSessions(mockSessions);
+      setSessions([]);
       return;
     }
     
@@ -106,12 +86,12 @@ export function useMeditationTracking() {
   const getWeeklyStats = async () => {
     if (!user) return null;
     
-    // In demo mode, return mock stats
+    // In demo mode, return empty stats initially
     if (isDemoMode) {
       return {
-        totalMinutes: 45,
-        sessionCount: 3,
-        averageStressReduction: 35,
+        totalMinutes: 0,
+        sessionCount: 0,
+        averageStressReduction: 0,
       };
     }
     

@@ -100,10 +100,10 @@ export function useDailyAffirmations() {
     // Set today's affirmation
     setTodaysAffirmation(getTodaysAffirmation());
 
-    // In demo mode, simulate some data
+    // In demo mode, start with minimal data
     if (isDemoMode) {
-      setFavoriteAffirmations(['aff_1', 'aff_4', 'aff_7']);
-      setAffirmationCount(23);
+      setFavoriteAffirmations([]);
+      setAffirmationCount(1);
       return;
     }
 

@@ -11,29 +11,15 @@ export function useStressTracking() {
   const loadStressReadings = async () => {
     if (!user) return;
     
-    // In demo mode, use mock data instead of querying database
+    // In demo mode, use minimal demo data
     if (isDemoMode) {
       const mockReadings: StressReading[] = [
         {
           id: 'demo-1',
           user_id: user.id,
-          stress_level: 6,
-          location: 'Home',
-          created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
-        },
-        {
-          id: 'demo-2',
-          user_id: user.id,
-          stress_level: 8,
-          location: 'Work',
-          created_at: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(), // 1 day ago
-        },
-        {
-          id: 'demo-3',
-          user_id: user.id,
-          stress_level: 4,
-          location: 'Park',
-          created_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days ago
+          stress_level: 65,
+          location: 'Current Location',
+          created_at: new Date().toISOString(),
         },
       ];
       setStressReadings(mockReadings);

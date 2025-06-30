@@ -22,7 +22,6 @@ export default function HomeScreen() {
   const { colors, theme } = useTheme();
   const { getCurrentStressLevel, getAverageStressLevel, recordStressLevel } = useStressTracking();
   const { sessions, getWeeklyStats } = useMeditationTracking();
-  const [stressLevel] = useState(72);
   const [isBreathing, setIsBreathing] = useState(false);
   const [showEmergencyCalm, setShowEmergencyCalm] = useState(false);
   const [showSettingsDrawer, setShowSettingsDrawer] = useState(false);
@@ -32,9 +31,9 @@ export default function HomeScreen() {
   // Animation for breathing button press
   const pressScale = useSharedValue(1);
 
-  // Get current stress level or use default
-  const currentStress = getCurrentStressLevel() || stressLevel;
-  const averageStress = getAverageStressLevel() || 0;
+  // Get current stress level
+  const currentStress = getCurrentStressLevel();
+  const averageStress = getAverageStressLevel();
 
   // Update time every minute for real-time greeting updates
   useEffect(() => {
@@ -77,10 +76,26 @@ export default function HomeScreen() {
     });
   };
 
+  // Calculate today's stats from actual data
   const todayStats = {
-    commutes: 2,
-    mindfulMinutes: weeklyStats?.totalMinutes || 18,
-    stressReduction: weeklyStats?.averageStressReduction || 23,
+    commutes: 0, // This would be calculated from actual journey data
+    mindfulMinutes: weeklyStats?.totalMinutes || 0,
+    stressReduction: weeklyStats?.averageStressReduction || 0,
+  };
+
+  // Get stress level description
+  const getStressDescription = (level: number | null) => {
+    if (level === null) {
+      return 'Start tracking your stress levels to see insights here.';
+    }
+    
+    if (level > 70) {
+      return 'Your stress level is elevated. Consider taking a few mindful breaths.';
+    } else if (level > 40) {
+      return 'Your stress level is moderate. You\'re doing well!';
+    } else {
+      return 'Your stress level is low. Great job staying calm!';
+    }
   };
 
   return (
@@ -88,7 +103,7 @@ export default function HomeScreen() {
       <TouchableOpacity 
         style={[
           styles.settingsButton,
-          { top: isDemoMode ? 120 : 80 } // Moved down further from 100/60 to 120/80
+          { top: isDemoMode ? 120 : 80 }
         ]}
         onPress={() => setShowSettingsDrawer(true)}
         activeOpacity={0.7}
@@ -114,15 +129,10 @@ export default function HomeScreen() {
         </View>
 
         <View style={styles.stressSection}>
-          <StressMeter stressLevel={currentStress} size={140} />
+          <StressMeter stressLevel={currentStress || 50} size={140} />
           <View style={styles.stressInfo}>
             <Text style={[styles.stressDescription, { color: colors.text }]}>
-              {currentStress > 70 
-                ? 'Your stress level is elevated. Consider taking a few mindful breaths.'
-                : currentStress > 40
-                ? 'Your stress level is moderate. You\'re doing well!'
-                : 'Your stress level is low. Great job staying calm!'
-              }
+              {getStressDescription(currentStress)}
             </Text>
           </View>
         </View>
@@ -179,7 +189,7 @@ export default function HomeScreen() {
             <View style={[styles.statCard, { backgroundColor: colors.card, shadowColor: colors.shadow }]}>
               <Calendar size={20} color={colors.primary} />
               <Text style={[styles.statNumber, { color: colors.text }]}>{todayStats.commutes}</Text>
-              <Text style={[styles.statLabel, { color: colors.text }]}>Commutes</Text>
+              <Text style={[styles.statLabel, { color: colors.text }]}>Journeys</Text>
             </View>
             <View style={[styles.statCard, { backgroundColor: colors.card, shadowColor: colors.shadow }]}>
               <Clock size={20} color={colors.accent} />
@@ -193,22 +203,50 @@ export default function HomeScreen() {
             </View>
           </View>
         </View>
-        <View style={styles.recentSessions}>
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>Recent Sessions</Text>
-          <View style={[styles.sessionCard, { backgroundColor: colors.card, shadowColor: colors.shadow }]}>
-            <View style={styles.sessionHeader}>
-              <Text style={[styles.sessionTitle, { color: colors.text }]}>Morning Commute</Text>
-              <Text style={[styles.sessionTime, { color: colors.text }]}>8:30 AM</Text>
-            </View>
-            <Text style={[styles.sessionDescription, { color: colors.text }]}>
-              15-minute guided meditation with nature sounds
-            </Text>
-            <View style={styles.sessionStats}>
-              <Text style={[styles.sessionStat, { color: colors.primary, backgroundColor: colors.primaryLight }]}>-18% stress</Text>
-              <Text style={[styles.sessionStat, { color: colors.primary, backgroundColor: colors.primaryLight }]}>Forest sounds</Text>
-            </View>
+
+        {/* Recent Sessions - Only show if there are actual sessions */}
+        {sessions.length > 0 && (
+          <View style={styles.recentSessions}>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>Recent Sessions</Text>
+            {sessions.slice(0, 3).map((session, index) => (
+              <View key={session.id || index} style={[styles.sessionCard, { backgroundColor: colors.card, shadowColor: colors.shadow }]}>
+                <View style={styles.sessionHeader}>
+                  <Text style={[styles.sessionTitle, { color: colors.text }]}>
+                    {session.session_type === 'breathing' ? 'Breathing Exercise' : 
+                     session.session_type === 'meditation' ? 'Meditation Session' : 
+                     'Mindfulness Session'}
+                  </Text>
+                  <Text style={[styles.sessionTime, { color: colors.text }]}>
+                    {new Date(session.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </Text>
+                </View>
+                <Text style={[styles.sessionDescription, { color: colors.text }]}>
+                  {session.duration_minutes}-minute {session.session_type} session
+                </Text>
+                <View style={styles.sessionStats}>
+                  {session.stress_before && session.stress_after && (
+                    <Text style={[styles.sessionStat, { color: colors.primary, backgroundColor: colors.primaryLight }]}>
+                      -{Math.round(((session.stress_before - session.stress_after) / session.stress_before) * 100)}% stress
+                    </Text>
+                  )}
+                  <Text style={[styles.sessionStat, { color: colors.primary, backgroundColor: colors.primaryLight }]}>
+                    {session.session_type}
+                  </Text>
+                </View>
+              </View>
+            ))}
           </View>
-        </View>
+        )}
+
+        {/* Empty state when no sessions */}
+        {sessions.length === 0 && (
+          <View style={styles.emptyState}>
+            <Text style={[styles.emptyStateTitle, { color: colors.text }]}>Start Your Mindful Journey</Text>
+            <Text style={[styles.emptyStateText, { color: colors.textSecondary }]}>
+              Begin with a breathing exercise or meditation session to see your progress here.
+            </Text>
+          </View>
+        )}
       </ScrollView>
 
       <SettingsDrawer
@@ -259,8 +297,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
-  },
-  signOutText: {
   },
   stressSection: {
     alignItems: 'center',
@@ -345,11 +381,12 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   recentSessions: {
-    paddingBottom: 120,
+    paddingBottom: 32,
   },
   sessionCard: {
     borderRadius: 20,
     padding: 20,
+    marginBottom: 16,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -391,5 +428,22 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginTop: 8,
     textAlign: 'center',
+  },
+  emptyState: {
+    alignItems: 'center',
+    paddingVertical: 40,
+    paddingHorizontal: 20,
+  },
+  emptyStateTitle: {
+    fontFamily: 'Nunito-SemiBold',
+    fontSize: 18,
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  emptyStateText: {
+    fontFamily: 'Quicksand-Regular',
+    fontSize: 14,
+    textAlign: 'center',
+    lineHeight: 20,
   },
 });

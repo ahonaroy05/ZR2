@@ -25,16 +25,18 @@ export function useStreakTracking() {
   const loadStreakData = useCallback(async () => {
     if (!user) return;
 
-    // In demo mode, simulate streak data
+    // In demo mode, start with minimal streak data
     if (isDemoMode) {
       const demoStreak: StreakData = {
-        currentStreak: 12,
-        longestStreak: 18,
+        currentStreak: 1,
+        longestStreak: 1,
         lastCheckIn: new Date().toISOString(),
-        streakHistory: Array.from({ length: 30 }, (_, i) => ({
-          date: new Date(Date.now() - i * 24 * 60 * 60 * 1000).toISOString(),
-          completed: Math.random() > 0.2, // 80% completion rate
-        })),
+        streakHistory: [
+          {
+            date: new Date().toISOString(),
+            completed: true,
+          }
+        ],
       };
       setStreakData(demoStreak);
       return;

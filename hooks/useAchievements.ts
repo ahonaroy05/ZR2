@@ -143,21 +143,9 @@ export function useAchievements() {
   const loadUnlockedAchievements = useCallback(async () => {
     if (!user) return;
 
-    // In demo mode, simulate some unlocked achievements
+    // In demo mode, start with no unlocked achievements
     if (isDemoMode) {
-      const demoUnlocked: UnlockedAchievement[] = [
-        {
-          achievementId: 'zen_sprout',
-          unlockedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-          userId: user.id,
-        },
-        {
-          achievementId: 'mood_alchemist',
-          unlockedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-          userId: user.id,
-        },
-      ];
-      setUnlockedAchievements(demoUnlocked);
+      setUnlockedAchievements([]);
       return;
     }
 
@@ -197,7 +185,7 @@ export function useAchievements() {
       
       case 'streak':
         // This would need to be connected to actual streak data
-        // For demo purposes, we'll simulate based on meditation sessions
+        // For now, we'll simulate based on meditation sessions
         const recentSessions = meditationSessions.filter(session => {
           const sessionDate = new Date(session.created_at);
           const daysDiff = Math.floor((Date.now() - sessionDate.getTime()) / (1000 * 60 * 60 * 24));

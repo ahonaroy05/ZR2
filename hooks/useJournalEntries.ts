@@ -17,31 +17,9 @@ export function useJournalEntries() {
   const loadEntries = async () => {
     if (!user) return;
     
-    // In demo mode, load mock data
+    // In demo mode, start with empty entries
     if (isDemoMode) {
-      const mockEntries: JournalEntry[] = [
-        {
-          id: 'demo-1',
-          user_id: user.id,
-          content: 'Morning commute was challenging due to delays, but the breathing exercises helped me stay centered.',
-          mood: 'neutral',
-          stress_level: 6,
-          tags: ['commute', 'breathing', 'delays'],
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        },
-        {
-          id: 'demo-2',
-          user_id: user.id,
-          content: 'Evening ride home was peaceful with the forest sounds playlist. Felt much more relaxed.',
-          mood: 'happy',
-          stress_level: 3,
-          tags: ['evening', 'forest sounds', 'peaceful'],
-          created_at: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-          updated_at: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-        },
-      ];
-      setEntries(mockEntries);
+      setEntries([]);
       return;
     }
     
