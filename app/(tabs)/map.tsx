@@ -4,7 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useGoogleMapsRoutes } from '@/hooks/useGoogleMapsRoutes';
 import { GoogleMapView } from '@/components/GoogleMapView';
-import { MapPin, Clock, TrendingDown, Route, Navigation, TriangleAlert as AlertTriangle, Loader } from 'lucide-react-native';
+import { MapPin, Clock, TrendingDown, Navigation, TriangleAlert as AlertTriangle, Loader } from 'lucide-react-native';
 
 interface StressZone {
   name: string;
