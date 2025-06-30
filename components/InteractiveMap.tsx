@@ -20,6 +20,7 @@ import Animated, {
 import { useTheme } from '@/contexts/ThemeContext';
 import { GoogleMapView } from '@/components/GoogleMapView';
 import { useGoogleMapsRoutes } from '@/hooks/useGoogleMapsRoutes';
+import { useLocationPermissions } from '@/hooks/useLocationPermissions';
 import { MapPin, Navigation, Search, Clock, Car, Brain as Train, Bike, User, Star, Chrome as Home, Briefcase, Coffee, Heart, X, RotateCcw, Zap, TriangleAlert as AlertTriangle, TrendingUp, ZoomIn, ZoomOut, RotateCw, CircleHelp as HelpCircle, Route } from 'lucide-react-native';
 
 const { width, height } = Dimensions.get('window');
@@ -51,12 +52,19 @@ interface TransportMode {
 export function InteractiveMap() {
   const { colors, theme } = useTheme();
   const { routes, loading, error, getStressOptimizedRoutes, clearError } = useGoogleMapsRoutes();
+  const { 
+    permissionStatus, 
+    currentLocation: deviceLocation, 
+    isLoading: locationLoading, 
+    error: locationError,
+    getCurrentLocation: getDeviceLocation,
+    requestPermissions 
+  } = useLocationPermissions();
   
   // Location states
-  const [currentLocation, setCurrentLocation] = useState<Location | null>({ lat: 20.2960, lng: 85.8246 });
+  const [currentLocation, setCurrentLocation] = useState<Location | null>(null);
   const [destination, setDestination] = useState<Location | null>({ lat: 20.2700, lng: 85.8400 });
   const [selectedRoute, setSelectedRoute] = useState<string | null>(null);
-  const [isLocating, setIsLocating] = useState(false);
   
   // UI states
   const [searchQuery, setSearchQuery] = useState('');
@@ -138,40 +146,31 @@ export function InteractiveMap() {
 
   // Get current location
   const getCurrentLocation = async () => {
-    if (Platform.OS === 'web') {
-      setIsLocating(true);
+    try {
+      const location = await getDeviceLocation({
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 60000,
+      });
       
-      if (!navigator.geolocation) {
-        Alert.alert('Error', 'Geolocation is not supported by this browser');
-        setIsLocating(false);
-        return;
-      }
-
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const location = {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          };
-          setCurrentLocation(location);
-          setIsLocating(false);
-        },
-        (error) => {
-          console.error('Error getting location:', error);
-          Alert.alert('Error', 'Unable to get your current location');
-          setIsLocating(false);
-          // Keep default location
-        },
-        {
-          enableHighAccuracy: true,
-          timeout: 10000,
-          maximumAge: 60000,
+      if (location) {
+        setCurrentLocation({
+          lat: location.latitude,
+          lng: location.longitude,
+        });
+      } else {
+        // Fallback to default location if unable to get device location
+        setCurrentLocation({ lat: 20.2960, lng: 85.8246 });
+        
+        if (locationError) {
+          Alert.alert('Location Error', locationError);
         }
-      );
-    } else {
-      // For mobile, you would use expo-location here
-      // For now, use default location
+      }
+    } catch (error) {
+      console.error('Error getting location:', error);
+      // Fallback to default location
       setCurrentLocation({ lat: 20.2960, lng: 85.8246 });
+      Alert.alert('Location Error', 'Unable to get your current location. Using default location.');
     }
   };
 
@@ -280,6 +279,10 @@ export function InteractiveMap() {
 
   // Initialize location on mount
   useEffect(() => {
+    // Set default location initially
+    setCurrentLocation({ lat: 20.2960, lng: 85.8246 });
+    
+    // Try to get actual location
     getCurrentLocation();
   }, []);
 
@@ -298,10 +301,16 @@ export function InteractiveMap() {
         <TouchableOpacity 
           style={[styles.findLocationButton, { backgroundColor: colors.overlay }]}
           onPress={handleFabPress}
-          disabled={isLocating}
+          disabled={locationLoading}
         >
-          <MapPin size={16} color={colors.text} />
-          <Text style={[styles.findLocationText, { color: colors.text }]}>Find My Location</Text>
+          {locationLoading ? (
+            <RotateCcw size={16} color={colors.text} />
+          ) : (
+            <MapPin size={16} color={colors.text} />
+          )}
+          <Text style={[styles.findLocationText, { color: colors.text }]}>
+            {locationLoading ? 'Locating...' : 'Find My Location'}
+          </Text>
         </TouchableOpacity>
 
         {/* Map Controls */}
