@@ -9,6 +9,7 @@ import {
   Alert,
   Platform,
   Dimensions,
+  Image,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated, {
@@ -19,7 +20,31 @@ import Animated, {
 import { useTheme } from '@/contexts/ThemeContext';
 import { GoogleMapView } from '@/components/GoogleMapView';
 import { useGoogleMapsRoutes } from '@/hooks/useGoogleMapsRoutes';
-import { MapPin, Navigation, Search, Clock, Car, Brain as Train, Bike, User, Star, Chrome as Home, Briefcase, Coffee, Heart, X, RotateCcw, Zap, TriangleAlert as AlertTriangle, TrendingUp } from 'lucide-react-native';
+import { 
+  MapPin, 
+  Navigation, 
+  Search, 
+  Clock, 
+  Car, 
+  Brain as Train, 
+  Bike, 
+  User, 
+  Star, 
+  Chrome as Home, 
+  Briefcase, 
+  Coffee, 
+  Heart, 
+  X, 
+  RotateCcw, 
+  Zap, 
+  TriangleAlert as AlertTriangle, 
+  TrendingUp,
+  ZoomIn,
+  ZoomOut,
+  RotateCw,
+  HelpCircle,
+  Route
+} from 'lucide-react-native';
 
 const { width, height } = Dimensions.get('window');
 
@@ -52,8 +77,8 @@ export function InteractiveMap() {
   const { routes, loading, error, getStressOptimizedRoutes, clearError } = useGoogleMapsRoutes();
   
   // Location states
-  const [currentLocation, setCurrentLocation] = useState<Location | null>(null);
-  const [destination, setDestination] = useState<Location | null>(null);
+  const [currentLocation, setCurrentLocation] = useState<Location | null>({ lat: 20.2960, lng: 85.8246 });
+  const [destination, setDestination] = useState<Location | null>({ lat: 20.2700, lng: 85.8400 });
   const [selectedRoute, setSelectedRoute] = useState<string | null>(null);
   const [isLocating, setIsLocating] = useState(false);
   
@@ -73,32 +98,32 @@ export function InteractiveMap() {
     {
       id: 'home',
       name: 'Home',
-      address: '123 Main St, San Francisco, CA',
-      location: { lat: 37.7749, lng: -122.4194 },
+      address: '123 Main St, Bhubaneswar, Odisha',
+      location: { lat: 20.2960, lng: 85.8246 },
       icon: 'home',
       color: colors.primary,
     },
     {
       id: 'work',
-      name: 'Work',
-      address: '456 Market St, San Francisco, CA',
-      location: { lat: 37.7849, lng: -122.4094 },
+      name: 'Downtown Office',
+      address: '456 Business District, Bhubaneswar, Odisha',
+      location: { lat: 20.2700, lng: 85.8400 },
       icon: 'briefcase',
       color: colors.accent,
     },
     {
       id: 'gym',
-      name: 'Gym',
-      address: '789 Fitness Ave, San Francisco, CA',
-      location: { lat: 37.7649, lng: -122.4294 },
+      name: 'Fitness Center',
+      address: '789 Health Ave, Bhubaneswar, Odisha',
+      location: { lat: 20.2800, lng: 85.8300 },
       icon: 'zap',
       color: colors.success,
     },
     {
       id: 'cafe',
       name: 'Favorite Café',
-      address: '321 Coffee St, San Francisco, CA',
-      location: { lat: 37.7549, lng: -122.4394 },
+      address: '321 Coffee St, Bhubaneswar, Odisha',
+      location: { lat: 20.2900, lng: 85.8500 },
       icon: 'coffee',
       color: colors.warning,
     },
@@ -159,8 +184,7 @@ export function InteractiveMap() {
           console.error('Error getting location:', error);
           Alert.alert('Error', 'Unable to get your current location');
           setIsLocating(false);
-          // Fallback to San Francisco
-          setCurrentLocation({ lat: 37.7749, lng: -122.4194 });
+          // Keep default location
         },
         {
           enableHighAccuracy: true,
@@ -171,7 +195,7 @@ export function InteractiveMap() {
     } else {
       // For mobile, you would use expo-location here
       // For now, use default location
-      setCurrentLocation({ lat: 37.7749, lng: -122.4194 });
+      setCurrentLocation({ lat: 20.2960, lng: 85.8246 });
     }
   };
 
@@ -183,25 +207,25 @@ export function InteractiveMap() {
       return;
     }
 
-    // Mock search results - in a real app, you'd use Google Places API
+    // Mock search results
     const mockResults = [
       {
         id: '1',
-        name: 'Union Square',
-        address: 'Union Square, San Francisco, CA',
-        location: { lat: 37.7879, lng: -122.4075 },
+        name: 'Kalinga Stadium',
+        address: 'Kalinga Stadium, Bhubaneswar, Odisha',
+        location: { lat: 20.2850, lng: 85.8200 },
       },
       {
         id: '2',
-        name: 'Golden Gate Park',
-        address: 'Golden Gate Park, San Francisco, CA',
-        location: { lat: 37.7694, lng: -122.4862 },
+        name: 'Ekamra Kanan',
+        address: 'Ekamra Kanan Botanical Gardens, Bhubaneswar, Odisha',
+        location: { lat: 20.2750, lng: 85.8350 },
       },
       {
         id: '3',
-        name: 'Fisherman\'s Wharf',
-        address: 'Fisherman\'s Wharf, San Francisco, CA',
-        location: { lat: 37.8080, lng: -122.4177 },
+        name: 'Shri Ram Temple',
+        address: 'Shri Ram Temple, Bhubaneswar, Odisha',
+        location: { lat: 20.2650, lng: 85.8450 },
       },
     ].filter(result => 
       result.name.toLowerCase().includes(query.toLowerCase()) ||
@@ -291,159 +315,192 @@ export function InteractiveMap() {
   }, [currentLocation, destination, selectedTransportMode]);
 
   return (
-    <View style={styles.container}>
-      {/* Map View */}
-      <View style={styles.mapContainer}>
+    <ScrollView style={[styles.container, { backgroundColor: colors.background }]} showsVerticalScrollIndicator={false}>
+      {/* Map Card */}
+      <View style={[styles.mapCard, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}>
+        {/* Find My Location Button */}
+        <TouchableOpacity 
+          style={[styles.findLocationButton, { backgroundColor: colors.overlay }]}
+          onPress={handleFabPress}
+          disabled={isLocating}
+        >
+          <MapPin size={16} color={colors.text} />
+          <Text style={[styles.findLocationText, { color: colors.text }]}>Find My Location</Text>
+        </TouchableOpacity>
+
+        {/* Map Controls */}
+        <View style={styles.mapControls}>
+          <TouchableOpacity style={[styles.controlButton, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}>
+            <ZoomIn size={20} color={colors.text} />
+          </TouchableOpacity>
+          <TouchableOpacity style={[styles.controlButton, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}>
+            <ZoomOut size={20} color={colors.text} />
+          </TouchableOpacity>
+          <TouchableOpacity style={[styles.controlButton, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}>
+            <RotateCw size={20} color={colors.text} />
+          </TouchableOpacity>
+        </View>
+
+        {/* Map View */}
         <GoogleMapView
           routes={routes.map(route => ({
             id: route.id,
             overviewPolyline: route.overviewPolyline,
             color: route.color,
           }))}
-          origin={currentLocation || { lat: 37.7749, lng: -122.4194 }}
-          destination={destination || { lat: 37.7849, lng: -122.4094 }}
+          origin={currentLocation || { lat: 20.2960, lng: 85.8246 }}
+          destination={destination || { lat: 20.2700, lng: 85.8400 }}
           selectedRoute={selectedRoute}
           onRouteSelect={setSelectedRoute}
           style={styles.map}
         />
-        
-        {/* Map Overlay Controls */}
-        <View style={styles.mapOverlay}>
-          {/* Search Bar */}
-          <Animated.View style={[styles.searchContainer, searchBarAnimatedStyle]}>
-            <View style={[styles.searchBar, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}>
-              <Search size={20} color={colors.textSecondary} />
-              <TextInput
-                style={[styles.searchInput, { color: colors.text }]}
-                placeholder="Where to?"
-                placeholderTextColor={colors.textSecondary}
-                value={searchQuery}
-                onChangeText={(text) => {
-                  setSearchQuery(text);
-                  searchLocations(text);
-                }}
-                onFocus={handleSearchFocus}
-                onBlur={handleSearchBlur}
-              />
-              {searchQuery.length > 0 && (
-                <TouchableOpacity
-                  onPress={() => {
-                    setSearchQuery('');
-                    setDestination(null);
-                    setShowSearchResults(false);
-                  }}
-                >
-                  <X size={20} color={colors.textSecondary} />
-                </TouchableOpacity>
-              )}
-              <TouchableOpacity
-                style={[styles.savedLocationsButton, { backgroundColor: colors.primaryLight }]}
-                onPress={() => setShowSavedLocations(!showSavedLocations)}
-              >
-                <Star size={16} color={colors.primary} />
-              </TouchableOpacity>
-            </View>
 
-            {/* Search Results */}
-            {showSearchResults && searchResults.length > 0 && (
-              <View style={[styles.searchResults, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}>
-                {searchResults.map((result) => (
-                  <TouchableOpacity
-                    key={result.id}
-                    style={styles.searchResultItem}
-                    onPress={() => selectDestination(result.location, result.name)}
-                  >
-                    <MapPin size={16} color={colors.primary} />
-                    <View style={styles.searchResultText}>
-                      <Text style={[styles.searchResultName, { color: colors.text }]}>
-                        {result.name}
-                      </Text>
-                      <Text style={[styles.searchResultAddress, { color: colors.textSecondary }]}>
-                        {result.address}
-                      </Text>
-                    </View>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            )}
-
-            {/* Saved Locations */}
-            {showSavedLocations && (
-              <View style={[styles.savedLocations, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}>
-                <Text style={[styles.savedLocationsTitle, { color: colors.text }]}>Saved Places</Text>
-                {savedLocations.map((location) => (
-                  <TouchableOpacity
-                    key={location.id}
-                    style={styles.savedLocationItem}
-                    onPress={() => selectSavedLocation(location)}
-                  >
-                    <View style={[styles.savedLocationIcon, { backgroundColor: `${location.color}20` }]}>
-                      {getSavedLocationIcon(location.icon, location.color)}
-                    </View>
-                    <View style={styles.savedLocationText}>
-                      <Text style={[styles.savedLocationName, { color: colors.text }]}>
-                        {location.name}
-                      </Text>
-                      <Text style={[styles.savedLocationAddress, { color: colors.textSecondary }]}>
-                        {location.address}
-                      </Text>
-                    </View>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            )}
-          </Animated.View>
-
-          {/* Transport Mode Selector */}
-          <View style={styles.transportModeContainer}>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.transportModeScroll}>
-              {transportModes.map((mode) => (
-                <TouchableOpacity
-                  key={mode.id}
-                  style={[
-                    styles.transportModeButton,
-                    { backgroundColor: colors.surface, shadowColor: colors.shadow },
-                    selectedTransportMode === mode.id && { backgroundColor: mode.color }
-                  ]}
-                  onPress={() => setSelectedTransportMode(mode.id)}
-                >
-                  {mode.icon}
-                  <Text style={[
-                    styles.transportModeText,
-                    { color: selectedTransportMode === mode.id ? colors.textInverse : colors.text }
-                  ]}>
-                    {mode.name}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
-          </View>
-
-          {/* Current Location FAB */}
-          <Animated.View style={[styles.locationFab, fabAnimatedStyle]}>
-            <TouchableOpacity
-              style={[styles.fabButton, { shadowColor: colors.shadow }]}
-              onPress={handleFabPress}
-              disabled={isLocating}
-            >
-              <LinearGradient
-                colors={theme.gradient.primary}
-                style={styles.fabGradient}
-              >
-                {isLocating ? (
-                  <RotateCcw size={24} color={colors.textInverse} />
-                ) : (
-                  <Navigation size={24} color={colors.textInverse} />
-                )}
-              </LinearGradient>
-            </TouchableOpacity>
-          </Animated.View>
+        {/* Google Attribution */}
+        <View style={styles.googleAttribution}>
+          <Text style={[styles.googleText, { color: colors.textSecondary }]}>Google</Text>
         </View>
       </View>
 
-      {/* Route Information Panel */}
+      {/* Current Journey Card */}
+      <View style={[styles.journeyCard, { backgroundColor: colors.card, shadowColor: colors.shadow }]}>
+        <View style={styles.journeyHeader}>
+          <Route size={24} color={colors.primary} />
+          <Text style={[styles.journeyTitle, { color: colors.textInverse }]}>Current Journey</Text>
+        </View>
+        
+        <Text style={[styles.journeyRoute, { color: colors.textInverse }]}>
+          Home → Downtown Office
+        </Text>
+        
+        <Text style={[styles.journeyCoordinates, { color: colors.textSecondary }]}>
+          Current: 20.2960, 85.8246
+        </Text>
+
+        <TouchableOpacity style={[styles.helpButton, { backgroundColor: colors.primary }]}>
+          <HelpCircle size={16} color={colors.textInverse} />
+          <Text style={[styles.helpButtonText, { color: colors.textInverse }]}>
+            Need help with your route planning?
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Search Section */}
+      <View style={styles.searchSection}>
+        <Animated.View style={[styles.searchContainer, searchBarAnimatedStyle]}>
+          <View style={[styles.searchBar, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}>
+            <Search size={20} color={colors.textSecondary} />
+            <TextInput
+              style={[styles.searchInput, { color: colors.text }]}
+              placeholder="Where to?"
+              placeholderTextColor={colors.textSecondary}
+              value={searchQuery}
+              onChangeText={(text) => {
+                setSearchQuery(text);
+                searchLocations(text);
+              }}
+              onFocus={handleSearchFocus}
+              onBlur={handleSearchBlur}
+            />
+            {searchQuery.length > 0 && (
+              <TouchableOpacity
+                onPress={() => {
+                  setSearchQuery('');
+                  setDestination(null);
+                  setShowSearchResults(false);
+                }}
+              >
+                <X size={20} color={colors.textSecondary} />
+              </TouchableOpacity>
+            )}
+            <TouchableOpacity
+              style={[styles.savedLocationsButton, { backgroundColor: colors.primaryLight }]}
+              onPress={() => setShowSavedLocations(!showSavedLocations)}
+            >
+              <Star size={16} color={colors.primary} />
+            </TouchableOpacity>
+          </View>
+
+          {/* Search Results */}
+          {showSearchResults && searchResults.length > 0 && (
+            <View style={[styles.searchResults, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}>
+              {searchResults.map((result) => (
+                <TouchableOpacity
+                  key={result.id}
+                  style={styles.searchResultItem}
+                  onPress={() => selectDestination(result.location, result.name)}
+                >
+                  <MapPin size={16} color={colors.primary} />
+                  <View style={styles.searchResultText}>
+                    <Text style={[styles.searchResultName, { color: colors.text }]}>
+                      {result.name}
+                    </Text>
+                    <Text style={[styles.searchResultAddress, { color: colors.textSecondary }]}>
+                      {result.address}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              ))}
+            </View>
+          )}
+
+          {/* Saved Locations */}
+          {showSavedLocations && (
+            <View style={[styles.savedLocations, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}>
+              <Text style={[styles.savedLocationsTitle, { color: colors.text }]}>Saved Places</Text>
+              {savedLocations.map((location) => (
+                <TouchableOpacity
+                  key={location.id}
+                  style={styles.savedLocationItem}
+                  onPress={() => selectSavedLocation(location)}
+                >
+                  <View style={[styles.savedLocationIcon, { backgroundColor: `${location.color}20` }]}>
+                    {getSavedLocationIcon(location.icon, location.color)}
+                  </View>
+                  <View style={styles.savedLocationText}>
+                    <Text style={[styles.savedLocationName, { color: colors.text }]}>
+                      {location.name}
+                    </Text>
+                    <Text style={[styles.savedLocationAddress, { color: colors.textSecondary }]}>
+                      {location.address}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              ))}
+            </View>
+          )}
+        </Animated.View>
+      </View>
+
+      {/* Transport Mode Selector */}
+      <View style={styles.transportModeSection}>
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>Transport Mode</Text>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.transportModeScroll}>
+          {transportModes.map((mode) => (
+            <TouchableOpacity
+              key={mode.id}
+              style={[
+                styles.transportModeButton,
+                { backgroundColor: colors.surface, shadowColor: colors.shadow },
+                selectedTransportMode === mode.id && { backgroundColor: mode.color }
+              ]}
+              onPress={() => setSelectedTransportMode(mode.id)}
+            >
+              {mode.icon}
+              <Text style={[
+                styles.transportModeText,
+                { color: selectedTransportMode === mode.id ? colors.textInverse : colors.text }
+              ]}>
+                {mode.name}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </View>
+
+      {/* Available Routes Section */}
       {routes.length > 0 && (
-        <View style={[styles.routePanel, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}>
+        <View style={styles.routesSection}>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>Available Routes</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             {routes.map((route) => (
               <TouchableOpacity
@@ -499,16 +556,16 @@ export function InteractiveMap() {
 
       {/* Loading Indicator */}
       {loading && (
-        <View style={[styles.loadingOverlay, { backgroundColor: colors.overlay }]}>
-          <View style={[styles.loadingContainer, { backgroundColor: colors.surface }]}>
-            <RotateCcw size={32} color={colors.primary} />
-            <Text style={[styles.loadingText, { color: colors.text }]}>
-              Finding optimal routes...
-            </Text>
-          </View>
+        <View style={[styles.loadingContainer, { backgroundColor: colors.surface }]}>
+          <RotateCcw size={32} color={colors.primary} />
+          <Text style={[styles.loadingText, { color: colors.text }]}>
+            Finding optimal routes...
+          </Text>
         </View>
       )}
-    </View>
+
+      <View style={styles.bottomPadding} />
+    </ScrollView>
   );
 }
 
@@ -516,24 +573,120 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  mapContainer: {
-    flex: 1,
+  mapCard: {
+    margin: 20,
+    borderRadius: 20,
+    height: 300,
     position: 'relative',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 4,
+    overflow: 'hidden',
+  },
+  findLocationButton: {
+    position: 'absolute',
+    top: 16,
+    left: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 20,
+    zIndex: 10,
+  },
+  findLocationText: {
+    marginLeft: 6,
+    fontSize: 12,
+    fontFamily: 'Quicksand-Medium',
+  },
+  mapControls: {
+    position: 'absolute',
+    top: 16,
+    right: 16,
+    zIndex: 10,
+    gap: 8,
+  },
+  controlButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   map: {
     flex: 1,
   },
-  mapOverlay: {
+  googleAttribution: {
     position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    pointerEvents: 'box-none',
+    bottom: 8,
+    left: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    borderRadius: 4,
+  },
+  googleText: {
+    fontSize: 10,
+    fontFamily: 'Quicksand-Medium',
+  },
+  journeyCard: {
+    marginHorizontal: 20,
+    marginBottom: 20,
+    borderRadius: 20,
+    padding: 20,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 4,
+    backgroundColor: '#4A3B4A', // Dark purple background like in the image
+  },
+  journeyHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  journeyTitle: {
+    fontSize: 18,
+    fontFamily: 'Nunito-SemiBold',
+    marginLeft: 8,
+    color: '#FFFFFF',
+  },
+  journeyRoute: {
+    fontSize: 24,
+    fontFamily: 'Nunito-Bold',
+    marginBottom: 8,
+    color: '#FFFFFF',
+  },
+  journeyCoordinates: {
+    fontSize: 14,
+    fontFamily: 'Quicksand-Regular',
+    marginBottom: 16,
+    color: '#B8A8B8',
+  },
+  helpButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 25,
+    alignSelf: 'flex-end',
+  },
+  helpButtonText: {
+    marginLeft: 8,
+    fontSize: 14,
+    fontFamily: 'Quicksand-Medium',
+  },
+  searchSection: {
+    paddingHorizontal: 20,
+    marginBottom: 20,
   },
   searchContainer: {
-    margin: 20,
-    marginTop: 60,
+    position: 'relative',
   },
   searchBar: {
     flexDirection: 'row',
@@ -628,14 +781,17 @@ const styles = StyleSheet.create({
     fontFamily: 'Quicksand-Regular',
     marginTop: 2,
   },
-  transportModeContainer: {
-    position: 'absolute',
-    bottom: 200,
-    left: 0,
-    right: 0,
+  transportModeSection: {
+    paddingHorizontal: 20,
+    marginBottom: 20,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontFamily: 'Nunito-SemiBold',
+    marginBottom: 12,
   },
   transportModeScroll: {
-    paddingHorizontal: 20,
+    paddingVertical: 4,
   },
   transportModeButton: {
     flexDirection: 'row',
@@ -654,38 +810,13 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: 'Quicksand-SemiBold',
   },
-  locationFab: {
-    position: 'absolute',
-    bottom: 120,
-    right: 20,
-  },
-  fabButton: {
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
-  },
-  fabGradient: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  routePanel: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    paddingVertical: 16,
-    shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 8,
+  routesSection: {
+    paddingHorizontal: 20,
+    marginBottom: 20,
   },
   routeCard: {
     width: 280,
-    marginHorizontal: 12,
+    marginRight: 12,
     padding: 16,
     borderRadius: 16,
     borderWidth: 1,
@@ -740,23 +871,19 @@ const styles = StyleSheet.create({
     fontFamily: 'Quicksand-Medium',
     flex: 1,
   },
-  loadingOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   loadingContainer: {
     alignItems: 'center',
     padding: 24,
+    marginHorizontal: 20,
     borderRadius: 16,
+    marginBottom: 20,
   },
   loadingText: {
     marginTop: 12,
     fontSize: 16,
     fontFamily: 'Quicksand-Medium',
+  },
+  bottomPadding: {
+    height: 100,
   },
 });
