@@ -208,18 +208,19 @@ export default function SoundScreen() {
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      {/* Bolt Logo */}
-      <View style={[
-        styles.boltLogoContainer,
-        { top: isDemoMode ? 120 : 80 }
-      ]}>
-        <BoltLogo size={36} />
-      </View>
-
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
-          <Text style={[styles.title, { color: theme.colors.text }]}>Soundscape Mixer</Text>
-          <Text style={[styles.subtitle, { color: theme.colors.text }]}>Create your perfect audio environment</Text>
+          <View style={styles.headerContent}>
+            <View style={styles.titleContainer}>
+              <Text style={[styles.title, { color: theme.colors.text }]}>Soundscape Mixer</Text>
+              <Text style={[styles.subtitle, { color: theme.colors.text }]}>Create your perfect audio environment</Text>
+            </View>
+            
+            {/* Bolt Logo positioned on the same line as title */}
+            <View style={styles.boltLogoContainer}>
+              <BoltLogo size={42} />
+            </View>
+          </View>
         </View>
 
         <View style={styles.controlsSection}>
@@ -449,21 +450,26 @@ const styles = StyleSheet.create({
     paddingTop: 20,
     paddingBottom: 24,
   },
+  headerContent: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+  },
+  titleContainer: {
+    flex: 1,
+  },
   title: {
     fontFamily: 'Nunito-Bold',
     fontSize: 28,
-    color: '#333',
   },
   subtitle: {
     fontFamily: 'Quicksand-Medium',
     fontSize: 16,
-    color: '#666',
     marginTop: 8,
   },
   boltLogoContainer: {
-    position: 'absolute',
-    right: 24,
-    zIndex: 1000,
+    marginLeft: 16,
+    marginTop: 4,
   },
   controlsSection: {
     marginBottom: 32,

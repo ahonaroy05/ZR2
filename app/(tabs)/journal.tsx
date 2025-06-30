@@ -125,18 +125,19 @@ export default function JournalScreen() {
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      {/* Bolt Logo */}
-      <View style={[
-        styles.boltLogoContainer,
-        { top: isDemoMode ? 120 : 80 }
-      ]}>
-        <BoltLogo size={36} />
-      </View>
-
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
-          <Text style={[styles.title, { color: theme.colors.text }]}>Mindful Journal</Text>
-          <Text style={[styles.subtitle, { color: theme.colors.text }]}>Reflect on your journey</Text>
+          <View style={styles.headerContent}>
+            <View style={styles.titleContainer}>
+              <Text style={[styles.title, { color: theme.colors.text }]}>Mindful Journal</Text>
+              <Text style={[styles.subtitle, { color: theme.colors.text }]}>Reflect on your journey</Text>
+            </View>
+            
+            {/* Bolt Logo positioned on the same line as title */}
+            <View style={styles.boltLogoContainer}>
+              <BoltLogo size={42} />
+            </View>
+          </View>
         </View>
 
         <View style={[styles.newEntrySection, { backgroundColor: theme.colors.card, shadowColor: theme.colors.shadow }]}>
@@ -308,6 +309,14 @@ const styles = StyleSheet.create({
     paddingTop: 20,
     paddingBottom: 24,
   },
+  headerContent: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+  },
+  titleContainer: {
+    flex: 1,
+  },
   title: {
     fontFamily: 'Nunito-Bold',
     fontSize: 28,
@@ -320,9 +329,8 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   boltLogoContainer: {
-    position: 'absolute',
-    right: 24,
-    zIndex: 1000,
+    marginLeft: 16,
+    marginTop: 4,
   },
   newEntrySection: {
     borderRadius: 20,

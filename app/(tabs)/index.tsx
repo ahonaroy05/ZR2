@@ -101,14 +101,6 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
-      {/* Bolt Logo */}
-      <View style={[
-        styles.boltLogoContainer,
-        { top: isDemoMode ? 120 : 80 }
-      ]}>
-        <BoltLogo size={36} />
-      </View>
-
       <TouchableOpacity 
         style={[
           styles.settingsButton,
@@ -127,14 +119,22 @@ export default function HomeScreen() {
       
       <ScrollView style={[styles.scrollView]} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
-          <View>
-            <TimeBasedGreeting 
-              username={user?.user_metadata?.username || 'Friend'}
-              style={styles.greeting}
-              updateInterval={60000}
-            />
-            <Text style={[styles.subtitle, { color: colors.text }]}>How are you feeling today?</Text>
+          <View style={styles.headerContent}>
+            <View style={styles.greetingContainer}>
+              <TimeBasedGreeting 
+                username={user?.user_metadata?.username || 'Friend'}
+                style={styles.greeting}
+                updateInterval={60000}
+              />
+            </View>
+            
+            {/* Bolt Logo positioned on the same line as greeting */}
+            <View style={styles.boltLogoContainer}>
+              <BoltLogo size={42} />
+            </View>
           </View>
+          
+          <Text style={[styles.subtitle, { color: colors.text }]}>How are you feeling today?</Text>
         </View>
 
         <View style={styles.stressSection}>
@@ -285,7 +285,11 @@ const styles = StyleSheet.create({
   headerContent: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-start',
+    marginBottom: 8,
+  },
+  greetingContainer: {
+    flex: 1,
   },
   greeting: {
     fontFamily: 'Nunito-Bold',
@@ -294,12 +298,10 @@ const styles = StyleSheet.create({
   subtitle: {
     fontFamily: 'Quicksand-Medium',
     fontSize: 16,
-    marginTop: 8,
   },
   boltLogoContainer: {
-    position: 'absolute',
-    right: 24,
-    zIndex: 1000,
+    marginLeft: 16,
+    marginTop: 4, // Slight adjustment to align with text baseline
   },
   settingsButton: {
     position: 'absolute',
